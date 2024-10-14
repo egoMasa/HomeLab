@@ -34,10 +34,8 @@
     * Serveur Linux : ISO debian graphique (stable et rapide)
     * Routeurs et Switch : ISO cisco
 
-
-## Architecture réseau de l'entreprise
+## Architecture du réseau déployé
 
 [SCHEMA RESEAU]
 
-## Configuration réseau (routeur et switch)
 
