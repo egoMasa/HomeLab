@@ -9,6 +9,9 @@
 	* Serveur de partage de fichier : NextCloud (Apache&PHP)
 	* Serveur mail : PostFix avec BDD et accès ThunderBird
     * Serveur de supervision : Zabbix serveur et Zabbix client
+	* Serveur SOC : SIEM, SOAR, XDR
+	* Serveur de journalisation : Elastic Stack
+	* Serveur de gestion ticketing : GLPI
 	* Serveur de stockage : BackUp avec Veeam
 	* Serveur DNS & DHCP : isc-dhcp et dnsmasq 
 	* Firewall + VPN : Pfsense avec Wireguard
