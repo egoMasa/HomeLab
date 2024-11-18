@@ -61,9 +61,6 @@
         <mxCell id="sgeaB0DVFmvgLcvJb8wv-21" value="" style="shape=mxgraph.cisco.servers.fileserver;sketch=0;html=1;pointerEvents=1;dashed=0;fillColor=#036897;strokeColor=#ffffff;strokeWidth=2;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;" vertex="1" parent="1">
           <mxGeometry x="1170" y="90" width="69" height="92" as="geometry" />
         </mxCell>
-        <mxCell id="sgeaB0DVFmvgLcvJb8wv-22" value="" style="shape=mxgraph.cisco.servers.fileserver;sketch=0;html=1;pointerEvents=1;dashed=0;fillColor=#036897;strokeColor=#ffffff;strokeWidth=2;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;" vertex="1" parent="1">
-          <mxGeometry x="1170" y="310" width="69" height="92" as="geometry" />
-        </mxCell>
         <mxCell id="sgeaB0DVFmvgLcvJb8wv-23" value="" style="shape=mxgraph.cisco.servers.fileserver;sketch=0;html=1;pointerEvents=1;dashed=0;fillColor=#036897;strokeColor=#ffffff;strokeWidth=2;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;" vertex="1" parent="1">
           <mxGeometry x="-111.5" y="109" width="69" height="92" as="geometry" />
         </mxCell>
@@ -89,9 +86,10 @@
             <mxPoint x="1018.9800000000005" y="240" as="sourcePoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sgeaB0DVFmvgLcvJb8wv-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;curved=1;endArrow=none;endFill=0;" edge="1" parent="1" source="sgeaB0DVFmvgLcvJb8wv-44" target="sgeaB0DVFmvgLcvJb8wv-22">
+        <mxCell id="sgeaB0DVFmvgLcvJb8wv-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=1;endArrow=none;endFill=0;" edge="1" parent="1" source="sgeaB0DVFmvgLcvJb8wv-44" target="sgeaB0DVFmvgLcvJb8wv-63">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1007.8699999999999" y="251.99999999999955" as="sourcePoint" />
+            <mxPoint x="1170" y="356" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="sgeaB0DVFmvgLcvJb8wv-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;endFill=0;" edge="1" parent="1" source="sgeaB0DVFmvgLcvJb8wv-16" target="sgeaB0DVFmvgLcvJb8wv-45">
@@ -152,11 +150,17 @@
         <mxCell id="sgeaB0DVFmvgLcvJb8wv-59" value="OUT" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="490" y="182" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="sgeaB0DVFmvgLcvJb8wv-61" value="&lt;p style=&quot;margin: 0px;&quot;&gt;- Serveur Mail&lt;/p&gt;&lt;br&gt;&lt;p style=&quot;margin: 0px;&quot;&gt;- Serveur NextCloud et FTP&lt;/p&gt;&lt;br&gt;&lt;p style=&quot;margin: 0px;&quot;&gt;- Serveur de backup Veeam&lt;/p&gt;&lt;br&gt;&lt;p style=&quot;margin: 0px;&quot;&gt;- Serveur DHCP&lt;/p&gt;&lt;br&gt;&lt;p style=&quot;margin: 0px;&quot;&gt;- Serveur DNS&lt;/p&gt;&lt;br&gt;&lt;p style=&quot;margin: 0px;&quot;&gt;- Service AD&lt;/p&gt;&lt;br&gt;&lt;p style=&quot;margin: 0px;&quot;&gt;- Serveur WEB&lt;/p&gt;&lt;br&gt;&lt;p style=&quot;margin: 0px;&quot;&gt;- Serveur de BDD&lt;/p&gt;&lt;br&gt;&lt;p style=&quot;margin: 0px;&quot;&gt;- Serveur d&#39;inventaire et ticketing GLPI&lt;/p&gt;" style="text;strokeColor=none;align=left;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="1250" y="97.5" width="230" height="310" as="geometry" />
+        <mxCell id="sgeaB0DVFmvgLcvJb8wv-61" value="&lt;p style=&quot;margin: 0px;&quot;&gt;&lt;b&gt;- Serveur Mail&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin: 0px;&quot;&gt;&lt;b&gt;- Serveur NextCloud et FTP&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin: 0px;&quot;&gt;&lt;b&gt;- Serveur de backup Veeam&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin: 0px;&quot;&gt;&lt;b&gt;- Serveur WEB&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin: 0px;&quot;&gt;&lt;b&gt;- Serveur de BDD&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin: 0px;&quot;&gt;&lt;b&gt;- Serveur d&#39;inventaire et ticketing GLPI&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin: 0px;&quot;&gt;&lt;br&gt;&lt;/p&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;p style=&quot;margin: 0px;&quot;&gt;&lt;br&gt;&lt;/p&gt;" style="text;strokeColor=none;align=left;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="141.5" width="230" height="131.5" as="geometry" />
         </mxCell>
         <mxCell id="sgeaB0DVFmvgLcvJb8wv-62" value="&lt;b&gt;VLAN 10 (Etudiant) : 192.168.10.X/24&lt;/b&gt;&lt;div&gt;&lt;b&gt;VLAN 20 (Professeur)&amp;nbsp;&lt;/b&gt;&lt;b style=&quot;background-color: initial;&quot;&gt;: 192.168.20.X/24&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;VLAN 30 (Secretariat)&amp;nbsp;&lt;/b&gt;&lt;b style=&quot;background-color: initial;&quot;&gt;: 192.168.30.X/24&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;VLAN 40 (Administration)&amp;nbsp;&lt;/b&gt;&lt;b style=&quot;background-color: initial;&quot;&gt;: 192.168.40.X/24&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;VLAN 99 : Natif&amp;nbsp;&lt;/b&gt;&lt;b style=&quot;background-color: initial;&quot;&gt;: 192.168.99.X/24&lt;/b&gt;&lt;/div&gt;" style="text;strokeColor=none;align=left;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="409" y="880" width="260" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="sgeaB0DVFmvgLcvJb8wv-63" value="" style="image;aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image=img/lib/active_directory/domain_controller.svg;" vertex="1" parent="1">
+          <mxGeometry x="1173" y="291" width="77" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="sgeaB0DVFmvgLcvJb8wv-64" value="&lt;p style=&quot;text-align: left; margin: 0px;&quot;&gt;&lt;b&gt;- Service AD&lt;/b&gt;&lt;b&gt;&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;text-align: left; margin: 0px;&quot;&gt;&lt;b&gt;- Serveur DHCP&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;text-align: left; margin: 0px;&quot;&gt;&lt;b&gt;- Serveur DNS&lt;/b&gt;&lt;/p&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1239" y="311" width="120" height="70" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
