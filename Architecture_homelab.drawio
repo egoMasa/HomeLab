@@ -159,8 +159,8 @@
         <mxCell id="sgeaB0DVFmvgLcvJb8wv-63" value="" style="image;aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image=img/lib/active_directory/domain_controller.svg;" vertex="1" parent="1">
           <mxGeometry x="1173" y="291" width="77" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="sgeaB0DVFmvgLcvJb8wv-64" value="&lt;p style=&quot;text-align: left; margin: 0px;&quot;&gt;&lt;b&gt;- Service AD&lt;/b&gt;&lt;b&gt;&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;text-align: left; margin: 0px;&quot;&gt;&lt;b&gt;- Serveur DHCP&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;text-align: left; margin: 0px;&quot;&gt;&lt;b&gt;- Serveur DNS&lt;/b&gt;&lt;/p&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="1239" y="311" width="120" height="70" as="geometry" />
+        <mxCell id="sgeaB0DVFmvgLcvJb8wv-64" value="&lt;p style=&quot;text-align: left; margin: 0px;&quot;&gt;&lt;b&gt;- Service AD&lt;/b&gt;&lt;b&gt;&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;text-align: left; margin: 0px;&quot;&gt;&lt;b&gt;- Serveur DHCP&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;text-align: left; margin: 0px;&quot;&gt;&lt;b&gt;- Serveur DNS&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;text-align: left; margin: 0px;&quot;&gt;&lt;b&gt;- Serveur RADIUS/TACACS+&lt;/b&gt;&lt;/p&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1239" y="311" width="171" height="70" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
