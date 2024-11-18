@@ -214,12 +214,6 @@
         <mxCell id="sgeaB0DVFmvgLcvJb8wv-91" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="sgeaB0DVFmvgLcvJb8wv-16" target="sgeaB0DVFmvgLcvJb8wv-89">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="sgeaB0DVFmvgLcvJb8wv-92" value="" style="sketch=0;points=[[0.015,0.015,0],[0.985,0.015,0],[0.985,0.985,0],[0.015,0.985,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];verticalLabelPosition=bottom;html=1;verticalAlign=top;aspect=fixed;align=center;pointerEvents=1;shape=mxgraph.cisco19.rect;prIcon=ips_ids;fillColor=#FAFAFA;strokeColor=#005073;" vertex="1" parent="1">
-          <mxGeometry x="503" y="440" width="74" height="57.81" as="geometry" />
-        </mxCell>
-        <mxCell id="sgeaB0DVFmvgLcvJb8wv-93" value="IPS (Inline)" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
-          <mxGeometry x="574.96" y="453.90999999999997" width="63" height="30" as="geometry" />
-        </mxCell>
         <mxCell id="sgeaB0DVFmvgLcvJb8wv-95" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;endFill=0;" edge="1" parent="1" source="sgeaB0DVFmvgLcvJb8wv-5" target="sgeaB0DVFmvgLcvJb8wv-10">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="539" y="200" as="sourcePoint" />
@@ -228,6 +222,15 @@
         </mxCell>
         <mxCell id="sgeaB0DVFmvgLcvJb8wv-98" value="FAI" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="506" y="-160" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="sgeaB0DVFmvgLcvJb8wv-99" value="" style="sketch=0;points=[[0.015,0.015,0],[0.985,0.015,0],[0.985,0.985,0],[0.015,0.985,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];verticalLabelPosition=bottom;html=1;verticalAlign=top;aspect=fixed;align=center;pointerEvents=1;shape=mxgraph.cisco19.rect;prIcon=ips_ids;fillColor=#FAFAFA;strokeColor=#005073;" vertex="1" parent="1">
+          <mxGeometry x="935" y="323.19000000000005" width="74" height="57.81" as="geometry" />
+        </mxCell>
+        <mxCell id="sgeaB0DVFmvgLcvJb8wv-100" value="IDS (with SPAN to SOC)" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="935.5" y="386" width="83" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="sgeaB0DVFmvgLcvJb8wv-101" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;endFill=0;" edge="1" parent="1" source="sgeaB0DVFmvgLcvJb8wv-99" target="sgeaB0DVFmvgLcvJb8wv-15">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
