@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36" version="24.8.6">
   <diagram name="Page-1" id="c37626ed-c26b-45fb-9056-f9ebc6bb27b6">
-    <mxGraphModel dx="3306" dy="2038" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
+    <mxGraphModel dx="3707" dy="2254" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -123,16 +123,22 @@
           <mxGeometry x="24" y="211" width="60" height="60" as="geometry" />
         </mxCell>
         <mxCell id="sgeaB0DVFmvgLcvJb8wv-46" value="" style="whiteSpace=wrap;html=1;fillColor=none;strokeColor=#d79b00;opacity=30;" vertex="1" parent="1">
-          <mxGeometry x="810" y="70" width="460" height="350" as="geometry" />
+          <mxGeometry x="1110" y="-168" width="460" height="350" as="geometry" />
         </mxCell>
         <mxCell id="sgeaB0DVFmvgLcvJb8wv-47" value="" style="whiteSpace=wrap;html=1;fillColor=none;strokeColor=#6c8ebf;opacity=30;" vertex="1" parent="1">
           <mxGeometry x="-220" y="75" width="490" height="350" as="geometry" />
         </mxCell>
         <mxCell id="sgeaB0DVFmvgLcvJb8wv-49" value="" style="whiteSpace=wrap;html=1;fillColor=none;strokeColor=#82b366;opacity=30;" vertex="1" parent="1">
-          <mxGeometry x="350" y="480" width="370" height="410" as="geometry" />
+          <mxGeometry x="40" y="480" width="370" height="410" as="geometry" />
         </mxCell>
         <mxCell id="sgeaB0DVFmvgLcvJb8wv-50" value="" style="whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;opacity=30;" vertex="1" parent="1">
           <mxGeometry x="309" y="-320" width="460" height="350" as="geometry" />
+        </mxCell>
+        <mxCell id="sgeaB0DVFmvgLcvJb8wv-51" value="" style="shape=mxgraph.cisco.computers_and_peripherals.pc;sketch=0;html=1;pointerEvents=1;dashed=0;fillColor=#036897;strokeColor=#ffffff;strokeWidth=2;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="931" y="332" width="78" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="sgeaB0DVFmvgLcvJb8wv-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;endFill=0;" edge="1" parent="1" source="sgeaB0DVFmvgLcvJb8wv-51" target="sgeaB0DVFmvgLcvJb8wv-44">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
