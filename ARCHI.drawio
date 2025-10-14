@@ -511,7 +511,13 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="jf9bjM_j5oZ7g4EwfMdx-16" value="Datacenter INTRANET" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
-          <mxGeometry x="190" y="113" width="140" height="30" as="geometry" />
+          <mxGeometry x="190" y="120" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="jf9bjM_j5oZ7g4EwfMdx-17" value="Spine" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="60" y="350" width="86" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="jf9bjM_j5oZ7g4EwfMdx-18" value="Leaf" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="64" y="245" width="86" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
