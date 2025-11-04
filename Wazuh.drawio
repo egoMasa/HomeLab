@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0" version="28.2.8">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0" version="28.2.9">
   <diagram name="Page-1" id="miqsxEoKTt82htUs__QP">
-    <mxGraphModel dx="2445" dy="916" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2202" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -22,7 +22,7 @@
         <mxCell id="50TxMLZr5pILtKMAu6r7-4" value="Rule 550 : Change" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="280" y="320" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="50TxMLZr5pILtKMAu6r7-5" value="Rule 554 : Delete" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="50TxMLZr5pILtKMAu6r7-5" value="Rule 553 : Delete" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="280" y="400" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="50TxMLZr5pILtKMAu6r7-7" value="&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Group : Syscheck&lt;/b&gt;&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" parent="1" vertex="1">
@@ -37,7 +37,7 @@
         <mxCell id="50TxMLZr5pILtKMAu6r7-57" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="50TxMLZr5pILtKMAu6r7-8" target="50TxMLZr5pILtKMAu6r7-56" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="50TxMLZr5pILtKMAu6r7-8" value="AR : ClamAV&amp;nbsp;&lt;br&gt;clamav_scan.sh" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
+        <mxCell id="50TxMLZr5pILtKMAu6r7-8" value="AR : ClamAV&amp;nbsp;&lt;br&gt;clamd_scan.sh" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
           <mxGeometry x="414" y="320" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="50TxMLZr5pILtKMAu6r7-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="50TxMLZr5pILtKMAu6r7-9" target="50TxMLZr5pILtKMAu6r7-11" edge="1">
@@ -148,13 +148,13 @@
         <mxCell id="50TxMLZr5pILtKMAu6r7-56" value="Rule 52511: Multi Found" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;gradientColor=#ea6b66;" parent="1" vertex="1">
           <mxGeometry x="584" y="360" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="JMU5hI2wlxs_5iNObf8q-4" value="ClamAV :&amp;nbsp;&lt;br&gt;&lt;div align=&quot;left&quot;&gt;- Comparaison hash fichier avec BDD locale&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Analyse heuristique/bytecode qui détecte des patterns de code malveillant&lt;br&gt;- Logique : Antivirus automatique locale avec détection heuristique, il juge lui même si c&#39;est maveillant&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Composants : bytecote engine (analyse sand-box léger), clamscan(commande), clamd (démon), freshclam (maj)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="JMU5hI2wlxs_5iNObf8q-4" value="ClamAV :&amp;nbsp;&lt;br&gt;&lt;div align=&quot;left&quot;&gt;- Comparaison hash fichier avec BDD locale&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Analyse heuristique/bytecode qui détecte des patterns de code malveillant&lt;br&gt;- Logique : Antivirus automatique locale avec détection heuristique, il juge lui même si c&#39;est maveillant&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Composants : bytecote engine (analyse sand-box léger), clamscan(commande), clamd (démon), freshclam (maj)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="-220" y="780" width="250" height="170" as="geometry" />
         </mxCell>
-        <mxCell id="JMU5hI2wlxs_5iNObf8q-5" value="Yara :&amp;nbsp;&lt;br&gt;&lt;div align=&quot;left&quot;&gt;- Recherche des motifs binaires avec une liste de règles établies (communautaire + perso)&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Réponse : Positif (avec la règle), Négatif (Rien)&lt;br&gt;- Logique : Permet de détecter des pattern spécifique et d&#39;ajouter des détails grace au métadata des règles, utile pour classer ou connaitre le niveau de gravité (low, high)&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="JMU5hI2wlxs_5iNObf8q-5" value="Yara :&amp;nbsp;&lt;br&gt;&lt;div align=&quot;left&quot;&gt;- Recherche des motifs binaires avec une liste de règles établies (communautaire + perso)&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Réponse : Positif (avec la règle), Négatif (Rien)&lt;br&gt;- Logique : Permet de détecter des pattern spécifique et d&#39;ajouter des détails grace au métadata des règles, utile pour classer ou connaitre le niveau de gravité (low, high)&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="-220" y="960" width="250" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="JMU5hI2wlxs_5iNObf8q-6" value="&lt;div align=&quot;center&quot;&gt;&lt;u&gt;&lt;b&gt;FIM Windows:&amp;nbsp;&lt;/b&gt;&lt;/u&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Directory realtime = yes car seulemement 2 events et besoin de protection rapide car employés&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Frequency : haute, référivication ponctuelle&lt;br&gt;- Peu verbeux et facilement lisible&lt;br&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;center&quot;&gt;&lt;u&gt;&lt;b&gt;FIM Linux&lt;/b&gt;&lt;/u&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Directory Realtime = no car trop verbeux et moins directement exposé à des malware directement executé.&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Frequency : basse pour garder une supervision par vague rapide&amp;nbsp;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="JMU5hI2wlxs_5iNObf8q-6" value="&lt;div align=&quot;center&quot;&gt;&lt;u&gt;&lt;b&gt;FIM Windows:&amp;nbsp;&lt;/b&gt;&lt;/u&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Directory realtime = yes car seulemement 2 events et besoin de protection rapide car employés&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Frequency : haute, référivication ponctuelle&lt;br&gt;- Peu verbeux et facilement lisible&lt;br&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;center&quot;&gt;&lt;u&gt;&lt;b&gt;FIM Linux&lt;/b&gt;&lt;/u&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Directory Realtime = no car trop verbeux et moins directement exposé à des malware directement executé.&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Frequency : basse pour garder une supervision par vague rapide&amp;nbsp;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="80" y="930" width="330" height="190" as="geometry" />
         </mxCell>
       </root>
