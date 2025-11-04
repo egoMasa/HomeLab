@@ -31,11 +31,26 @@
         <mxCell id="50TxMLZr5pILtKMAu6r7-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="50TxMLZr5pILtKMAu6r7-8" target="50TxMLZr5pILtKMAu6r7-10" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="-8x340yR3fjXO4OWPqTa-3" value="OK" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="50TxMLZr5pILtKMAu6r7-31">
+          <mxGeometry x="-0.44" y="-3" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="50TxMLZr5pILtKMAu6r7-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="50TxMLZr5pILtKMAu6r7-8" target="50TxMLZr5pILtKMAu6r7-9" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="-8x340yR3fjXO4OWPqTa-1" value="FOUND" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="50TxMLZr5pILtKMAu6r7-33">
+          <mxGeometry x="0.2" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="50TxMLZr5pILtKMAu6r7-57" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="50TxMLZr5pILtKMAu6r7-8" target="50TxMLZr5pILtKMAu6r7-56" edge="1">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="-8x340yR3fjXO4OWPqTa-2" value="FOUND" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="50TxMLZr5pILtKMAu6r7-57">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="50TxMLZr5pILtKMAu6r7-8" value="AR : ClamAV&amp;nbsp;&lt;br&gt;clamd_scan.sh" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
           <mxGeometry x="414" y="320" width="120" height="80" as="geometry" />
@@ -43,13 +58,13 @@
         <mxCell id="50TxMLZr5pILtKMAu6r7-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="50TxMLZr5pILtKMAu6r7-9" target="50TxMLZr5pILtKMAu6r7-11" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="50TxMLZr5pILtKMAu6r7-9" value="Rule 52502: One Found" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;gradientColor=#ea6b66;" parent="1" vertex="1">
-          <mxGeometry x="584" y="280" width="80" height="80" as="geometry" />
+        <mxCell id="50TxMLZr5pILtKMAu6r7-9" value="Rule 52502: ClamAV: Virus detected" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;gradientColor=#ea6b66;" parent="1" vertex="1">
+          <mxGeometry x="644" y="280" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="50TxMLZr5pILtKMAu6r7-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="50TxMLZr5pILtKMAu6r7-10" target="50TxMLZr5pILtKMAu6r7-13" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="50TxMLZr5pILtKMAu6r7-10" value="Rule 52512: OK" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;gradientColor=#97d077;strokeColor=#82b366;" parent="1" vertex="1">
+        <mxCell id="50TxMLZr5pILtKMAu6r7-10" value="Rule 52512: ClamAV: File scanned, no infection found" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;gradientColor=#97d077;strokeColor=#82b366;" parent="1" vertex="1">
           <mxGeometry x="434" y="450" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="50TxMLZr5pILtKMAu6r7-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="50TxMLZr5pILtKMAu6r7-11" target="50TxMLZr5pILtKMAu6r7-12" edge="1">
@@ -80,7 +95,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="50TxMLZr5pILtKMAu6r7-14" value="Rule 108001: Positive" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;gradientColor=#ea6b66;" parent="1" vertex="1">
-          <mxGeometry x="584" y="580" width="80" height="80" as="geometry" />
+          <mxGeometry x="644" y="580" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="50TxMLZr5pILtKMAu6r7-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="50TxMLZr5pILtKMAu6r7-16" target="50TxMLZr5pILtKMAu6r7-17" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -145,8 +160,8 @@
         <mxCell id="50TxMLZr5pILtKMAu6r7-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="50TxMLZr5pILtKMAu6r7-56" target="50TxMLZr5pILtKMAu6r7-11" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="50TxMLZr5pILtKMAu6r7-56" value="Rule 52511: Multi Found" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;gradientColor=#ea6b66;" parent="1" vertex="1">
-          <mxGeometry x="584" y="360" width="80" height="80" as="geometry" />
+        <mxCell id="50TxMLZr5pILtKMAu6r7-56" value="Rule 52511: ClamAV: Virus detected multiple times" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;gradientColor=#ea6b66;" parent="1" vertex="1">
+          <mxGeometry x="644" y="360" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="JMU5hI2wlxs_5iNObf8q-4" value="ClamAV :&amp;nbsp;&lt;br&gt;&lt;div align=&quot;left&quot;&gt;- Comparaison hash fichier avec BDD locale&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Analyse heuristique/bytecode qui détecte des patterns de code malveillant&lt;br&gt;- Logique : Antivirus automatique locale avec détection heuristique, il juge lui même si c&#39;est maveillant&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Composants : bytecote engine (analyse sand-box léger), clamscan(commande), clamd (démon), freshclam (maj)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="-220" y="780" width="250" height="170" as="geometry" />
