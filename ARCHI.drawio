@@ -1,9 +1,12 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0" version="29.1.1">
   <diagram id="KyBi60yTIyqBOMDfQFZI" name="Architecture générale">
-    <mxGraphModel dx="1375" dy="1948" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2202" dy="1948" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="oXyz6O96sIjOpCaWlppG-2" parent="1" style="ellipse;whiteSpace=wrap;html=1;rotation=-90;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="22" width="58" x="408" y="665" as="geometry" />
+        </mxCell>
         <mxCell id="EIFAATXxTj7hpaYYy5GO-27" parent="1" style="whiteSpace=wrap;html=1;fillColor=#f0a30a;strokeColor=#BD7000;opacity=50;fontColor=#000000;" value="" vertex="1">
           <mxGeometry height="312" width="266" x="824" y="20" as="geometry" />
         </mxCell>
@@ -358,6 +361,24 @@
         </mxCell>
         <mxCell id="WjT5AkxXdvR3aI3L92dg-24" edge="1" parent="1" source="qgnNNqIa0O5qme5UtDdc-5" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.452;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;endFill=0;" target="WjT5AkxXdvR3aI3L92dg-12">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="oXyz6O96sIjOpCaWlppG-3" parent="1" style="ellipse;whiteSpace=wrap;html=1;rotation=-90;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="22" width="58" x="723" y="665" as="geometry" />
+        </mxCell>
+        <mxCell id="oXyz6O96sIjOpCaWlppG-4" parent="1" style="ellipse;whiteSpace=wrap;html=1;rotation=-90;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="22" width="58" x="568" y="517" as="geometry" />
+        </mxCell>
+        <mxCell id="oXyz6O96sIjOpCaWlppG-5" parent="1" style="ellipse;whiteSpace=wrap;html=1;rotation=-90;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="22" width="58" x="776" y="332" as="geometry" />
+        </mxCell>
+        <mxCell id="oXyz6O96sIjOpCaWlppG-6" parent="1" style="ellipse;whiteSpace=wrap;html=1;rotation=-90;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="22" width="58" x="366" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="oXyz6O96sIjOpCaWlppG-7" parent="1" style="ellipse;whiteSpace=wrap;html=1;rotation=-90;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="22" width="58" x="-186" y="711" as="geometry" />
+        </mxCell>
+        <mxCell id="oXyz6O96sIjOpCaWlppG-9" parent="1" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" value="Lien HA/VRRP/GLBP" vertex="1">
+          <mxGeometry height="30" width="128" x="-143" y="707" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
