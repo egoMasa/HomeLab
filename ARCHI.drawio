@@ -1,14 +1,14 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0" version="29.1.1">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0" version="29.2.4">
   <diagram id="KyBi60yTIyqBOMDfQFZI" name="Architecture générale">
-    <mxGraphModel dx="2202" dy="1948" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1479" dy="1947" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="3D4oKagns0f2dPA9W5bj-48" parent="1" style="whiteSpace=wrap;html=1;fillColor=#d0cee2;strokeColor=#56517e;opacity=50;" value="" vertex="1">
-          <mxGeometry height="375" width="404" x="644" y="637" as="geometry" />
+          <mxGeometry height="375" width="615" x="644" y="637" as="geometry" />
         </mxCell>
         <mxCell id="3D4oKagns0f2dPA9W5bj-47" parent="1" style="whiteSpace=wrap;html=1;fillColor=#d0cee2;strokeColor=#56517e;opacity=50;" value="" vertex="1">
-          <mxGeometry height="375" width="404" x="144" y="637" as="geometry" />
+          <mxGeometry height="375" width="547" x="1" y="637" as="geometry" />
         </mxCell>
         <mxCell id="oXyz6O96sIjOpCaWlppG-2" parent="1" style="ellipse;whiteSpace=wrap;html=1;rotation=-90;fillColor=none;" value="" vertex="1">
           <mxGeometry height="22" width="58" x="408" y="665" as="geometry" />
@@ -128,14 +128,34 @@
         <mxCell id="4nvfCktIJrDuLJudb_AO-29" edge="1" parent="1" source="qgnNNqIa0O5qme5UtDdc-5" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;shape=link;" target="4nvfCktIJrDuLJudb_AO-11">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="o1d2O7FiFnDLXuaTWMUE-8" connectable="0" parent="4nvfCktIJrDuLJudb_AO-29" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="trunk" vertex="1">
+          <mxGeometry relative="1" x="0.0697" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="4nvfCktIJrDuLJudb_AO-30" edge="1" parent="1" source="qgnNNqIa0O5qme5UtDdc-6" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;shape=link;" target="4nvfCktIJrDuLJudb_AO-11">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o1d2O7FiFnDLXuaTWMUE-11" connectable="0" parent="4nvfCktIJrDuLJudb_AO-30" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="trunk" vertex="1">
+          <mxGeometry relative="1" x="-0.4233" y="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="4nvfCktIJrDuLJudb_AO-34" edge="1" parent="1" source="qgnNNqIa0O5qme5UtDdc-5" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;shape=link;" target="4nvfCktIJrDuLJudb_AO-12">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="o1d2O7FiFnDLXuaTWMUE-10" connectable="0" parent="4nvfCktIJrDuLJudb_AO-34" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="trunk" vertex="1">
+          <mxGeometry relative="1" x="-0.4064" y="-1" as="geometry">
+            <mxPoint y="-1" as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="4nvfCktIJrDuLJudb_AO-36" edge="1" parent="1" source="qgnNNqIa0O5qme5UtDdc-6" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;shape=link;" target="4nvfCktIJrDuLJudb_AO-12">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o1d2O7FiFnDLXuaTWMUE-9" connectable="0" parent="4nvfCktIJrDuLJudb_AO-36" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="trunk" vertex="1">
+          <mxGeometry relative="1" x="0.0001" as="geometry">
+            <mxPoint x="1" as="offset" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="4nvfCktIJrDuLJudb_AO-37" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;endFill=0;shape=link;fillColor=#60a917;strokeColor=#2D7600;">
           <mxGeometry relative="1" as="geometry">
@@ -333,36 +353,61 @@
           <mxGeometry height="70" width="68" x="433" y="-20" as="geometry" />
         </mxCell>
         <mxCell id="WjT5AkxXdvR3aI3L92dg-11" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.devices.workstation_pc;" value="" vertex="1">
-          <mxGeometry height="55" width="46" x="337" y="889" as="geometry" />
+          <mxGeometry height="55" width="46" x="337" y="931.38" as="geometry" />
         </mxCell>
         <mxCell id="WjT5AkxXdvR3aI3L92dg-12" parent="1" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/security/Surveillance_Camera_Ceiling.svg;" value="" vertex="1">
-          <mxGeometry height="40" width="42.04" x="414" y="878.5" as="geometry" />
+          <mxGeometry height="40" width="42.04" x="433" y="909.5" as="geometry" />
         </mxCell>
         <mxCell id="WjT5AkxXdvR3aI3L92dg-13" parent="1" style="sketch=0;html=1;pointerEvents=1;dashed=0;fillColor=#036897;strokeColor=#ffffff;strokeWidth=2;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.cisco.misc.access_point;" value="" vertex="1">
           <mxGeometry height="30" width="60.8" x="252" y="886" as="geometry" />
         </mxCell>
         <mxCell id="WjT5AkxXdvR3aI3L92dg-14" parent="1" style="sketch=0;html=1;pointerEvents=1;dashed=0;fillColor=#036897;strokeColor=#ffffff;strokeWidth=2;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.cisco.computers_and_peripherals.laptop;" value="" vertex="1">
-          <mxGeometry height="44" width="64" x="236" y="949.5" as="geometry" />
+          <mxGeometry height="44" width="64" x="248.8" y="968" as="geometry" />
         </mxCell>
         <mxCell id="WjT5AkxXdvR3aI3L92dg-17" parent="1" style="image;aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image=img/lib/active_directory/cell_phone.svg;" value="" vertex="1">
-          <mxGeometry height="52.38" width="22" x="189" y="934" as="geometry" />
+          <mxGeometry height="52.38" width="22" x="160" y="916" as="geometry" />
         </mxCell>
         <mxCell id="WjT5AkxXdvR3aI3L92dg-19" edge="1" parent="1" source="WjT5AkxXdvR3aI3L92dg-14" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0.985;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;endFill=0;dashed=1;" target="WjT5AkxXdvR3aI3L92dg-13">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="o1d2O7FiFnDLXuaTWMUE-7" connectable="0" parent="WjT5AkxXdvR3aI3L92dg-19" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="access" vertex="1">
+          <mxGeometry relative="1" x="-0.0732" y="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="WjT5AkxXdvR3aI3L92dg-20" edge="1" parent="1" source="WjT5AkxXdvR3aI3L92dg-17" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0.985;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;endArrow=none;endFill=0;" target="WjT5AkxXdvR3aI3L92dg-13">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="o1d2O7FiFnDLXuaTWMUE-6" connectable="0" parent="WjT5AkxXdvR3aI3L92dg-20" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="access" vertex="1">
+          <mxGeometry relative="1" x="-0.0812" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="WjT5AkxXdvR3aI3L92dg-21" edge="1" parent="1" source="WjT5AkxXdvR3aI3L92dg-13" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;endFill=0;" target="qgnNNqIa0O5qme5UtDdc-5">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o1d2O7FiFnDLXuaTWMUE-5" connectable="0" parent="WjT5AkxXdvR3aI3L92dg-21" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="trunk" vertex="1">
+          <mxGeometry relative="1" x="-0.0663" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="WjT5AkxXdvR3aI3L92dg-22" edge="1" parent="1" source="qgnNNqIa0O5qme5UtDdc-5" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;endArrow=none;endFill=0;" target="WjT5AkxXdvR3aI3L92dg-11">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="360.5800000000004" y="875.5" as="targetPoint" />
           </mxGeometry>
         </mxCell>
+        <mxCell id="o1d2O7FiFnDLXuaTWMUE-2" connectable="0" parent="WjT5AkxXdvR3aI3L92dg-22" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="access" vertex="1">
+          <mxGeometry relative="1" x="0.0322" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="WjT5AkxXdvR3aI3L92dg-24" edge="1" parent="1" source="qgnNNqIa0O5qme5UtDdc-5" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.452;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;endFill=0;" target="WjT5AkxXdvR3aI3L92dg-12">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o1d2O7FiFnDLXuaTWMUE-4" connectable="0" parent="WjT5AkxXdvR3aI3L92dg-24" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="access" vertex="1">
+          <mxGeometry relative="1" x="0.1341" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="oXyz6O96sIjOpCaWlppG-3" parent="1" style="ellipse;whiteSpace=wrap;html=1;rotation=-90;fillColor=none;" value="" vertex="1">
           <mxGeometry height="22" width="58" x="723" y="665" as="geometry" />
@@ -441,6 +486,9 @@
         </mxCell>
         <mxCell id="3D4oKagns0f2dPA9W5bj-46" parent="1" style="text;whiteSpace=wrap;html=1;" value="&lt;table data-path-to-node=&quot;8&quot; style=&quot;margin-bottom: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;thead style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;tr style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;strong style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-bottom: 0px !important;&quot;&gt;Zone ID (XX)&lt;/strong&gt;&lt;/td&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;strong style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-bottom: 0px !important;&quot;&gt;Nom de la Zone&lt;/strong&gt;&lt;/td&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;strong style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-bottom: 0px !important;&quot;&gt;Description&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;tr style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,1,0,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;b style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;0&lt;/b&gt;&lt;/span&gt;&lt;/td&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,1,1,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;b style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;INFRA&lt;/b&gt;&lt;/span&gt;&lt;/td&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,1,2,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;Liens P2P (Routeurs), Loopbacks, Transit.&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,2,0,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;b style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;1&lt;/b&gt;&lt;/span&gt;&lt;/td&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,2,1,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;b style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;DATACENTER&lt;/b&gt;&lt;/span&gt;&lt;/td&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,2,2,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;Serveurs, Hyperviseurs, Stockage (Zone Spine/Leaf).&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,3,0,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;b style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;10&lt;/b&gt;&lt;/span&gt;&lt;/td&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,3,1,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;b style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;CAMPUS A (Gauche)&lt;/b&gt;&lt;/span&gt;&lt;/td&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,3,2,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;Le bloc LAN de gauche (Distrib A + Access A).&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,4,0,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;b style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;20&lt;/b&gt;&lt;/span&gt;&lt;/td&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,4,1,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;b style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;CAMPUS B (Droite)&lt;/b&gt;&lt;/span&gt;&lt;/td&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,4,2,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;Le bloc LAN de droite (Distrib B + Access B).&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,5,0,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;b style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;50&lt;/b&gt;&lt;/span&gt;&lt;/td&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,5,1,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;b style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;DMZ&lt;/b&gt;&lt;/span&gt;&lt;/td&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,5,2,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;Zone démilitarisée (Web, Mail, Proxy).&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,6,0,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;b style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;99&lt;/b&gt;&lt;/span&gt;&lt;/td&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,6,1,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;b style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;MGMT&lt;/b&gt;&lt;/span&gt;&lt;/td&gt;&lt;td style=&quot;border: 1px solid; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;&lt;span data-path-to-node=&quot;8,6,2,0&quot; style=&quot;font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;&quot;&gt;Gestion hors-bande (OOB) et In-band.&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;" vertex="1">
           <mxGeometry height="195" width="523" x="-525" y="81" as="geometry" />
+        </mxCell>
+        <mxCell id="o1d2O7FiFnDLXuaTWMUE-1" parent="1" style="text;strokeColor=none;align=left;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" value="&lt;div align=&quot;left&quot;&gt;- VTP + VLAN&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- STP&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Trunk + Access&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- HSRP/VRRP/GLBP&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="119" width="145" x="1" y="637" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
