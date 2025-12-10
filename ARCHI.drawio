@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0" version="29.2.4">
   <diagram id="KyBi60yTIyqBOMDfQFZI" name="Architecture générale">
-    <mxGraphModel dx="1479" dy="1947" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1643" dy="1947" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -8,7 +8,7 @@
           <mxGeometry height="375" width="615" x="644" y="637" as="geometry" />
         </mxCell>
         <mxCell id="3D4oKagns0f2dPA9W5bj-47" parent="1" style="whiteSpace=wrap;html=1;fillColor=#d0cee2;strokeColor=#56517e;opacity=50;" value="" vertex="1">
-          <mxGeometry height="375" width="547" x="1" y="637" as="geometry" />
+          <mxGeometry height="385" width="546" x="2" y="637" as="geometry" />
         </mxCell>
         <mxCell id="oXyz6O96sIjOpCaWlppG-2" parent="1" style="ellipse;whiteSpace=wrap;html=1;rotation=-90;fillColor=none;" value="" vertex="1">
           <mxGeometry height="22" width="58" x="408" y="665" as="geometry" />
