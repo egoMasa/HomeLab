@@ -510,8 +510,8 @@
         <mxCell id="Spx-P1e5gUSwLe5Kc17M-45" parent="1" style="text;whiteSpace=wrap;html=1;fontStyle=1" value="ToR Leaf" vertex="1">
           <mxGeometry height="28" width="59.5" x="760.27" y="-87" as="geometry" />
         </mxCell>
-        <mxCell id="Spx-P1e5gUSwLe5Kc17M-52" parent="1" style="text;whiteSpace=wrap;html=1;fontStyle=1" value="vSwitch (VLAN)" vertex="1">
-          <mxGeometry height="28" width="92" x="746" y="-177" as="geometry" />
+        <mxCell id="Spx-P1e5gUSwLe5Kc17M-52" parent="1" style="text;whiteSpace=wrap;html=1;fontStyle=1" value="vSwitch&lt;br&gt;- VLAN 10 : PROD&lt;br&gt;- VLAN 20 : ADM&lt;br&gt;- VLAN 30 : DMZ&lt;br&gt;- VLAN 40 : MANAG&lt;br&gt;- VLAN 50 : INFRA" vertex="1">
+          <mxGeometry height="98.5" width="220.5" x="760.27" y="-248.5" as="geometry" />
         </mxCell>
         <mxCell id="Z8ezAOmdvmSTuJNEQ20B-2" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#005F4B;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.veeam2.esxi_host;" value="" vertex="1">
           <mxGeometry height="79" width="82" x="-29" y="-86" as="geometry" />
