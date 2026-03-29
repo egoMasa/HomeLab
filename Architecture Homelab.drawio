@@ -519,6 +519,18 @@
         <mxCell id="Z8ezAOmdvmSTuJNEQ20B-3" parent="1" style="pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#4495D1;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.veeam.server;" value="" vertex="1">
           <mxGeometry height="18.8" width="71.6" x="-9" y="-150" as="geometry" />
         </mxCell>
+        <mxCell id="Z8ezAOmdvmSTuJNEQ20B-4" edge="1" parent="1" source="Spx-P1e5gUSwLe5Kc17M-5" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=none;endFill=0;fillColor=#60a917;strokeColor=#2D7600;entryPerimeter=0;exitPerimeter=0;" target="0fs0xrtFiuMwDiOIX3Pj-50">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="183" as="sourcePoint" />
+            <mxPoint x="610" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Z8ezAOmdvmSTuJNEQ20B-5" edge="1" parent="1" source="Spx-P1e5gUSwLe5Kc17M-6" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=none;endFill=0;fillColor=#60a917;strokeColor=#2D7600;entryPerimeter=0;exitPerimeter=0;" target="0fs0xrtFiuMwDiOIX3Pj-49">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="213" as="sourcePoint" />
+            <mxPoint x="754" y="140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
