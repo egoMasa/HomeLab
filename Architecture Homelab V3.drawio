@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" pages="3">
   <diagram name="Architecture générale" id="afl-n46_FWIlyFFu-ON1">
-    <mxGraphModel dx="2033" dy="1385" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2304" dy="1540" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -645,7 +645,7 @@
         <mxCell id="BQZ1UUfVLzdWCsZuc6HK-5" parent="1" style="strokeColor=#ffffff;sketch=0;html=1;pointerEvents=1;dashed=0;fillColor=#036897;strokeWidth=2;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.cisco.switches.fibre_channel_fabric_switch;" value="" vertex="1">
           <mxGeometry height="40" width="60" x="540.5" y="-320" as="geometry" />
         </mxCell>
-        <mxCell id="BQZ1UUfVLzdWCsZuc6HK-6" edge="1" parent="1" source="Z8ezAOmdvmSTuJNEQ20B-3" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;fillColor=#60a917;strokeColor=light-dark(#000000,#6600CC);entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;fontColor=light-dark(default, #400040);" target="BQZ1UUfVLzdWCsZuc6HK-5">
+        <mxCell id="BQZ1UUfVLzdWCsZuc6HK-6" edge="1" parent="1" source="RmrCqTi-e3dx604tnfgd-1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;fillColor=#60a917;strokeColor=light-dark(#000000,#6600CC);entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;fontColor=light-dark(default, #400040);exitX=0.5;exitY=0;exitDx=0;exitDy=0;" target="BQZ1UUfVLzdWCsZuc6HK-5">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="606.31" y="-214" as="sourcePoint" />
             <mxPoint x="606.31" y="-280" as="targetPoint" />
@@ -696,7 +696,7 @@
             <mxPoint x="558" y="-350" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="CQp6Ki8eFqKhazDei_1H-7" edge="1" parent="1" source="Z8ezAOmdvmSTuJNEQ20B-3" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;fillColor=#60a917;strokeColor=light-dark(#000000,#6600CC);entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" target="BQZ1UUfVLzdWCsZuc6HK-4">
+        <mxCell id="CQp6Ki8eFqKhazDei_1H-7" edge="1" parent="1" source="RmrCqTi-e3dx604tnfgd-1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;fillColor=#60a917;strokeColor=light-dark(#000000,#6600CC);entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" target="BQZ1UUfVLzdWCsZuc6HK-4">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="476.13" y="-190" as="sourcePoint" />
             <mxPoint x="396.13" y="-280" as="targetPoint" />
@@ -1057,6 +1057,15 @@
             <mxPoint x="310.13" y="-100.99999999999996" as="sourcePoint" />
             <mxPoint x="310.305773195876" y="-169.2" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="RmrCqTi-e3dx604tnfgd-1" parent="1" style="whiteSpace=wrap;html=1;" value="&lt;font style=&quot;font-size: 7px;&quot;&gt;HBA&lt;/font&gt;" vertex="1">
+          <mxGeometry height="8.8" width="22.68" x="704.66" y="-190" as="geometry" />
+        </mxCell>
+        <mxCell id="RmrCqTi-e3dx604tnfgd-2" parent="1" style="whiteSpace=wrap;html=1;" value="&lt;font style=&quot;font-size: 7px;&quot;&gt;NIC&lt;/font&gt;" vertex="1">
+          <mxGeometry height="8.8" width="18.68" x="721.32" y="-180" as="geometry" />
+        </mxCell>
+        <mxCell id="RmrCqTi-e3dx604tnfgd-3" parent="1" style="whiteSpace=wrap;html=1;" value="&lt;font style=&quot;font-size: 7px;&quot;&gt;BMC&lt;/font&gt;" vertex="1">
+          <mxGeometry height="8.8" width="22.68" x="690" y="-180" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
