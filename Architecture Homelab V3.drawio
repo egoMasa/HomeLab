@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" pages="3">
   <diagram name="Architecture générale" id="afl-n46_FWIlyFFu-ON1">
-    <mxGraphModel dx="2791" dy="1818" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2033" dy="1385" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -731,7 +731,7 @@
             <mxPoint x="317" y="-280" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="CQp6Ki8eFqKhazDei_1H-18" edge="1" parent="1" source="CQp6Ki8eFqKhazDei_1H-15" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;fillColor=#60a917;strokeColor=light-dark(#2D7600, #ffffff);entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" target="BQZ1UUfVLzdWCsZuc6HK-4">
+        <mxCell id="CQp6Ki8eFqKhazDei_1H-18" edge="1" parent="1" source="CQp6Ki8eFqKhazDei_1H-15" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;fillColor=#60a917;strokeColor=light-dark(#000000,#6600CC);entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" target="BQZ1UUfVLzdWCsZuc6HK-4">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="198.13" y="-190" as="sourcePoint" />
             <mxPoint x="186" y="-280" as="targetPoint" />
@@ -759,7 +759,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="CQp6Ki8eFqKhazDei_1H-29" parent="1" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" value="Lien L2" vertex="1">
-          <mxGeometry height="30" width="57" x="-19" y="1173" as="geometry" />
+          <mxGeometry height="30" width="57" x="-21" y="1173" as="geometry" />
         </mxCell>
         <mxCell id="CQp6Ki8eFqKhazDei_1H-30" edge="1" parent="1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;endArrow=none;endFill=0;fillColor=none;strokeWidth=3;strokeColor=light-dark(#000000,#6600CC);">
           <mxGeometry relative="1" as="geometry">
