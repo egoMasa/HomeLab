@@ -779,20 +779,10 @@
             <mxPoint x="586.1757731958761" y="-171.20000000000005" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="CQp6Ki8eFqKhazDei_1H-34" connectable="0" parent="CQp6Ki8eFqKhazDei_1H-33" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];rotation=-90;fontSize=6;" value="IN-BAND" vertex="1">
-          <mxGeometry relative="1" x="-0.0127" as="geometry">
-            <mxPoint as="offset" />
-          </mxGeometry>
-        </mxCell>
         <mxCell id="CQp6Ki8eFqKhazDei_1H-35" edge="1" parent="1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;endArrow=none;endFill=0;fillColor=#60a917;strokeColor=light-dark(#2D7600, #ffffff);">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="555.8800000000001" y="-103" as="sourcePoint" />
             <mxPoint x="556.0557731958761" y="-171.20000000000005" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="CQp6Ki8eFqKhazDei_1H-36" connectable="0" parent="CQp6Ki8eFqKhazDei_1H-35" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];rotation=-90;fontSize=6;" value="OUT-BAND" vertex="1">
-          <mxGeometry relative="1" x="0.0206" y="1" as="geometry">
-            <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="CQp6Ki8eFqKhazDei_1H-38" parent="1" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedHeader=1;" value="" vertex="1">
@@ -1050,20 +1040,10 @@
             <mxPoint x="423.175773195876" y="-171.2" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="XFi5_qkNkkKGDq13VOwX-23" connectable="0" parent="XFi5_qkNkkKGDq13VOwX-22" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];rotation=-90;fontSize=6;" value="OUT-BAND" vertex="1">
-          <mxGeometry relative="1" x="0.0206" y="1" as="geometry">
-            <mxPoint as="offset" />
-          </mxGeometry>
-        </mxCell>
         <mxCell id="XFi5_qkNkkKGDq13VOwX-24" edge="1" parent="1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;endArrow=none;endFill=0;fillColor=#60a917;strokeColor=light-dark(#2D7600, #ffffff);">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="450" y="-102.99999999999996" as="sourcePoint" />
             <mxPoint x="450.175773195876" y="-171.2" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="XFi5_qkNkkKGDq13VOwX-25" connectable="0" parent="XFi5_qkNkkKGDq13VOwX-24" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];rotation=-90;fontSize=6;" value="IN-BAND" vertex="1">
-          <mxGeometry relative="1" x="-0.0127" as="geometry">
-            <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="XFi5_qkNkkKGDq13VOwX-26" edge="1" parent="1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;endArrow=none;endFill=0;fillColor=#60a917;strokeColor=light-dark(#2D7600, #ffffff);">
@@ -1072,20 +1052,10 @@
             <mxPoint x="280.175773195876" y="-171.2" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="XFi5_qkNkkKGDq13VOwX-27" connectable="0" parent="XFi5_qkNkkKGDq13VOwX-26" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];rotation=-90;fontSize=6;" value="OUT-BAND" vertex="1">
-          <mxGeometry relative="1" x="0.0206" y="1" as="geometry">
-            <mxPoint as="offset" />
-          </mxGeometry>
-        </mxCell>
         <mxCell id="XFi5_qkNkkKGDq13VOwX-28" edge="1" parent="1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;endArrow=none;endFill=0;fillColor=#60a917;strokeColor=light-dark(#2D7600, #ffffff);">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="310.13" y="-100.99999999999996" as="sourcePoint" />
             <mxPoint x="310.305773195876" y="-169.2" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="XFi5_qkNkkKGDq13VOwX-29" connectable="0" parent="XFi5_qkNkkKGDq13VOwX-28" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];rotation=-90;fontSize=6;" value="IN-BAND" vertex="1">
-          <mxGeometry relative="1" x="-0.0127" as="geometry">
-            <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
       </root>
