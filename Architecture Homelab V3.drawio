@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" pages="4">
   <diagram name="Architecture générale" id="afl-n46_FWIlyFFu-ON1">
-    <mxGraphModel dx="2791" dy="1818" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="3259" dy="2085" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1127,7 +1127,7 @@
           <mxGeometry height="50" width="80" x="1522" y="-794" as="geometry" />
         </mxCell>
         <mxCell id="137MNJz-vER5j8dCxLs8-6" parent="1" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;verticalAlign=top;" value="CTRL 2" vertex="1">
-          <mxGeometry height="106" width="258" x="1636" y="-838" as="geometry" />
+          <mxGeometry height="108" width="258" x="1636" y="-840" as="geometry" />
         </mxCell>
         <mxCell id="137MNJz-vER5j8dCxLs8-7" parent="1" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;fontStyle=1;" value="HBA (FC)" vertex="1">
           <mxGeometry height="50" width="80" x="1644" y="-794" as="geometry" />
@@ -1147,11 +1147,11 @@
         <mxCell id="tSmW1x6_uDm5gFtEdp1F-1" parent="1" style="rounded=1;fillColor=#fffde7;strokeColor=#d6b656;strokeWidth=2;fontStyle=1;fontSize=12;verticalAlign=top;" value="Rack Management — services d&#39;exploitation" vertex="1">
           <mxGeometry height="767" width="350" x="1880" y="-497" as="geometry" />
         </mxCell>
-        <mxCell id="tSmW1x6_uDm5gFtEdp1F-2" parent="1" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" value="ToR Leaf Mgmt — 1U&#xa;VLAN 11/12/13" vertex="1">
+        <mxCell id="tSmW1x6_uDm5gFtEdp1F-2" parent="1" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" value="ToR Leaf — 1U" vertex="1">
           <mxGeometry height="40" width="326" x="1892" y="-475" as="geometry" />
         </mxCell>
-        <mxCell id="tSmW1x6_uDm5gFtEdp1F-3" parent="1" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=11;strokeWidth=2;" value="Switch IPMI central — 1U&#xa;reçoit uplinks IPMI de tous les racks" vertex="1">
-          <mxGeometry height="46" width="326" x="1892" y="-429" as="geometry" />
+        <mxCell id="tSmW1x6_uDm5gFtEdp1F-3" parent="1" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=11;strokeWidth=2;" value="Switch IPMI central — 1U" vertex="1">
+          <mxGeometry height="46" width="326" x="1894" y="-428" as="geometry" />
         </mxCell>
         <mxCell id="tSmW1x6_uDm5gFtEdp1F-4" parent="1" style="rounded=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=10;" value="Patch Panel — 1U" vertex="1">
           <mxGeometry height="26" width="326" x="1892" y="-377" as="geometry" />
@@ -1566,6 +1566,40 @@
             <mxPoint x="2096" y="90" as="sourcePoint" />
             <mxPoint x="2200" y="-151" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="Jqg1Ufjc52MRFrLLbYGi-18" edge="1" parent="1" source="Jqg1Ufjc52MRFrLLbYGi-3" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;strokeWidth=2;entryX=0;entryY=0.75;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;endArrow=none;endFill=0;" target="tSmW1x6_uDm5gFtEdp1F-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1860" y="-103" />
+              <mxPoint x="1860" y="-394" />
+            </Array>
+            <mxPoint x="1990" y="-205" as="sourcePoint" />
+            <mxPoint x="1892" y="-395" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Jqg1Ufjc52MRFrLLbYGi-19" edge="1" parent="1" source="Jqg1Ufjc52MRFrLLbYGi-6" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;strokeWidth=2;entryX=0;entryY=0.75;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;endArrow=none;endFill=0;" target="tSmW1x6_uDm5gFtEdp1F-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1860" y="-6" />
+              <mxPoint x="1860" y="-394" />
+            </Array>
+            <mxPoint x="1960" y="-104.5" as="sourcePoint" />
+            <mxPoint x="1892" y="-395.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Jqg1Ufjc52MRFrLLbYGi-20" edge="1" parent="1" source="Jqg1Ufjc52MRFrLLbYGi-9" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;strokeWidth=2;entryX=0;entryY=0.75;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;endArrow=none;endFill=0;" target="tSmW1x6_uDm5gFtEdp1F-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1860" y="90" />
+              <mxPoint x="1860" y="-392" />
+              <mxPoint x="1892" y="-392" />
+            </Array>
+            <mxPoint x="1960" y="-4" as="sourcePoint" />
+            <mxPoint x="1859" y="-392" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Jqg1Ufjc52MRFrLLbYGi-21" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Baies de stockage 4U" vertex="1">
+          <mxGeometry height="30" width="136" x="1560" y="-960" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
