@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" pages="4">
   <diagram name="Architecture générale" id="afl-n46_FWIlyFFu-ON1">
-    <mxGraphModel dx="3173" dy="1911" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1948" dy="1531" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -952,6 +952,15 @@
         </mxCell>
         <mxCell id="zolv0oaMZ8VqDHzG4_PE-15" parent="1" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" value="Internet FAI" vertex="1">
           <mxGeometry height="30" width="86" x="915" y="-15" as="geometry" />
+        </mxCell>
+        <mxCell id="b5QHcuQ7x48-Yf9JND1F-1" edge="1" parent="1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;fillColor=#e51400;strokeColor=light-dark(#B20000,#CC0000);" target="0fs0xrtFiuMwDiOIX3Pj-23">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="372" as="sourcePoint" />
+            <mxPoint x="836" y="373" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="b5QHcuQ7x48-Yf9JND1F-2" parent="1" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" value="&lt;font style=&quot;font-size: 8px;&quot;&gt;VIP : VPN&lt;/font&gt;" vertex="1">
+          <mxGeometry height="13" width="39" x="801" y="363" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
