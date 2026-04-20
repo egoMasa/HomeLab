@@ -1,0 +1,252 @@
+{
+  "main": {
+    "id": "439caeadf7a6b3a8",
+    "type": "split",
+    "children": [
+      {
+        "id": "3eb2ec1eaf2d12e1",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9164425279e590a0",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "README.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "README"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "011b61ae12153cf3",
+    "type": "split",
+    "children": [
+      {
+        "id": "a4000cca6d9e9460",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a3419b1b392a37bc",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorateur de fichiers"
+            }
+          },
+          {
+            "id": "e2d47f2ace9b05eb",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Rechercher"
+            }
+          },
+          {
+            "id": "0298e6d1f409b082",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Signet"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 375.5
+  },
+  "right": {
+    "id": "76106136780ccbfe",
+    "type": "split",
+    "children": [
+      {
+        "id": "4fde059bb3b32617",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "96922ba0d915dcbf",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Procédure de déclaration d'incident sur un système d'information.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Rétrolien pour Procédure de déclaration d'incident sur un système d'information"
+            }
+          },
+          {
+            "id": "e7b018ecc2f70e54",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Procédure de déclaration d'incident sur un système d'information.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Liens sortants de Procédure de déclaration d'incident sur un système d'information"
+            }
+          },
+          {
+            "id": "14c9c5d760735481",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Mots-clés"
+            }
+          },
+          {
+            "id": "a46dc49804a6fdad",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "📁 Fichiers/👔 Alternance/Homologation/Intégration AMUpfp.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Plan de Intégration AMUpfp"
+            }
+          },
+          {
+            "id": "f09e6df74e92cf6a",
+            "type": "leaf",
+            "state": {
+              "type": "advanced-tables-toolbar",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "Plugin no longer active"
+            }
+          },
+          {
+            "id": "d53690b4f718f889",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
+          }
+        ],
+        "currentTab": 5
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Ouvrir le sélecteur rapide": false,
+      "graph:Ouvrir la vue graphique": false,
+      "canvas:Créer une nouvelle toile": false,
+      "daily-notes:Ouvrir la note quotidienne": false,
+      "templates:Insérer le modèle": false,
+      "command-palette:Ouvrir la palette de commandes": false,
+      "bases:Créer une nouvelle base": false,
+      "obsidian-excalidraw-plugin:New drawing": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false,
+      "obsidian-kanban:Create new board": false,
+      "obsidian-git:Open Git source control": false,
+      "obsidian-full-calendar:Open Full Calendar": false
+    }
+  },
+  "active": "9164425279e590a0",
+  "lastOpenFiles": [
+    "📁 Fichiers/🏠 Perso/HomeLAB/Rapport homelab.md",
+    "📁 Fichiers/🏠 Perso/HomeLAB/Pasted image 20260330214908.png",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/Plan dossier homologation.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/3 - Matrice conformité/SI_03_MC.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/3 - Matrice conformité/DC_03_MC.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FUSION/2 - Dossier d'architecture technique (DAT)/SI_02_DAT.docx",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/3 - Matrice conformité/DC_03_MC.xlsx",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/3 - Matrice conformité/SI_03_MC.xlsx",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/10 - Audits de sécurité/AUDIT_07_PENTEST.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/10 - Audits de sécurité/AUDIT_06_CODE.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/10 - Audits de sécurité/AUDIT_05_TECHNIQUE.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/10 - Audits de sécurité/AUDIT_04_ARCHITECTURE.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/10 - Audits de sécurité/AUDIT_03_CONFIGURATION.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/10 - Audits de sécurité/AUDIT_02_ORGANISATIONNEL.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/10 - Audits de sécurité/AUDIT_01_CONFORMITE.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/12 - Décision homologation/SI_12_DH.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/12 - Décision homologation/DC_12_DH.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/12 - Décision homologation",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/12 - Avis & décision/SI_12_DH.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/12 - Avis & décision/DC_12_DH.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/11 - Historique du SI [OK]/SI_11_HIST.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/11 - Historique du SI [OK]/DC_11_HIST.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/8 - Plan de résilience (PDR) [OK]/SI_08_PDR.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/8 - Plan de résilience (PDR) [OK]/DC_08_PDR.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/7 - Plan de maintien en condition de sécurité (MCS) [OK]/SI_07_MCS.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/7 - Plan de maintien en condition de sécurité (MCS) [OK]/DC_07_MCS.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/6 - Plan de maintien en condition opérationnelle (MCO) [OK]/SI_06_MCO.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/6 - Plan de maintien en condition opérationnelle (MCO) [OK]/DC_06_MCO.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/5 - Analyse de risques/SI_05_EBIOS.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/5 - Analyse de risques/DC_05_EBIOS.md",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FUSION/2 - Dossier d'architecture technique (DAT)/DC_02_DAT.docx",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/9 - Plan d'action/SI_09_PlanAction.docx",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/9 - Plan d'action/PlanAction.xlsx",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/9 - Plan d'action/DC_09_PlanAction.docx",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/5 - Analyse de risques/SI_05_EBIOS.docx",
+    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/5 - Analyse de risques/DC_05_EBIOS.docx",
+    "🗺️ MindMap/Exemple.canvas",
+    "📁 Fichiers/🎒Etudes/🛜M2 ARC/UE Datacenter/Schéma datacenter.png",
+    "🗺️ MindMap/LLM.canvas",
+    "Pasted image 20260227110651.png",
+    "📁 Fichiers/🎒Etudes/🛜M2 ARC/Pentest-marko/TP7 Powershell/20260122_161629.jpg",
+    "📁 Fichiers/🎒Etudes/🛜M2 ARC/Pentest-marko/TP3/images.steamusercontent.jpeg",
+    "📁 Fichiers/🎒Etudes/🛜M2 ARC/Pentest-marko/TP3/a73e72177b50f786a60cf46a4415a753.jpg",
+    "📁 Fichiers/🎒Etudes/🛜M2 ARC/UE ThinkSmart/Supervision de sécurité (Wazuh)/LAB/Capture d'écran 2025-11-04 003627.png",
+    "🗺️ MindMap/GRC.canvas",
+    "🗺️ MindMap/SoftSkills.canvas",
+    "🗺️ MindMap/Pentest.canvas",
+    "✏️ Illustrations/Dossier homologation.canvas",
+    "📁 Fichiers/🏠 Perso/Lab SOC Wazuh/Maquette.canvas",
+    "📁 Fichiers/🏠 Perso/Homelab/Maquette.canvas",
+    "Vault/MindMap/Pentest.canvas",
+    "Vault/MindMap/GRC.canvas"
+  ]
+}
