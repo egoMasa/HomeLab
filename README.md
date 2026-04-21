@@ -191,7 +191,7 @@ Le tableau ci-dessous récapitule, catégorie par catégorie, les éléments tec
 | Handoff VRF | Sous-interfaces 802.1Q em2/em3.201-204 | Présentation des 4 VRF sous forme de 4 VLAN transit |
 | Filtrage | Rules par interface + Aliases + Floating rules | Stateful, deny-by-default, granulaire |
 | Anti-spoof | Anti-bogons + Anti-spoof | Blocage des IP privées et bogons en entrée WAN |
-| VPN | WireGuard (retenu) ou OpenVPN (alternatif) | VPN nomade bindé sur VIP CARP 198.51.100.10 |
+| VPN | WireGuard (retenu) ou OpenVPN (alternatif) | VPN nomade bindé sur VIP CARP 192.168.122.10 |
 | IPS/IDS | Suricata + pfBlockerNG | Inspection profonde, rulesets ET Open, filtrage géographique |
 | DNS | Unbound en mode forwarder | Résolution locale, forwarders vers DNS interne et public |
 | Admin | HTTPS webGUI (bastion uniquement) + SSH clé | Accès admin restreint |
@@ -337,7 +337,6 @@ L'alternative "compute séparé par zone" est évoquée dans le rapport comme pa
 La bordure WAN concentre les responsabilités les plus sensibles de l'infrastructure : l'exposition publique, la terminaison des VPN, l'essentiel du NAT et toute l'interface avec les fournisseurs d'accès. Sa conception a des répercussions directes sur le plan d'adressage, la politique de routage interne, et la résilience globale du SI face à une panne FAI.
 
 Trois décisions structurent cette zone :
-
 - Le **nombre de fournisseurs d'accès** (mono-FAI ou multi-FAI).
 - Le **protocole de routage** avec le FAI (route par défaut statique ou eBGP).
 - La **topologie interne** (présence ou non d'un routeur CE distinct du firewall, placement des IP publiques, modèle de NAT).
@@ -374,7 +373,9 @@ Une offre Internet professionnelle standard fournit deux éléments IP distincts
 
 La séparation entre ces deux éléments est **contractuelle et systématique** sur les offres pro (Orange Business, SFR Business, Completel, Adista, Hexanet, opérateurs alternatifs). La pénurie IPv4 affecte le coût pour le FAI mais pas le principe d'allocation d'un bloc routé aux clients professionnels. Les offres qui ne fournissent qu'un /30 de peering sont des offres de transit BGP pur, destinées à des clients qui apportent déjà leur propre bloc PI.
 
-Dans la modélisation du projet, on suppose une offre pro standard fournissant un /30 de peering et un /28 routé. Le bloc public simulé retenu est **`198.51.100.0/28`** (RFC 5737, réservé à la documentation publique).
+Dans la modélisation du projet, on suppose une offre pro standard fournissant un /30 de peering et un /28 routé.
+
+**Simplification retenue pour la maquette.** Dans une infrastructure réelle, le bloc public client est distinct du subnet de peering (par exemple un /28 public routé vers le client, séparé du /30 de peering). Dans cette maquette, pour éviter de devoir maintenir une route statique supplémentaire sur le host et garantir que les tests depuis un client externe fonctionnent de bout en bout sans bidouille réseau, on **fusionne les deux rôles dans le subnet libvirt `192.168.122.0/24`**. Les VIP publiques de services (VPN, reverse proxy, MX, DNS, API Gateway) sont portées directement dans cette plage, qui fait donc office à la fois de subnet de peering PE↔FW **et** de bloc public client. En production, cette conflation ne serait pas acceptable — on aurait bien deux plages distinctes comme décrit plus haut — mais elle est pédagogiquement neutre dans le cadre du lab tant que la distinction conceptuelle est rappelée.
 
 ### 3.4.5) Les trois scénarios de connectivité WAN
 
@@ -449,27 +450,40 @@ En pfSense, la configuration se fait via *Firewall → Virtual IPs*. Quatre type
 
 Chaque IP publique de service est déclarée en VIP CARP et **bindée explicitement** par le démon correspondant (WireGuard, HAProxy, BIND, etc.). Ce binding explicite garantit qu'un service ne répond pas sur une IP qui ne lui est pas destinée.
 
-Les VIP publiques effectivement allouées dans le projet sont les suivantes :
+Les VIP publiques effectivement allouées dans la maquette sont les suivantes (toutes dans le subnet libvirt `192.168.122.0/24`, conformément à la simplification retenue en 3.4.4) :
 
-| IP | Service associé | Rôle |
-|---|---|---|
-| `198.51.100.1` | NAT sortant LAN/DC | Source NAT des usagers et VM vers Internet |
-| `198.51.100.2` | NAT sortant DMZ | Source NAT dédié aux flux DMZ |
-| `198.51.100.10` | VPN WireGuard | Endpoint VPN pour télétravailleurs |
-| `198.51.100.11` | Reverse proxy HTTPS | Publication HTTPS (HAProxy derrière en DMZ) |
-| `198.51.100.12` | SMTP MX inbound | Mail entrant |
-| `198.51.100.13` | DNS autoritaire public | Résolution des zones publiques |
-| `198.51.100.14` | API Gateway | Exposition d'APIs publiques |
+| IP                 | Service associé        | Rôle                                        |
+| ------------------ | ---------------------- | ------------------------------------------- |
+| `192.168.122.1`    | NAT sortant LAN/DC     | Source NAT des usagers et VM vers Internet  |
+| `192.168.122.2`    | NAT sortant DMZ        | Source NAT dédié aux flux DMZ               |
+| `192.168.122.10`   | VPN WireGuard          | Endpoint VPN pour télétravailleurs          |
+| `192.168.122.11`   | Reverse proxy HTTPS    | Publication HTTPS (HAProxy derrière en DMZ) |
+| `192.168.122.12`   | SMTP MX inbound        | Mail entrant                                |
+| `192.168.122.13`   | DNS autoritaire public | Résolution des zones publiques              |
+| `192.168.122.14`   | API Gateway            | Exposition d'APIs publiques                 |
+| `192.168.122.200`  | VIP CARP WAN           | Adresse partagée d'exposition WAN de base   |
+| `192.168.122.201`  | FW-1 physique WAN      | IP master (em1)                             |
+| `192.168.122.202`  | FW-2 physique WAN      | IP backup (em1)                             |
 
-Le cheminement d'un paquet VPN entrant illustre le mécanisme :
+Le cheminement d'un paquet VPN entrant illustre le mécanisme **tel qu'implémenté dans la maquette** :
 
 ```
-1. Client → dst = 198.51.100.10:51820
+1. PC-EXT → dst = 192.168.122.10:51820
+2. Paquet émis sur le bridge libvirt virbr0
+3. Le FW master (FW-1, advskew=0) répond à l'ARP pour 192.168.122.10
+   via CARP sur em1
+4. FW → reconnaît 192.168.122.10 comme VIP CARP locale → livre au démon WireGuard
+```
+
+**En infrastructure réelle**, le cheminement serait un peu plus long et impliquerait le CE :
+
+```
+1. Client Internet → dst = <IP publique VPN, ex. 203.0.113.10>:51820
 2. Internet → FAI de l'entreprise (route BGP connue)
 3. PE → CE via peering public (IP destination inchangée)
-4. CE → table de routage : 198.51.100.0/28 via FW
+4. CE → table de routage : <bloc public client /28> via FW
 5. CE → FW via lien privé de transit (IP destination toujours inchangée)
-6. FW → reconnaît 198.51.100.10 comme VIP locale → livre au démon
+6. FW → reconnaît l'IP publique comme VIP locale → livre au démon
 ```
 
 À aucun moment le CE n'héberge la VIP. À aucun moment il n'y a de NAT sur le CE. L'IP de destination reste publique de bout en bout, même en traversant un segment L2 privé. **L'adressage du lien et l'adressage des paquets qui y transitent sont décorrélés**.
@@ -876,8 +890,9 @@ Le coût de cette approche est une "consommation" apparente d'IP plus large que 
 | DC — VRF-DMZ | `10.3.0.0/16` | VM services exposés | 5 | 251 |
 | DC — VRF-ADMIN | `10.4.0.0/16` | Outillage admin, CICD, monitoring, SOC, AAA, Vault | 7 | 249 |
 | Management | `10.254.0.0/16` | VRF-MGMT in-band équipements | 1 | 255 |
-| WAN simulé (libvirt) | `192.168.122.0/24` | Subnet imposé par libvirt NAT Cloud | 1 (imposé) | — |
-| Bloc public simulé | `198.51.100.0/28` | VIP CARP publiques sur FW (RFC 5737) | — | — |
+| WAN + bloc public simulé | `192.168.122.0/24` | Subnet libvirt qui sert à la fois de peering PE↔FW et de bloc public (VIP CARP de services) | 1 (imposé) | — |
+
+**Note sur la fusion WAN + public.** Dans une infrastructure réelle, on aurait un /30 de peering **plus** un /28 public routé, comme détaillé en 3.4.4. Dans le lab, par simplicité et pour éviter toute bidouille de routage statique sur le host, les deux rôles sont fusionnés dans le subnet libvirt `192.168.122.0/24`. Le détail de l'allocation est donné en 3.8.6.
 
 ### 3.8.3) Conventions par type de lien
 
@@ -886,7 +901,7 @@ Le coût de cette approche est une "consommation" apparente d'IP plus large que 
 - **Loopbacks équipements fabric** : `/32` dans `10.0.0.0/24`, numérotation par rôle (1-2 Spine, 11-13 Leaf, 21-22 Core, 31-34 Distribution, 41-42 FW).
 - **VLAN de postes et de VM** : `/24` systématique pour les segments broadcast.
 - **Handoff VRF FW ↔ Spine** : `/30` par lien logique, bloc `/24` dédié par VRF (PROD=`10.0.21.0/24`, DMZ=`10.0.22.0/24`, ADMIN=`10.0.23.0/24`, MGMT=`10.0.24.0/24`).
-- **Bloc public** : `/28` fourni par FAI, VIP CARP pour chaque service exposé.
+- **Bloc public** : dans une vraie offre pro, /28 ou /29 routé par le FAI. Dans la maquette, fusionné avec le subnet de peering libvirt `192.168.122.0/24` (voir 3.4.4 et 3.8.6).
 
 ### 3.8.4) Allocation des sous-blocs dans `10.0.0.0/16`
 
@@ -924,51 +939,45 @@ Chaque bloc de Distribution a ses propres subnets, avec un offset `+100` sur le 
 
 Dans chaque /24 utilisateur, le découpage interne est standardisé : `.1` VIP VRRP (passerelle), `.2`/`.3` SVI des deux Distribution, `.4-.9` réserve, `.10-.99` DHCP dynamique, `.100-.199` réservations DHCP, `.200-.254` IP statiques.
 
-### 3.8.6) VIP publiques portées par le FW
+### 3.8.6) Allocation WAN et VIP publiques (fusionnées)
 
-Les 7 VIP CARP publiques déclinées dans le `/28` fourni par le FAI simulé :
+Le subnet libvirt `192.168.122.0/24` porte à la fois les IP physiques WAN des FW **et** les VIP CARP publiques de services. Cette fusion est une simplification assumée du lab (voir 3.4.4). Dans une infrastructure réelle, les VIP publiques seraient dans un /28 séparé, routé par le FAI.
 
-| IP | Service | Rôle |
+Les IP physiques des FW sont placées en fourchette haute (.201, .202) pour rester en dehors de la plage DHCP dynamique libvirt (`.2-.199`), qui reste disponible pour des clients externes (PC-EXT en particulier).
+
+| IP | Rôle | Commentaire |
 |---|---|---|
-| `198.51.100.1` | NAT sortant LAN/DC | Source NAT des usagers et VM vers Internet |
-| `198.51.100.2` | NAT sortant DMZ | Source NAT dédié aux flux DMZ |
-| `198.51.100.10` | VPN WireGuard | Endpoint VPN télétravailleurs |
-| `198.51.100.11` | Reverse proxy HTTPS | Publication HTTPS via HAProxy en DMZ |
-| `198.51.100.12` | SMTP MX inbound | Mail entrant |
-| `198.51.100.13` | DNS autoritaire public | Résolution des zones publiques |
-| `198.51.100.14` | API Gateway | Exposition d'APIs publiques |
+| `192.168.122.1` | Gateway (port NAT Cloud = PE simulé) | Fournie par libvirt |
+| `192.168.122.2`-`192.168.122.199` | Plage DHCP dynamique libvirt | Réservée aux clients externes branchés sur le NAT Cloud (PC-EXT, tests) |
+| `192.168.122.10` | VIP CARP VPN WireGuard | Endpoint VPN télétravailleurs |
+| `192.168.122.11` | VIP CARP Reverse Proxy HTTPS | Publication HTTPS via HAProxy en DMZ |
+| `192.168.122.12` | VIP CARP SMTP MX inbound | Mail entrant |
+| `192.168.122.13` | VIP CARP DNS autoritaire public | Résolution des zones publiques |
+| `192.168.122.14` | VIP CARP API Gateway | Exposition d'APIs publiques |
+| `192.168.122.200` | VIP CARP WAN | Source NAT par défaut depuis LAN/DC vers Internet |
+| `192.168.122.201` | FW-1 physique WAN (em1) | IP master |
+| `192.168.122.202` | FW-2 physique WAN (em1) | IP backup |
+| `192.168.122.203`-`192.168.122.254` | Réserve statique | Extensions futures (CE, VIP supplémentaires) |
 
-Sur les 14 IP utilisables du /28, 7 sont allouées et 7 restent disponibles pour extension.
+**Conflit potentiel avec DHCP libvirt.** Les IP fixes choisies (`.10`-`.14`, `.200`-`.202`) sont dans la plage DHCP libvirt par défaut. libvirt attribue ses IP DHCP séquentiellement depuis `.2`, donc en pratique il n'y aura pas de collision tant qu'on a moins de 8 clients DHCP simultanés. Pour garantir zéro chevauchement, on peut réduire la plage DHCP libvirt à `.2-.9` via `virsh net-edit default` (modifier la balise `<range>`). À faire si des collisions apparaissent en exploitation.
 
-### 3.8.7) Allocation WAN (libvirt)
+### 3.8.7) Traçabilité et maintenance
 
-Le subnet WAN est imposé par libvirt (bridge `virbr0`). Les IP fixes des FW sont choisies dans la fourchette haute pour ne pas entrer en conflit avec la plage DHCP dynamique libvirt (`.2-.199`) :
-
-| Élément | IP |
-|---|---|
-| Gateway (port NAT Cloud = PE simulé) | `192.168.122.1` |
-| VIP CARP WAN | `192.168.122.200` |
-| FW-1 (`em1`) physique | `192.168.122.201` |
-| FW-2 (`em1`) physique | `192.168.122.202` |
-
-### 3.8.8) Traçabilité et maintenance
-
-Le fichier `plan_adressage.xlsx` est la source de vérité. Il contient 14 feuilles :
+Le fichier `plan_adressage.xlsx` est la source de vérité. Il contient 13 feuilles :
 
 1. Synthèse
 2. Loopbacks
 3. Liens-L3-Infra (underlay, handoff VRF, Core-FW, Core-Distribution, pfsync)
-4. WAN
-5. Public-VIP
-6. VLAN-LAN
-7. VLAN-DC-PROD
-8. VLAN-DC-DMZ
-9. VLAN-DC-ADMIN
-10. MGMT
-11. VRF (RD, RT, VNI L3)
-12. Routage (OSPF, iBGP EVPN, VRRP, CARP)
-13. Scalabilité
-14. Légende
+4. WAN-et-VIP-publiques (fusion WAN libvirt + VIP CARP de services)
+5. VLAN-LAN
+6. VLAN-DC-PROD
+7. VLAN-DC-DMZ
+8. VLAN-DC-ADMIN
+9. MGMT
+10. VRF (RD, RT, VNI L3)
+11. Routage (OSPF, iBGP EVPN, VRRP, CARP)
+12. Scalabilité
+13. Légende
 
 Toute modification du plan d'adressage doit passer par ce fichier avant d'être reportée sur un équipement. En cas d'incohérence, **ce fichier prévaut** sur toute configuration d'équipement.
 
@@ -1309,7 +1318,7 @@ La **Phase 1 — Architecture réseau** est en voie de finalisation. Les livrabl
 | Cahier des charges complet | ✅ Finalisé | Section 2 du présent rapport |
 | Choix topologiques justifiés | ✅ Finalisé | Sections 3.1 à 3.7 |
 | Maquette GNS3 fonctionnelle (26 équipements, 47 liens) | ✅ Topologie câblée | `homelab.gns3` |
-| Plan d'adressage IPv4 complet | ✅ Finalisé | `plan_adressage.xlsx` (14 feuilles) |
+| Plan d'adressage IPv4 complet | ✅ Finalisé | `plan_adressage.xlsx` (13 feuilles) |
 | Plan VLAN / VNI / VRF | ✅ Finalisé | Section 3.9 + `plan_adressage.xlsx` |
 | Cartographie détaillée par équipement | ✅ Finalisée | `cartographie.xlsx` (26 feuilles) |
 
