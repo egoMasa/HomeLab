@@ -20,13 +20,18 @@ Concernant la façon de mettre en place ce projet nous utiliserons le logiciel d
 
 # 2) Cahier des charges
 
-| Matériel               | Nombre | Modèle/ISO    | Rôle                                        | Zones d'emplacement               |
-| ---------------------- | ------ | ------------- | ------------------------------------------- | --------------------------------- |
-| Routeur                | 1      | CiscoIOSv     | PE du FAI                                   | OUT                               |
-| MultiLayerSwitch (SW3) | 8      | CiscoIOSv     | x                                           | LAN(Core, distrib) DC(Spine)      |
-| Switch (SW2)           | 8      | CiscoIOSvL2   | x                                           | LAN(Access), DMZ(Access),DC(Leaf) |
-| Firewall               | 4      | Pfsense 2.7.2 | Segmente chaques zones (barrage)            | OUT, DMZ, LAN, DC                 |
-| Hyperviseur 1          | 4      | Proxmox       | Heberge les services dans des VM/Conteneurs | DMZ, DC                           |
+|#|Équipement|Zone|ISO / Image|Version|RAM|vCPU|Disque principal|Disque additionnel|Interfaces|Console|
+|---|---|---|---|---|---|---|---|---|---|---|
+|1|Routeur PE FAI|OUT|Cisco IOSv|15.9(3)M4 ou +récent|512 Mo|1|(fourni)|—|4|telnet|
+|2|Firewall périmétrique (×2 HA)|OUT ↔ LAN/DMZ/DC|pfSense CE ou OPNsense|pfSense 2.8.x / OPNsense 25.x|2 Go|2|20 Go|—|6|vnc (install) / telnet (run)|
+|3|Switch Core LAN (×2)|LAN|Cisco IOSvL2|15.2(20200924:215240)|1 Go|1|(fourni)|—|16|telnet|
+|4|Switch Distribution LAN (×2)|LAN|Cisco IOSvL2|15.2(20200924:215240)|1 Go|1|(fourni)|—|16|telnet|
+|5|Switch Access LAN (×N)|LAN|Cisco IOSvL2|15.2(20200924:215240)|768 Mo|1|(fourni)|—|16|telnet|
+|6|Spine DC (×2)|DC|Arista vEOS-lab|4.33.x (ou +récent stable)|2 Go|1|vmdk fourni|Aboot ISO (bootloader)|8–16|telnet|
+|7|Leaf DC (×4)|DC|Arista vEOS-lab|4.33.x|2 Go|1|vmdk fourni|Aboot ISO|8–16|telnet|
+|8|Border Leaf (×1 ou ×2)|DC|Arista vEOS-lab|4.33.x|2 Go|1|vmdk fourni|Aboot ISO|8–16|telnet|
+|9|Hyperviseur Proxmox VE (×2)|DC / DMZ|Proxmox VE|9.1|16 Go|6|300–500 Go|—|4–6|vnc|
+|10|Proxmox Backup Server (×1)|DC (zone Infra)|Proxmox Backup Server|3.x (ou 4.x si sorti)|4 Go|2|32 Go|500 Go (datastore)|1|vnc|
 
 
 | Services                          | Placement | Solutions possibles (open-source)                      | Utilisé pour                                                                                                      |
@@ -55,6 +60,165 @@ Concernant la façon de mettre en place ce projet nous utiliserons le logiciel d
 | VPN                               | FW_OUT    | OpenVPN                                                | Permettre aux usagers à distance d'accéder au réseau/services non externalisés                                    |
 | Automatisation de tâches serveurs | DC        | Ansible, Puppet                                        | Executer des actions d'administration sur les serveurs via SSH et des playbook                                    |
 | IPS/IDS                           | FW        | Suricata, Snort                                        | Surveiller les flux réseaux, les analyser et bloquer automatiquement                                              |
+
+### Partie : Ce qu'il faut configurer, couche par couche
+
+Voici le récap structuré par équipement, qui répond directement à ta question "qu'est-ce qu'on configure où".
+
+#### Sur les switches Access
+
+**Protocoles/features à configurer localement** :
+
+- VLAN (access + voice VLAN sur les ports utilisateurs)
+- Trunk 802.1Q LACP vers les Distribution
+- MSTP + PortFast + BPDU Guard
+- Port Security
+- DHCP Snooping (untrusted sur ports access, trusted sur uplinks)
+- Dynamic ARP Inspection
+- Storm Control
+- 802.1X + MAB (vers RADIUS central)
+- SSH v2, AAA local + RADIUS fallback, logs vers syslog
+- SNMPv3 pour supervision
+- NTP client vers serveur central
+- DNS client (résolveur interne)
+
+#### Sur les switches Distribution
+
+**Protocoles/features** :
+
+- VLAN locaux nécessaires + trunk vers Access
+- **SVI utilisateurs** (une par VLAN) avec VRRP (ou VARP Arista)
+- LACP peer-link avec l'autre Distribution du bloc (MLAG)
+- MSTP (priorité élevée, secondaire au Core)
+- **OSPF area 0** sur les uplinks vers Core (L3 /31)
+- **DHCP Relay** (`ip helper-address`) sur chaque SVI utilisateur
+- SSH v2, AAA, syslog, SNMPv3, NTP, DNS client
+
+#### Sur les switches Core
+
+**Protocoles/features** :
+
+- **MLAG** + peer-link LACP entre Core-1 et Core-2
+- **OSPF area 0** sur tous les liens (vers Distribution et vers FW)
+- MSTP (priorité root)
+- Pas de SVI utilisateur : le Core ne termine aucun VLAN utilisateur
+- SSH v2, AAA, syslog, SNMPv3, NTP, DNS client
+
+#### Sur les firewalls pfSense
+
+**Protocoles/features** :
+
+- CARP + pfsync (HA)
+- **OSPF via FRR** vers les Core (côté LAN), vers les Spine (côté DC, avec VRF handoff)
+- VIP (CARP) publiques côté WAN
+- Règles firewall inter-zones
+- NAT sortant
+- Termination VPN (OpenVPN ou WireGuard)
+- Suricata (IPS/IDS en mode inline ou IDS)
+- Syslog export, SNMPv3, NTP client, DNS client
+
+---
+
+### Partie 4 — Tableau de synthèse "où ça se configure"
+
+Pour que tu aies une vue d'ensemble :
+
+|Protocole / Feature|Sur équipement réseau|Sur serveur central|Commentaire|
+|---|---|---|---|
+|VLAN|✓|—|Local, sans VTP|
+|MSTP + BPDU Guard|✓|—|Local|
+|VRRP (ou VARP)|✓|—|Local sur Distribution|
+|LACP|✓|—|Local, peer-links et uplinks Access|
+|OSPF|✓|—|Local|
+|Port Security|✓|—|Local sur Access|
+|DHCP Snooping + DAI|✓|—|Local sur Access|
+|Storm Control|✓|—|Local sur Access|
+|802.1X (supplicant → switch → RADIUS)|✓ (client)|✓ (FreeRADIUS)|Split|
+|DHCP (relay → serveur central)|✓ (relay)|✓ (Kea+Stork)|Split|
+|DNS|—|✓ (Unbound/BIND9)|Serveur central, équipements = clients|
+|NTP|✓ (client)|✓ (chrony)|Split|
+|AAA admin (TACACS+ / RADIUS)|✓ (client)|✓ (FreeRADIUS/tac_plus)|Split|
+|Syslog|✓ (expéditeur)|✓ (Graylog/Wazuh)|Split|
+|SNMPv3 / Télémétrie|✓ (agent)|✓ (Zabbix/Prometheus)|Split|
+|NetFlow / sFlow|✓ (export)|✓ (ntopng/Elastiflow)|Split|
+
+### Tableau synthétique par équipement (Zone datacenter)
+
+Voici le tableau que tu demandes, par catégorie d'équipement :
+
+#### Spine (vEOS)
+
+|Protocole / Feature|But|
+|---|---|
+|**OSPFv2**|IGP underlay, résout les loopbacks de tous les équipements fabric|
+|**BGP EVPN (Route Reflector)**|Réfléchit les routes EVPN entre tous les Leaf pour éviter le full-mesh iBGP|
+|**MLAG peer-link**|Synchronise l'état MAC/ARP entre Spine-1 et Spine-2, porte le lien de contrôle du cluster|
+|**Jumbo frames (MTU 9214)**|Absorbe l'overhead VXLAN (50 octets) sans fragmentation|
+|**ECMP**|Répartition du trafic sur tous les chemins Spine-Leaf équivalents|
+|**BFD** (optionnel)|Détection rapide de panne de lien (<1s vs 40s OSPF)|
+|**VLAN handoff vers FW**|Présente chaque VRF sous forme de VLAN de transit au FW (pattern Border)|
+|**Anycast gateway VIP**|IP partagée pour les VRF côté FW (si HA)|
+|**SSH + AAA**|Administration sécurisée|
+|**Syslog / SNMPv3 / NTP / DNS**|Intégration aux services centraux|
+
+#### Leaf (vEOS)
+
+|Protocole / Feature|But|
+|---|---|
+|**OSPFv2**|Participe à l'underlay, annonce sa loopback aux Spine|
+|**BGP EVPN**|Client des RR Spine, annonce les MAC/IP de ses VM, apprend celles des autres Leaf|
+|**VTEP VXLAN**|Encapsule les trames sortantes, décapsule les trames entrantes. Port UDP 4789|
+|**VNI L2** (1 par VLAN)|Identifie chaque segment L2 étendu dans la fabric|
+|**VNI L3** (1 par VRF)|Identifie chaque VRF pour le routage inter-subnet à travers la fabric|
+|**VLAN locaux**|Mappent les interfaces serveur vers les VNI|
+|**VRF-PROD, VRF-DMZ, VRF-ADMIN, VRF-MGMT**|Instanciées localement, avec RD et RT propres|
+|**Distributed Symmetric IRB**|Mode de routage inter-VNI retenu|
+|**Anycast Gateway**|Tous les Leaf répondent à la même IP de passerelle pour un VLAN donné, permet la mobilité VM|
+|**ARP suppression (EVPN)**|Les Leaf répondent localement aux ARP grâce aux annonces EVPN, réduit le trafic BUM|
+|**Jumbo frames**|Idem Spine|
+|**Trunk 802.1Q** vers les HV|Porte tous les VLAN des zones hébergées sur le Leaf|
+|**Storm Control / BPDU Guard**|Protection L2 sur les ports serveurs|
+|**MAC move threshold**|Détection de boucles ou d'attaques|
+|**SSH + AAA / Syslog / SNMPv3 / NTP / DNS**|Intégration services centraux|
+
+#### Hyperviseur Proxmox (HV-1, HV-2)
+
+|Protocole / Feature|But|
+|---|---|
+|**Linux Bridge par zone** (`vmbr-prod`, `vmbr-dmz`)|Un bridge dédié par VRF pour éviter la mutualisation des domaines L2 entre zones|
+|**VLAN tagging** (802.1Q) sur le trunk vers Leaf|Chaque bridge est attaché à un VLAN du trunk entrant|
+|**Cluster Corosync**|Communication de cluster Proxmox pour quorum et synchronisation HA|
+|**Lien dédié cluster** (idéalement VLAN séparé)|Isole le trafic Corosync du data|
+|**Interface management**|Interface Proxmox sur VLAN de VRF-MGMT, accès admin uniquement|
+|**HA Manager**|Orchestration du failover des VM entre nœuds en cas de panne|
+|**Affinity rules**|Règles de placement préférentiel des VM (DMZ sur HV-1, PROD sur HV-2 par exemple)|
+|**SSH par clé uniquement**|Administration sécurisée|
+|**Fail2ban**|Protection contre bruteforce SSH|
+|**Firewall Proxmox** (pve-firewall)|Filtrage au niveau hyperviseur et par VM (bonus)|
+|**Syslog / NTP / DNS**|Intégration services centraux|
+
+#### Hyperviseur Proxmox standalone (HV-3, management)
+
+|Protocole / Feature|But|
+|---|---|
+|**Tout ce qui précède** (Linux Bridge, management, SSH, NTP, etc.)|Base commune|
+|**QDevice (corosync-qnetd)**|Troisième voix pour le quorum du cluster HV-1/HV-2|
+|**Double patte réseau**|Une dans VRF-MGMT (pour atteindre les HV), une dans VRF-ADMIN (pour héberger les VM d'admin)|
+|**Proxmox Backup Server** (hébergé en VM)|Sauvegarde des VM du cluster|
+|**Proxmox Datacenter Manager** (hébergé en VM)|Administration centralisée multi-cluster|
+
+#### Virtual switches / bridges Proxmox
+
+|Élément|But|
+|---|---|
+|**vmbr0** (management)|Bridge pour l'interface admin de l'hyperviseur lui-même, connecté au VLAN MGMT|
+|**vmbr-prod**|Bridge pour VM de VRF-PROD, connecté au VLAN de VRF-PROD sur le trunk|
+|**vmbr-dmz**|Bridge pour VM de VRF-DMZ|
+|**vmbr-admin**|Bridge pour VM de VRF-ADMIN|
+|**VLAN-aware** (option alternative)|Un seul bridge `vmbr0` avec VLAN-aware activé, et on assigne un tag par VM. Plus compact, moins lisible|
+|**Firewall Proxmox par VM**|Règles iptables au niveau hyperviseur pour chaque VM (L2 et L3)|
+
+---
 # 3) Architecture réseau
 
 Très bien, donc nous commençons ce projet en abordant la notion de l'architecture réseau. Ça va être une des briques angulaires de ce projet. Le but étant de voir les différents modèles d'architecture et comment est-ce qu'un architecte réseau approche les différents designs et modèles qui sont possibles de mettre en place et qui sont recommandés, quelles sont les différentes bonnes pratiques. Nous verrons qu'il existe beaucoup de modèles différents et nous allons essayer de trouver un modèle le plus optimisé et qui se rapproche le plus possible des bonnes pratiques que l'on va retrouver. On peut commencer par citer que dans le monde des réseaux, il existe des modèles par tiers, tiers 1, tiers 2 et tiers 3, chacun étant ayant leurs avantages et leurs inconvénients, mais généralement, au plus on monte dans les tiers, au plus haut mieux c'est. Donc de façon naturelle, sans même forcément réfléchir sur le pourquoi du comment, nous partons sur un modèle de tiers 3 car il permet de nombreux avantages, notamment une haute redondance en essayant de viser un full mesh, des différentes couches logiques qui ont chacune une fonction, une fonction notamment de commutation, de routage et qui permet d'avoir de la redondance et de la haute disponibilité. Vous allez du coup venir identifier trois différentes couches, la couche access qui va relier les différents terminaux, vraiment la finalité de ce qui va devoir communiquer, les différents endpoints qui vont être reliés à la couche d'agrégation qui elle-même va être reliée à la couche cœur. Nous verrons aussi qu'il y a, que l'on va parler en termes de zones, on va venir aborder le terme de zone LAN, de zone DMZ, de zone datacenter interne non externalisée, ainsi que des zones internet ou out. Et le but est de montrer qu'il est possible de faire une architecture complète permettant d'externaliser différents services de façon sécurisée et maîtrisée en ayant la redondance et la qualité de services des réseaux LAN standards. Nous aborderons aussi dans une approche orientée datacenter, comme nous le verrons, en abordant l'ensemble des différentes configurations et des bonnes pratiques que l'on retrouve généralement, que ce soit pour les questions de stockage, de sauvegarde, mais aussi de modèles d'architecture spine leaf qui diffère un peu du modèle tier 3 que l'on va retrouver au niveau du LAN. Le but étant de cloisonner l'ensemble de ces différentes zones via des firewalls ainsi que des VRF et des VLAN et de rajouter par-dessus les services dits orientés réseau, pas forcément en système, mais réseau, qui vont permettre le bon fonctionnement ainsi que la sécurité du réseau sur chacune des couches du modèle OSI.
