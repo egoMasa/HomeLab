@@ -11,14 +11,10 @@
             "id": "9164425279e590a0",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "README.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "README"
+              "title": "Nouvel onglet"
             }
           }
         ]
@@ -194,8 +190,10 @@
       "obsidian-full-calendar:Open Full Calendar": false
     }
   },
-  "active": "d53690b4f718f889",
+  "active": "9164425279e590a0",
   "lastOpenFiles": [
+    "README.md",
+    "README(1).md",
     "Plan adressage.xlsx",
     "plan_adressage_v2.xlsx",
     "homelab.gns3",
@@ -211,7 +209,6 @@
     "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/3 - Matrice conformité/SI_03_MC.md",
     "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/3 - Matrice conformité/DC_03_MC.md",
     "📁 Fichiers/👔 Alternance/Homologation/HOMO-FUSION/2 - Dossier d'architecture technique (DAT)/SI_02_DAT.docx",
-    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/3 - Matrice conformité/DC_03_MC.xlsx",
     "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/10 - Audits de sécurité/AUDIT_07_PENTEST.md",
     "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/10 - Audits de sécurité/AUDIT_06_CODE.md",
     "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/10 - Audits de sécurité/AUDIT_05_TECHNIQUE.md",
@@ -232,7 +229,6 @@
     "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/6 - Plan de maintien en condition opérationnelle (MCO) [OK]/SI_06_MCO.md",
     "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/6 - Plan de maintien en condition opérationnelle (MCO) [OK]/DC_06_MCO.md",
     "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/5 - Analyse de risques/SI_05_EBIOS.md",
-    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/5 - Analyse de risques/DC_05_EBIOS.md",
     "🗺️ MindMap/Exemple.canvas",
     "📁 Fichiers/🎒Etudes/🛜M2 ARC/UE Datacenter/Schéma datacenter.png",
     "🗺️ MindMap/LLM.canvas",
