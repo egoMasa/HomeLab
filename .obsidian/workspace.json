@@ -176,8 +176,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -195,7 +194,7 @@
       "obsidian-full-calendar:Open Full Calendar": false
     }
   },
-  "active": "9164425279e590a0",
+  "active": "d53690b4f718f889",
   "lastOpenFiles": [
     "Ressources",
     "Nouveau dossier",
