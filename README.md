@@ -72,32 +72,32 @@ Quelques précisions complémentaires sur certains choix.
 
 Les services applicatifs sont la matière de la Phase 2. On les liste ici à titre indicatif pour que le lecteur ait la vision de ce qui sera hébergé sur les hyperviseurs, sans rentrer dans l'arbitrage solution par solution qui interviendra plus tard.
 
-| Service | Placement | Solutions open-source envisagées | Besoin couvert |
-|---|---|---|---|
-| DNS Interne | DC (VRF-PROD) | Unbound, BIND9 | Résolution des noms internes non externalisés |
-| DHCP Central | DC (VRF-PROD) | ISC Kea + Stork | Attribution dynamique des adresses IP sur tout le SI |
-| Annuaire LDAP | DC (VRF-PROD) | Samba ADDC, OpenLDAP | Stockage des comptes, groupes, droits et permissions |
-| RADIUS | DC (VRF-ADMIN) | FreeRADIUS | Authentification 802.1X, VPN, admin équipements |
-| SSO / IdP | DC (VRF-ADMIN) | Keycloak | Authentification unique par tokens pour les services |
-| Supervision de performance | DC (VRF-ADMIN) | Zabbix, Prometheus, Grafana | État et métriques des équipements et services |
-| SOC / SIEM / XDR | DC (VRF-ADMIN) | Wazuh, Graylog + Shuffle, OpenCTI, CrowdSec | Supervision de sécurité, remédiation active |
-| Bastion d'administration | DC (VRF-ADMIN) | Apache Guacamole | Portail d'accès admin aux équipements |
-| ITSM / Ticketing / Inventaire | DC (VRF-ADMIN) | GLPI | Inventaire, tickets, gestion des biens |
-| Stockage cloud | DC (VRF-PROD) | NextCloud | Dépôt de fichiers utilisateurs |
-| NTP interne | DC (VRF-PROD) | chrony | Synchronisation horaire de tout le SI |
-| CI/CD et dépôt de code | DC (VRF-ADMIN) | GitLab, Jenkins | Environnement de développement et dépôt |
-| Gestion de projet | DC (VRF-ADMIN) | Redmine | Suivi de projet, tâches, diagrammes |
-| Reverse Proxy | DMZ (VRF-DMZ) | HAProxy | Publication HTTPS, load balancing L7 |
-| Proxy sortant | DMZ (VRF-DMZ) | Squid, TinyProxy | Contrôle des flux sortants des usagers |
-| WAF | DMZ (VRF-DMZ) | BunkerWeb | Protection des applications web exposées |
-| SMTP Inbound / Outbound | DMZ (VRF-DMZ) | Postfix, Rspamd | Mail entrant et sortant |
-| Serveur web exposé | DMZ (VRF-DMZ) | Nginx, Apache | Sites vitrines et applicatifs publics |
-| DNS Public | DMZ (VRF-DMZ) | BIND9, NSD | Résolution autoritaire des zones publiques |
-| VPN nomade | FW (Edge) | WireGuard (retenu), OpenVPN (alternatif) | Accès distant au SI pour télétravailleurs |
-| Automatisation | DC (VRF-ADMIN) | Ansible, AWX | Exécution de playbooks sur les serveurs |
-| IPS/IDS | FW (Edge) | Suricata | Détection et blocage des menaces réseau |
-| PKI interne | DC (VRF-ADMIN) | HashiCorp Vault, Smallstep | Émission de certificats internes |
-| Gestion de secrets | DC (VRF-ADMIN) | HashiCorp Vault | Coffre-fort de secrets applicatifs |
+| Service                       | Placement      | Solutions open-source envisagées            | Besoin couvert                                       |
+| ----------------------------- | -------------- | ------------------------------------------- | ---------------------------------------------------- |
+| DNS Interne                   | DC (VRF-PROD)  | Unbound, BIND9                              | Résolution des noms internes non externalisés        |
+| DHCP Central                  | DC (VRF-PROD)  | ISC Kea + Stork                             | Attribution dynamique des adresses IP sur tout le SI |
+| Annuaire LDAP                 | DC (VRF-PROD)  | Samba ADDC, OpenLDAP, FreeIPA               | Stockage des comptes, groupes, droits et permissions |
+| RADIUS                        | DC (VRF-ADMIN) | FreeRADIUS                                  | Authentification 802.1X, VPN, admin équipements      |
+| SSO / IdP                     | DC (VRF-ADMIN) | Keycloak                                    | Authentification unique par tokens pour les services |
+| Supervision de performance    | DC (VRF-ADMIN) | Zabbix, Prometheus, Grafana                 | État et métriques des équipements et services        |
+| SOC / SIEM / XDR              | DC (VRF-ADMIN) | Wazuh, Graylog + Shuffle, OpenCTI, CrowdSec | Supervision de sécurité, remédiation active          |
+| Bastion d'administration      | DC (VRF-ADMIN) | Apache Guacamole                            | Portail d'accès admin aux équipements                |
+| ITSM / Ticketing / Inventaire | DC (VRF-ADMIN) | GLPI                                        | Inventaire, tickets, gestion des biens               |
+| Stockage cloud                | DC (VRF-PROD)  | NextCloud                                   | Dépôt de fichiers utilisateurs                       |
+| NTP interne                   | DC (VRF-PROD)  | chrony                                      | Synchronisation horaire de tout le SI                |
+| CI/CD et dépôt de code        | DC (VRF-ADMIN) | GitLab, Jenkins                             | Environnement de développement et dépôt              |
+| Gestion de projet             | DC (VRF-ADMIN) | Redmine                                     | Suivi de projet, tâches, diagrammes                  |
+| Reverse Proxy                 | DMZ (VRF-DMZ)  | HAProxy                                     | Publication HTTPS, load balancing L7                 |
+| Proxy sortant                 | DMZ (VRF-DMZ)  | Squid, TinyProxy                            | Contrôle des flux sortants des usagers               |
+| WAF                           | DMZ (VRF-DMZ)  | BunkerWeb                                   | Protection des applications web exposées             |
+| SMTP Inbound / Outbound       | DMZ (VRF-DMZ)  | Postfix, Rspamd                             | Mail entrant et sortant                              |
+| Serveur web exposé            | DMZ (VRF-DMZ)  | Nginx, Apache                               | Sites vitrines et applicatifs publics                |
+| DNS Public                    | DMZ (VRF-DMZ)  | BIND9, NSD                                  | Résolution autoritaire des zones publiques           |
+| VPN nomade                    | FW (Edge)      | WireGuard (retenu), OpenVPN (alternatif)    | Accès distant au SI pour télétravailleurs            |
+| Automatisation                | DC (VRF-ADMIN) | Ansible, AWX                                | Exécution de playbooks sur les serveurs              |
+| IPS/IDS                       | FW (Edge)      | Suricata                                    | Détection et blocage des menaces réseau              |
+| PKI interne                   | DC (VRF-ADMIN) | HashiCorp Vault, Smallstep                  | Émission de certificats internes                     |
+| Gestion de secrets            | DC (VRF-ADMIN) | HashiCorp Vault                             | Coffre-fort de secrets applicatifs                   |
 
 Chaque solution retenue fera l'objet d'un arbitrage détaillé en début de Phase 2, selon le canevas annoncé dans le prompt système : notion, état du marché, sélection argumentée, dimensionnement, installation, sécurisation, administration, intégration avec le reste du SI.
 
