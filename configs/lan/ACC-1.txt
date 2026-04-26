@@ -1,0 +1,220 @@
+! ============================================================
+! ACC-1 — Switch Access LAN — Bloc 1
+! Plateforme : Cisco IOSvL2 15.2
+! Role       : Access switches Bloc 1 (avec ACC-2)
+! Connexions :
+!   Gi0/0  -> DIST-1 Gi0/1  (uplink trunk)
+!   Gi0/1  -> DIST-2 Gi0/1  (uplink trunk)
+!   Gi0/2  -> PC1 / VPCS    (access VLAN 10)
+!
+! SECURITE : changer les mots de passe avant tout deploiement reel.
+!            Les valeurs ci-dessous sont des placeholders pedagogiques.
+! ============================================================
+
+version 15.2
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+no service pad
+!
+hostname ACC-1
+!
+ip domain-name homelab.local
+!
+enable secret HomeLabSecret!
+!
+username admin privilege 15 secret HomeLabSecret!
+!
+aaa new-model
+aaa authentication login default local
+aaa authorization exec default local
+!
+! --- Generez la cle RSA en mode interactif apres paste :
+!     crypto key generate rsa modulus 2048
+ip ssh version 2
+ip ssh time-out 60
+ip ssh authentication-retries 3
+!
+! ============================================================
+! VLAN DATABASE
+! ============================================================
+vlan 10
+ name USERS
+vlan 20
+ name VOICE
+vlan 30
+ name IOT
+vlan 40
+ name WIFI-CORP
+vlan 41
+ name WIFI-GUEST
+vlan 42
+ name WIFI-BYOD
+vlan 50
+ name PRINTERS
+vlan 90
+ name LAB-DEV
+vlan 999
+ name MGMT-INFRA
+!
+! ============================================================
+! SPANNING TREE — MSTP
+! Meme region et mapping que tous les switches LAN.
+! Les Access ne configurent pas de priorite : laisser 32768 (>Distribution).
+! ============================================================
+spanning-tree mode mst
+spanning-tree mst configuration
+ name HOMELAB
+ revision 1
+ instance 1 vlan 10,30,40,42,50
+ instance 2 vlan 20,41,90,999
+!
+! ============================================================
+! INTERFACES — UPLINKS TRUNK vers Distribution
+! ============================================================
+interface GigabitEthernet0/0
+ description UPLINK-DIST-1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,41,42,50,90,999
+ switchport nonegotiate
+ lldp transmit
+ lldp receive
+ cdp enable
+ no shutdown
+!
+interface GigabitEthernet0/1
+ description UPLINK-DIST-2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,41,42,50,90,999
+ switchport nonegotiate
+ lldp transmit
+ lldp receive
+ cdp enable
+ no shutdown
+!
+! ============================================================
+! INTERFACE — PORT ENDPOINT (PC1 / VPCS)
+! PortFast + BPDU Guard + Port Security sticky
+! Phase 1 : Port Security uniquement (802.1X en Phase 2)
+! ============================================================
+interface GigabitEthernet0/2
+ description PC1-VPCS-VLAN10
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+ lldp transmit
+ lldp receive
+ no cdp enable
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ! storm-control broadcast level 20.00 10.00  ! non supporte IOSvL2 GNS3
+ ! storm-control multicast level 20.00 10.00  ! non supporte IOSvL2 GNS3
+ ! storm-control unknown-unicast level 10.00 5.00  ! non supporte IOSvL2 GNS3
+ ! storm-control action shutdown  ! non supporte IOSvL2 GNS3
+ switchport port-security
+ switchport port-security maximum 2
+ switchport port-security violation shutdown
+ switchport port-security mac-address sticky
+ switchport port-security aging time 60
+ switchport port-security aging type inactivity
+ ip dhcp snooping limit rate 15
+ no shutdown
+!
+! ============================================================
+! DHCP SNOOPING
+! ============================================================
+ip dhcp snooping
+ip dhcp snooping vlan 10,20,30,40,41,42,50,90
+no ip dhcp snooping information option
+ip dhcp snooping database flash:dhcp-snooping.db
+ip dhcp snooping database write-delay 300
+!
+interface GigabitEthernet0/0
+ ip dhcp snooping trust
+!
+interface GigabitEthernet0/1
+ ip dhcp snooping trust
+!
+! ============================================================
+! DYNAMIC ARP INSPECTION
+! ============================================================
+ip arp inspection vlan 10,20,30,40,41,42,50,90
+ip arp inspection validate src-mac dst-mac ip
+!
+interface GigabitEthernet0/0
+ ip arp inspection trust
+!
+interface GigabitEthernet0/1
+ ip arp inspection trust
+!
+! ============================================================
+! INTERFACE MANAGEMENT — VLAN 999
+! default-gateway = VIP VRRP DIST-1/DIST-2 sur VLAN 999
+! ============================================================
+interface Vlan999
+ description MGMT-INBAND
+ ip address 10.254.0.41 255.255.255.0
+ no ip proxy-arp
+ no shutdown
+!
+ip default-gateway 10.254.0.1
+!
+! ============================================================
+! LLDP global
+! ============================================================
+lldp run
+!
+! ============================================================
+! LIGNES VTY et CONSOLE
+! ============================================================
+line con 0
+ logging synchronous
+ exec-timeout 5 0
+!
+line vty 0 15
+ transport input ssh
+ login authentication default
+ exec-timeout 10 0
+ logging synchronous
+!
+! ============================================================
+! NTP — Phase 1 : NAT Cloud. Phase 2 : remplacer par 10.2.103.10
+! ============================================================
+ntp server 192.168.122.1 prefer
+clock timezone CET 1
+clock summer-time CEST recurring last Sun Mar 2:00 last Sun Oct 3:00
+!
+! ============================================================
+! SYSLOG — Phase 2 : activer quand Graylog est deploye
+! ============================================================
+logging on
+logging buffered 16384 informational
+! logging host 10.4.306.10 transport udp port 514
+logging source-interface Vlan999
+service timestamps log datetime msec localtime show-timezone
+!
+! ============================================================
+! SNMP v3 — Phase 2 : activer quand Zabbix/Prometheus est deploye
+! ============================================================
+! snmp-server group MONITORING v3 priv
+! snmp-server user snmp-monitor MONITORING v3 auth sha <AUTH-KEY> priv aes 128 <PRIV-KEY>
+! snmp-server host 10.4.302.10 version 3 priv snmp-monitor
+! snmp-server enable traps
+snmp-server location GNS3-HomeLab-ACC-1
+snmp-server contact admin@homelab.local
+!
+! ============================================================
+! BANNIERE
+! ============================================================
+banner motd ^
+*******************************************************************************
+*  Acces reserve aux personnes habilitees - HomeLab Infrastructure            *
+*  ACC-1 | Bloc 1 | Switch Access LAN                                         *
+*******************************************************************************
+^
+!
+end

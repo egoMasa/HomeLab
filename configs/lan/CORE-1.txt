@@ -1,0 +1,258 @@
+! ============================================================
+! CORE-1 — Switch Core LAN
+! Plateforme : Cisco IOSvL2 15.2
+! Role       : Backbone L3 du LAN — noeud central OSPF
+!              STP Root de toute l'infrastructure LAN (prio 4096 toutes instances)
+!
+! Connexions :
+!   Gi0/0  -> FW-1   Gi4/0   (L3 /31 uplink, 10.0.30.0/31)
+!   Gi0/1  -> FW-2   Gi4/0   (L3 /31 uplink, 10.0.30.2/31)
+!   Gi0/2  -> CORE-2 Gi0/2   (peer-link Po1 membre 1)
+!   Gi0/3  -> CORE-2 Gi0/3   (peer-link Po1 membre 2)
+!   Gi0/1  -> DIST-1 Gi0/0   (L3 /31 downlink, 10.0.40.0/31)
+!   Gi1/1  -> DIST-2 Gi0/0   (L3 /31 downlink, 10.0.40.2/31)
+!   Gi1/2  -> DIST-3 Gi0/0   (L3 /31 downlink, 10.0.40.4/31)
+!   Gi1/3  -> DIST-4 Gi0/0   (L3 /31 downlink, 10.0.40.6/31)
+!
+! Convention adressage /31 : Core = IP impaire (haute)
+!   Gi0/0 FW-1  : CORE-1=10.0.30.1   FW-1=10.0.30.0
+!   Gi0/1 FW-2  : CORE-1=10.0.30.3   FW-2=10.0.30.2
+!   Gi1/0 DIST-1: CORE-1=10.0.40.1   DIST-1=10.0.40.0
+!   Gi1/1 DIST-2: CORE-1=10.0.40.3   DIST-2=10.0.40.2
+!   Gi1/2 DIST-3: CORE-1=10.0.40.5   DIST-3=10.0.40.4
+!   Gi1/3 DIST-4: CORE-1=10.0.40.7   DIST-4=10.0.40.6
+!
+! Adressage :
+!   Loopback0  : 10.0.0.21/32
+!   Vlan999    : 10.254.0.21/24
+!
+! SECURITE : changer les mots de passe avant deploiement reel.
+! ============================================================
+
+version 15.2
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+no service pad
+!
+hostname CORE-1
+!
+ip domain-name homelab.local
+ip routing
+!
+enable secret HomeLabSecret!
+!
+username admin privilege 15 secret HomeLabSecret!
+!
+aaa new-model
+aaa authentication login default local
+aaa authorization exec default local
+!
+ip ssh version 2
+ip ssh time-out 60
+ip ssh authentication-retries 3
+!
+! ============================================================
+! VLAN DATABASE — CORE ne porte que VLAN 999 (management)
+! ============================================================
+vlan 999
+ name MGMT-INFRA
+!
+! ============================================================
+! SPANNING TREE — MSTP
+! CORE = root primaire de TOUTES les instances (prio 4096)
+! Priorite inferieure a Distribution (4096 vs 8192/32768)
+! ============================================================
+spanning-tree mode mst
+spanning-tree mst configuration
+ name HOMELAB
+ revision 1
+ instance 1 vlan 10,30,40,42,50
+ instance 2 vlan 20,41,90,999
+!
+spanning-tree mst 1 priority 4096
+spanning-tree mst 2 priority 4096
+!
+! ============================================================
+! PEER-LINK LACP — Port-Channel1 vers CORE-2 (VLAN 999 uniquement)
+! ============================================================
+interface Port-channel1
+ description PEER-LINK-CORE-2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 999
+ switchport nonegotiate
+!
+interface GigabitEthernet0/2
+ description PEER-LINK-CORE-2-MBR1
+ channel-group 1 mode active
+ no shutdown
+!
+interface GigabitEthernet0/3
+ description PEER-LINK-CORE-2-MBR2
+ channel-group 1 mode active
+ no shutdown
+!
+! ============================================================
+! INTERFACES L3 — UPLINKS vers FW
+! ============================================================
+interface GigabitEthernet0/0
+ description UPLINK-FW-1
+ no switchport
+ ip address 10.0.30.1 255.255.255.254
+ ip ospf network point-to-point
+ ip ospf cost 10
+ ip ospf message-digest-key 1 md5 HomeLab-OSPF
+ no ip proxy-arp
+ lldp transmit
+ lldp receive
+ cdp enable
+ no shutdown
+!
+interface GigabitEthernet0/1
+ description UPLINK-FW-2
+ no switchport
+ ip address 10.0.30.3 255.255.255.254
+ ip ospf network point-to-point
+ ip ospf cost 10
+ ip ospf message-digest-key 1 md5 HomeLab-OSPF
+ no ip proxy-arp
+ lldp transmit
+ lldp receive
+ cdp enable
+ no shutdown
+!
+! ============================================================
+! INTERFACES L3 — DOWNLINKS vers Distribution
+! ============================================================
+interface GigabitEthernet1/0
+ description DOWNLINK-DIST-1
+ no switchport
+ ip address 10.0.40.1 255.255.255.254
+ ip ospf network point-to-point
+ ip ospf cost 10
+ ip ospf message-digest-key 1 md5 HomeLab-OSPF
+ no ip proxy-arp
+ lldp transmit
+ lldp receive
+ cdp enable
+ no shutdown
+!
+interface GigabitEthernet1/1
+ description DOWNLINK-DIST-2
+ no switchport
+ ip address 10.0.40.3 255.255.255.254
+ ip ospf network point-to-point
+ ip ospf cost 10
+ ip ospf message-digest-key 1 md5 HomeLab-OSPF
+ no ip proxy-arp
+ lldp transmit
+ lldp receive
+ cdp enable
+ no shutdown
+!
+interface GigabitEthernet1/2
+ description DOWNLINK-DIST-3
+ no switchport
+ ip address 10.0.40.5 255.255.255.254
+ ip ospf network point-to-point
+ ip ospf cost 10
+ ip ospf message-digest-key 1 md5 HomeLab-OSPF
+ no ip proxy-arp
+ lldp transmit
+ lldp receive
+ cdp enable
+ no shutdown
+!
+interface GigabitEthernet1/3
+ description DOWNLINK-DIST-4
+ no switchport
+ ip address 10.0.40.7 255.255.255.254
+ ip ospf network point-to-point
+ ip ospf cost 10
+ ip ospf message-digest-key 1 md5 HomeLab-OSPF
+ no ip proxy-arp
+ lldp transmit
+ lldp receive
+ cdp enable
+ no shutdown
+!
+! ============================================================
+! LOOPBACK et SVI MANAGEMENT
+! ============================================================
+interface Loopback0
+ description ROUTER-ID-OSPF
+ ip address 10.0.0.21 255.255.255.255
+ no shutdown
+!
+interface Vlan999
+ description MGMT-INBAND
+ ip address 10.254.0.21 255.255.255.0
+ no ip proxy-arp
+ no shutdown
+!
+! ============================================================
+! OSPF area 0 — noeud central
+! Toutes les interfaces actives (FW x2 + DIST x4)
+! ECMP sur 4 chemins pour l'exploitation optimale du full-mesh
+! ============================================================
+router ospf 1
+ router-id 10.0.0.21
+ area 0 authentication message-digest
+ passive-interface default
+ no passive-interface GigabitEthernet0/0
+ no passive-interface GigabitEthernet0/1
+ no passive-interface GigabitEthernet1/0
+ no passive-interface GigabitEthernet1/1
+ no passive-interface GigabitEthernet1/2
+ no passive-interface GigabitEthernet1/3
+ maximum-paths 4
+ network 10.0.0.21 0.0.0.0 area 0
+ network 10.0.30.0 0.0.0.7 area 0
+ network 10.0.40.0 0.0.0.15 area 0
+ network 10.254.0.21 0.0.0.0 area 0
+!
+! ============================================================
+! LLDP
+! ============================================================
+lldp run
+!
+! ============================================================
+! LIGNES VTY et CONSOLE
+! ============================================================
+line con 0
+ logging synchronous
+ exec-timeout 5 0
+!
+line vty 0 15
+ transport input ssh
+ login authentication default
+ exec-timeout 10 0
+ logging synchronous
+!
+! ============================================================
+! NTP / SYSLOG / SNMP
+! Source = Loopback0
+! ============================================================
+ntp server 192.168.122.1 prefer
+clock timezone CET 1
+clock summer-time CEST recurring last Sun Mar 2:00 last Sun Oct 3:00
+!
+logging on
+logging buffered 16384 informational
+logging source-interface Loopback0
+! logging host 10.4.306.10 transport udp port 514
+!
+snmp-server location GNS3-HomeLab-CORE-1
+snmp-server contact admin@homelab.local
+!
+banner motd ^
+*******************************************************************************
+*  Acces reserve aux personnes habilitees - HomeLab Infrastructure            *
+*  CORE-1 | Switch Core LAN | STP Root toutes instances                       *
+*  OSPF : 6 adjacences (FW-1, FW-2, DIST-1, DIST-2, DIST-3, DIST-4)         *
+*******************************************************************************
+^
+!
+end

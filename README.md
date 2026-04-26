@@ -14,6 +14,7 @@
 	9. Plan VLAN, VNI et VRF
 	10. Cas particulier des flux datacenter (intra-VRF vs inter-VRF)
 	11. Synthèse de l'architecture retenue
+	12. Plan de routage IGP : choix du protocole et architecture OSPF
 4. Configuration des équipements
 	1. Méthodologie et ordre de déploiement
 	2. Switches Access LAN (ACC-1 à ACC-4)
@@ -43,6 +44,17 @@
 		10. Supervision
 		11. Synthèse des interfaces par équipement (bloc 1)
 	4. Switches Core LAN (CORE-1, CORE-2)
+		1. Activation du routage IP
+		2. Configuration de base
+		3. Base de données VLAN
+		4. Spanning Tree — root bridge LAN
+		5. Peer-link LACP CORE-1 ↔ CORE-2
+		6. Interfaces L3 vers les FW (uplinks)
+		7. Interfaces L3 vers les Distribution (downlinks)
+		8. SVI management et loopback
+		9. OSPF area 0 — nœud central
+		10. Supervision
+		11. Synthèse des interfaces
 	5. Spine DC (SPINE-1, SPINE-2)
 	6. Leaf DC (LEAF-1, LEAF-2, LEAF-3)
 	7. Hyperviseurs Proxmox (HV-1, HV-2, HV-3)
@@ -1373,7 +1385,151 @@ Les étapes restantes pour clore la Phase 1 :
 
 Une fois les équipements configurés et la maquette validée (Section 4), on enchaînera sur la **Section 5** (déploiement des services applicatifs selon le canevas : notion → état du marché → sélection → dimensionnement → installation → sécurisation → administration → intégration). La **Section 6** (mise en conformité SI : référentiels, cartographie des risques, PCA/PRA, gouvernance) interviendra en clôture.
 
-# 4) Configuration des équipements
+## 3.12) Plan de routage IGP : choix du protocole et architecture OSPF
+
+### 3.12.1) Rôle d'un IGP dans une infrastructure d'entreprise
+
+Un **IGP (Interior Gateway Protocol)** est un protocole de routage dynamique utilisé à l'intérieur d'un système autonome (AS) pour que chaque routeur connaisse automatiquement comment atteindre toutes les destinations du réseau. Sans IGP, il faudrait configurer manuellement des routes statiques sur chaque équipement — une approche viable sur deux ou trois routeurs, impossible à maintenir dès qu'on dépasse une dizaine d'équipements et intenable dès qu'une panne survient (les routes statiques ne s'adaptent pas automatiquement à la topologie).
+
+L'IGP remplit trois fonctions dans cette infrastructure :
+
+**Distribution de la joignabilité.** Chaque routeur annonce ses propres préfixes connectés (ses subnets, ses loopbacks) et apprend ceux des autres. Résultat : Core-1 sait comment atteindre VLAN 10 (10.1.10.0/24) via DIST-1, Leaf-1 sait comment atteindre Spine-2 via son loopback, le FW sait comment atteindre tous les subnets LAN et DC.
+
+**Convergence automatique sur panne.** Quand un lien tombe, l'IGP recalcule les chemins et installe automatiquement les routes alternatives. Si CORE-1 perd son lien vers DIST-1, il passera automatiquement par CORE-2 → DIST-1 sans intervention manuelle.
+
+**Base de transport VXLAN.** Dans le datacenter, l'IGP résout la joignabilité entre les loopbacks des Leaf (les VTEPs — VXLAN Tunnel Endpoints). Sans cette résolution, les tunnels VXLAN ne peuvent pas se former : un Leaf ne saurait pas vers quelle IP envoyer les paquets encapsulés destinés à un autre Leaf.
+
+### 3.12.2) Solutions disponibles
+
+Quatre protocoles IGP coexistent dans l'industrie, relevant de deux grandes familles algorithmiques.
+
+**La famille vecteur de distance** (Distance Vector) : chaque routeur connaît uniquement ses voisins directs et la distance qu'ils annoncent vers les destinations. Il ne connaît pas la topologie complète. L'algorithme de Bellman-Ford calcule les meilleures routes par itérations successives entre voisins.
+
+**La famille état de lien** (Link State) : chaque routeur construit une carte topologique complète du réseau (la LSDB — Link State Database), diffusée par flooding à tous les routeurs. L'algorithme de Dijkstra (SPF — Shortest Path First) calcule ensuite les meilleurs chemins depuis cette carte. Plus complexe mais convergence rapide et pas de boucles de routage.
+
+| Critère | RIP v2 | EIGRP | OSPF | IS-IS |
+|---|---|---|---|---|
+| Standard | RFC 2453 (ouvert) | Cisco propriétaire (RFC 7868 informatif) | RFC 2328 (ouvert) | ISO 10589 / RFC 1195 (ouvert) |
+| Algorithme | Vecteur de distance (Bellman-Ford) | Hybride (DUAL) | État de lien (Dijkstra) | État de lien (Dijkstra) |
+| Convergence | Lente (minutes) | Très rapide (DUAL maintient successeurs de secours) | Rapide (1-30s, sub-seconde avec BFD) | Rapide (comparable à OSPF) |
+| Limite topologique | 15 sauts maximum | Aucune | Aucune | Aucune |
+| Métrique | Nombre de sauts uniquement | Composite (bande passante + délai + charge + fiabilité) | Coût (basé sur la bande passante) | Coût |
+| Découpage hiérarchique | Non | Non (système autonome EIGRP, pas d'areas) | Oui (areas 0 + N) | Oui (Level 1 / Level 2) |
+| Compatibilité multi-constructeur | Oui | Non — Cisco uniquement en pratique | Oui — universel | Oui — universel |
+| Complexité de configuration | Faible | Modérée | Modérée | Élevée |
+| Usage typique | Déprécié, réseaux legacy | Réseaux purement Cisco | Entreprise, standard universel | ISP, opérateurs, très grands réseaux |
+
+**RIP v2.** Sa limite à 15 sauts le rend inutilisable dès qu'une infrastructure dépasse quelques routeurs. Sa convergence en minutes est inacceptable dans un contexte professionnel. Il n'est cité ici que pour complétude et comparaison historique.
+
+**EIGRP.** L'algorithme DUAL est techniquement supérieur à Bellman-Ford : il maintient en permanence un "feasible successor" (successeur de secours préqualifié) pour chaque route, ce qui permet une convergence quasi-instantanée sur panne sans recalcul complet. Mais EIGRP est propriétaire Cisco. Bien que Cisco ait publié un RFC informatif en 2016 (RFC 7868), aucun équipement non-Cisco ne l'implémente en pratique. Dans une infrastructure mêlant Cisco (LAN), Arista (DC) et pfSense/FRR (FW), EIGRP ne peut tout simplement pas fonctionner bout en bout.
+
+**IS-IS.** Fonctionnellement très proche d'OSPF — les deux sont link-state avec Dijkstra. IS-IS présente quelques avantages techniques sur OSPF à très grande échelle : il ne dépend pas de l'area 0 comme point de convergence obligatoire, supporte des topologies plus flexibles, et le flooding est parfois plus efficace. Il est le protocole de référence des grands opérateurs (backbone des principaux ISP mondiaux). En revanche, sa courbe d'apprentissage est plus élevée, il est moins enseigné en formation réseau, et son gain sur OSPF est imperceptible en dessous de quelques centaines de routeurs.
+
+**OSPF.** Standard IEEE, implémenté sur tous les équipements réseau modernes (Cisco IOS, Arista EOS, Juniper JunOS, pfSense via FRR, Linux via BIRD ou FRR, etc.). Sa convergence est rapide, sa documentation abondante, son support multi-constructeur universel. C'est le protocole IGP enseigné dans toutes les certifications réseau (CCNA, CCNP, JNCIA, PCNSE) et déployé dans la grande majorité des entreprises.
+
+### 3.12.3) Choix retenu : OSPF (RFC 2328 / OSPFv2)
+
+OSPF est retenu pour trois raisons cumulatives.
+
+**Interopérabilité obligatoire.** Cette infrastructure mêle Cisco IOSvL2 (LAN), Arista vEOS (DC), pfSense avec le démon FRR (FW), et potentiellement des VMs Linux avec FRR (futurs services routants). EIGRP s'arrêterait à la frontière Cisco/Arista. IS-IS serait possible mais surqualifié. OSPF est le seul protocole que tous ces composants parlent nativement.
+
+**Rapport complexité/bénéfice optimal.** OSPF offre tout ce dont on a besoin : convergence rapide, multi-area pour une scalabilité future, authentification, support du /31 point-to-point, BFD pour la détection sub-seconde. IS-IS offre les mêmes fonctionnalités avec plus de complexité de configuration sans gain mesurable à cette échelle.
+
+**Cohérence pédagogique.** OSPF est le protocole étudié dans les formations réseau. Toute la documentation en ligne (RFC, Cisco, Arista, FRR) est en OSPF. Le lecteur du rapport, qu'il soit ingénieur réseau en poste ou étudiant, aura déjà rencontré OSPF.
+
+La version retenue est **OSPFv2** (RFC 2328), qui opère sur IPv4. OSPFv3 (RFC 5340) est l'extension pour IPv6 — non nécessaire dans ce projet qui reste en IPv4 pur.
+
+### 3.12.4) Architecture OSPF : une seule area 0
+
+**Le problème de passage à l'échelle d'OSPF**
+
+OSPF a une contrainte inhérente à son algorithme : chaque routeur d'une area stocke la **totalité** de la topologie dans sa LSDB et recalcule le SPF complet à chaque changement. Plus l'area est grande, plus le calcul est coûteux en CPU et en mémoire, et plus la convergence ralentit. Dans un domaine de plusieurs centaines de routeurs avec des milliers de préfixes, une seule area deviendrait ingérable.
+
+La solution d'OSPF est le **découpage en areas hiérarchiques**. Chaque area ne connaît que sa propre topologie interne. Les routes entre areas transitent sous forme résumée (type 3 LSA — inter-area) via un routeur de frontière appelé **ABR (Area Border Router)**. L'**area 0** est la backbone obligatoire : toutes les autres areas doivent s'y connecter, et tout trafic inter-area transite par area 0.
+
+**Pourquoi une seule area 0 est la bonne décision ici**
+
+Cette infrastructure compte **13 routeurs OSPF** au total : 4 Distribution, 2 Core, 2 FW, 2 Spine, 3 Leaf. Sa LSDB contiendra environ 40 à 60 LSA. Le calcul SPF sur cette topologie prend quelques millisecondes, la mémoire consommée est négligeable.
+
+Le seuil à partir duquel le découpage multi-area apporte un bénéfice réel se situe autour de **50 à 100 routeurs** dans une area, ou quand des instabilités (flapping de liens) dans une partie du réseau génèrent des SPF intempestifs dans des zones qui n'ont aucun rapport avec le problème. Ni l'un ni l'autre ne s'applique ici.
+
+Un découpage en plusieurs areas ajouterait de la configuration (ABRs, network statements par area, vérification des routes inter-area), augmenterait la complexité du dépannage, et ne résoudrait aucun problème existant. Le gain serait nul, le coût réel.
+
+**À quelle échelle le multi-area deviendrait pertinent**
+
+Si cette infrastructure était scalée vers une vraie entreprise de taille intermédiaire, un découpage naturel serait :
+
+- **Area 0 (backbone)** : Core + FW + Spine — les nœuds centraux de transit uniquement.
+- **Area 1, 2, … (stub)** : un bloc de distribution par area. Chaque bloc n'a qu'un seul exit (vers le Core), donc il n'a pas besoin de connaître la topologie complète. L'ABR (le Core) injecte uniquement une default route. Avantage : une panne dans le bloc 3 ne déclenche pas de SPF dans les blocs 1, 2, 4.
+- **Area N (stub)** : le datacenter Spine-Leaf, avec le FW comme ABR. Les Leaf n'ont qu'un seul exit (le Spine → FW), donc stub avec default route.
+
+Ce design permettrait aussi de **résumer** les routes à la frontière des areas : au lieu d'annoncer 8 routes /24 depuis le bloc 2 dans area 0, l'ABR résume en un seul préfixe /21 ou /20. Les tables de routage globales sont allégées.
+
+### 3.12.5) Types d'area OSPF et leurs cas d'usage
+
+| Type d'area | LSA type 3 reçus (inter-area) | LSA type 5 reçus (routes externes) | Redistribution locale possible | Default route injectée par ABR |
+|---|---|---|---|---|
+| Regular | Oui | Oui | Oui | Non (sauf config explicite) |
+| Stub | Oui | Non | Non | Oui |
+| Totally Stubby | Non | Non | Non | Oui |
+| NSSA | Oui | Non | Oui (via LSA type 7) | Optionnel |
+| Totally NSSA | Non | Non | Oui (via LSA type 7) | Oui |
+
+**Stub area.** L'area ne reçoit pas les routes externes redistribuées dans OSPF (type 5 LSA, typiquement des routes BGP ou statiques importées par un ASBR). Elle reçoit seulement les routes inter-area (type 3) et une default route injectée par son ABR. Usage : une agence distante avec un seul lien WAN vers le siège. Elle n'a qu'un chemin de sortie, la default route suffit.
+
+**Totally Stubby area.** Extension Cisco (pas dans le standard IEEE). Encore plus restrictif : bloque les type 3 (inter-area) en plus des type 5 (externes). L'area ne reçoit qu'une default route. Usage : un site qui n'a besoin d'aucune route spécifique, uniquement "envoie tout vers l'ABR". Réduit fortement la LSDB et la table de routage sur les équipements de l'area.
+
+**NSSA (Not-So-Stubby Area).** Cas hybride qui résout un problème précis : une area qui ne veut pas recevoir des routes externes venues d'ailleurs (donc se comporte comme stub pour les type 5 entrants), **mais** qui a elle-même besoin de redistribuer des routes depuis un autre protocole localement (elle a son propre ASBR). Les routes redistribuées localement sont transportées en type 7 LSA à l'intérieur de la NSSA, puis converties en type 5 LSA par l'ABR en sortant dans area 0. Usage typique : un datacenter régional avec son propre peering BGP ISP, qui veut redistribuer ses routes BGP dans OSPF sans recevoir les routes externes de tous les autres ASBRs du domaine.
+
+**Totally NSSA.** Combine NSSA et Totally Stubby : bloque les type 3 et type 5 entrants, autorise la redistribution locale via type 7, injecte une default route. Le cas le plus restrictif compatible avec la présence d'un ASBR local.
+
+### 3.12.6) Articulation OSPF et BGP EVPN dans le datacenter
+
+L'infrastructure utilise **deux protocoles de routage distincts** avec des rôles complémentaires et non concurrents.
+
+**OSPF — le plan de transport (underlay)**
+
+OSPF opère dans la **VRF default** de tous les équipements réseau. Son seul objectif dans le datacenter est de distribuer la joignabilité entre les **loopbacks des VTEPs** (Leaf) et des Route Reflectors (Spine). Les Leaf ont besoin de connaître l'IP des loopbacks de tous les autres Leaf pour monter les tunnels VXLAN. C'est tout ce qu'OSPF fait côté DC — il ne sait rien des VRFs PROD, DMZ, ADMIN, des VNI, ni des MAC/IP des VMs.
+
+**BGP EVPN — le plan de service (overlay)**
+
+BGP EVPN opère **au-dessus** de l'underlay OSPF. Il utilise les loopbacks (dont OSPF assure la joignabilité) comme sources et destinations des sessions BGP. Il distribue les routes MAC/IP des VMs (type 2), les routes de passerelle anycast (type 2 + type 3), et les préfixes IP des VRFs (type 5). C'est lui qui permet à LEAF-1 de savoir que la VM 10.2.101.50 est derrière LEAF-2, sans avoir recours au flooding traditionnel.
+
+**La frontière entre les deux**
+
+```
+        OSPF area 0                          BGP EVPN AS 65000
+┌─────────────────────────────┐      ┌──────────────────────────────┐
+│                             │      │                              │
+│  Distribution               │      │  Spine (Route Reflector)     │
+│      Core                   │      │      Leaf (RR Client)        │
+│          FW ◄───────────────┼──────┼──► FW (via VLAN handoff)    │
+│                             │      │                              │
+└─────────────────────────────┘      └──────────────────────────────┘
+            ▲                                      ▲
+            │                                      │
+        Underlay : /31 L3              Overlay : Tunnels VXLAN UDP 4789
+        loopbacks, SVIs                VNI, VRFs, MAC/IP VMs
+```
+
+Le **FW** est le seul équipement qui participe aux deux plans simultanément :
+- Il forme des adjacences OSPF avec les Core (côté LAN) et les Spine (côté DC underlay)
+- Il reçoit les routes VRF via les sous-interfaces VLAN (handoff 201-204) depuis les Spine
+- Il fait le lien entre routing LAN (appris par OSPF) et routing DC VRF (appris via BGP EVPN / handoff)
+
+Le **Leaf** est la frontière technique entre les deux protocoles : il participe à OSPF (pour l'underlay) et à BGP EVPN (pour l'overlay). Sa loopback est connue via OSPF, ses routes VRF sont distribuées via BGP EVPN.
+
+### 3.12.7) Synthèse : ce que chaque équipement annonce et apprend
+
+| Équipement | Annonce dans OSPF | Apprend via OSPF |
+|---|---|---|
+| **Distribution** | Loopback, SVIs utilisateurs (/24 × 8 VLANs × 2 blocs), SVI MGMT | Default route (du FW), routes DC underlay (loopbacks Spine/Leaf), loopbacks Core/FW |
+| **Core** | Loopback, SVI MGMT | SVIs utilisateurs (des Distribution), loopbacks Spine/Leaf, default route (du FW) |
+| **FW (FRR)** | Default route (redistribuée depuis WAN statique), loopback, liens /31 LAN et DC | Tous les subnets LAN, tous les loopbacks DC (Spine/Leaf), permet le routage LAN ↔ DC underlay |
+| **Spine** | Loopbacks Spine, liens /31 Spine↔Leaf, liens /31 Spine↔FW | Loopbacks Leaf, loopback FW, routes LAN (des Distribution via FW) |
+| **Leaf** | Loopback Leaf, liens /31 Leaf↔Spine | Loopbacks autres Leaf/Spine, loopback FW, routes LAN |
+
+**Note sur les routes LAN dans le DC.** Le FW redistribue les routes LAN (10.1.x.x/24) dans le domaine OSPF DC, et les Spine/Leaf les apprennent. En pratique ces routes leur sont inutiles (le trafic LAN ↔ DC VM passe toujours par le FW), mais leur présence dans la LSDB est sans conséquence à cette échelle. Dans un design de production voulant minimiser la LSDB DC, un prefix-list sur le FW filtrerait ces annonces côté DC.
 
 Cette section documente la configuration CLI complète de chaque équipement de la maquette. Elle est le pont entre l'architecture décrite en Section 3 et les services déployés en Section 5 : on passe de la décision à l'implémentation. Pour chaque équipement, on suit le même canevas : rappel du rôle et des interfaces concernées, explication des choix de configuration, configuration CLI annotée, et procédure de vérification.
 
@@ -2804,7 +2960,379 @@ show snmp user
 
 ## 4.4) Switches Core LAN (CORE-1, CORE-2)
 
-*À rédiger.*
+Les switches Core sont le backbone du LAN Tier-3. Leur configuration est plus légère que celle des Distribution : pas de VRRP, pas de DHCP relay, pas de SVI utilisateurs, pas de sécurité L2 sur les ports. Ce qu'ils font est plus limité en nombre de fonctions, mais plus central en termes de volume de trafic et d'adjacences OSPF.
+
+Leur rôle se résume à trois tâches : **agréger les routes des Distribution vers le FW**, **propager la default route et les routes DC depuis le FW vers les Distribution**, et **offrir deux chemins redondants vers chaque destination via ECMP**. Tout repose sur OSPF area 0 et sur la qualité du câblage full-mesh.
+
+La pile de configuration suit cet ordre :
+
+```
+1.  Activation du routage IP
+2.  Configuration de base             (hostname, SSH, AAA — identique 4.2.1)
+3.  Base de données VLAN              (VLAN 999 uniquement)
+4.  Spanning Tree — root bridge LAN   (racine STP de toute l'infrastructure)
+5.  Peer-link LACP CORE-1 ↔ CORE-2   (même concept que 4.3.3, VLAN 999 uniquement)
+6.  Interfaces L3 vers les FW         (uplinks /31, bloc 10.0.30.0/24)
+7.  Interfaces L3 vers les Distribution (downlinks /31, bloc 10.0.40.0/24)
+8.  SVI management et loopback        (VLAN 999 + Loopback0 router-ID)
+9.  OSPF area 0 — nœud central        (toutes les adjacences + passive-interface)
+10. Supervision                        (NTP, Syslog, SNMPv3 — identique 4.3.10)
+11. Synthèse des interfaces
+```
+
+### 4.4.1) Activation du routage IP
+
+Identique à 4.3.1. Obligatoire sur les Core.
+
+```
+ip routing
+```
+
+### 4.4.2) Configuration de base
+
+Identique à la section 4.2.1, en changeant le hostname (`CORE-1`, `CORE-2`), l'IP de management (section 4.4.8), et la clé RSA. Toutes les autres commandes (SSH v2, AAA, VTY, bannière, service timestamps, désactivation HTTP) sont strictement identiques.
+
+### 4.4.3) Base de données VLAN
+
+Les Core ne portent aucun VLAN utilisateur. Seul le VLAN 999 (management in-band) est nécessaire pour permettre à la SVI de management d'exister.
+
+```
+vlan 999
+ name MGMT-INFRA
+```
+
+### 4.4.4) Spanning Tree — root bridge de l'infrastructure LAN
+
+**Concept**
+
+Les Core sont au sommet de la hiérarchie L2 du LAN. En théorie, tous leurs liens vers les FW et les Distribution sont des interfaces L3 routées — STP n'y a aucun rôle. En pratique, la seule liaison L2 sur un Core est le peer-link vers l'autre Core (trunk VLAN 999). Un seul VLAN, deux switches : STP converge trivialement, aucune boucle possible.
+
+La configuration STP sur les Core remplit néanmoins deux objectifs. D'abord, maintenir la cohérence de la région MST (même `name`, même `revision`, même mapping VLAN→instance que l'ensemble du LAN). Ensuite, garantir que si quelqu'un crée accidentellement un lien L2 entre un Core et un autre équipement, le Core sera toujours root bridge — ce qui est la topologie la plus sûre.
+
+**Configuration**
+
+```
+spanning-tree mode mst
+spanning-tree mst configuration
+ name HOMELAB
+ revision 1
+ instance 1 vlan 10,30,40,42,50
+ instance 2 vlan 20,41,90,999
+ exit
+
+spanning-tree mst 1 priority 4096
+spanning-tree mst 2 priority 4096
+```
+
+- `spanning-tree mst configuration` : obligatoire, identique sur tous les équipements du LAN. Un switch avec un `name` ou `revision` différent serait dans une autre région MST et deviendrait une frontière de région — comportement non voulu.
+- `priority 4096` : obligatoire pour que le Core soit root de toutes les instances (4096 < 8192 des Distribution primaires < 32768 des Access). Les deux Core ont la même priorité, donc le Core avec le bridge ID (MAC) le plus bas sera élu root — comportement déterministe.
+
+**Vérification**
+
+```
+show spanning-tree mst 1     ! Core apparaît en role "Root"
+show spanning-tree mst 2
+```
+
+### 4.4.5) Peer-link LACP CORE-1 ↔ CORE-2
+
+**Concept**
+
+Le peer-link entre les deux Core est un Port-Channel LACP de 2 liens physiques. Son rôle est limité par rapport au peer-link des Distribution : il ne porte que le VLAN 999 (management in-band). Il n'y a pas de VLAN utilisateurs sur les Core, donc le peer-link ne transporte pas de trafic utilisateur.
+
+Le concept LACP (IEEE 802.3ad) et la justification du choix sur PAgP sont documentés en section 4.3.3. Même configuration ici, avec une liste de VLANs réduite.
+
+**Configuration**
+
+```
+interface Port-channel1
+ description PEER-LINK-CORE-2
+ switchport mode trunk
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 999
+ switchport nonegotiate
+
+interface GigabitEthernetX/Y
+ description PEER-LINK-CORE-2-MBR1
+ channel-group 1 mode active
+ no shutdown
+
+interface GigabitEthernetX/Z
+ description PEER-LINK-CORE-2-MBR2
+ channel-group 1 mode active
+ no shutdown
+```
+
+- `switchport trunk allowed vlan 999` : obligatoire. Le peer-link ne porte que le VLAN management. Aucun VLAN utilisateur ne transite ici.
+- `channel-group 1 mode active` : obligatoire. LACP actif des deux côtés.
+
+**Vérification**
+
+```
+show etherchannel summary    ! Po1 doit être SU (bundle actif)
+show lacp neighbor           ! voisin LACP visible
+```
+
+### 4.4.6) Interfaces L3 vers les FW (uplinks)
+
+**Concept**
+
+Le Core est raccordé aux deux FW en full-mesh : CORE-1 a un lien vers FW-1 et un vers FW-2, idem pour CORE-2. Cela donne 4 liens /31 au total (bloc `10.0.30.0/24`), tous portant une adjacence OSPF. Ce full-mesh garantit qu'une panne d'un FW ou d'un Core ne coupe pas la connectivité réseau.
+
+Côté FW, ces liens arrivent sur les interfaces `em4` et `em5` de chaque pfSense. Côté Core, ce sont des interfaces L3 routées sans STP (pas de L2).
+
+**Plan d'adressage (bloc 10.0.30.0/24)**
+
+| Lien | Interface Core-1 | IP Core-1 | IP FW-1/FW-2 | Sous-réseau |
+|---|---|---|---|---|
+| CORE-1 ↔ FW-1 | Gi0/0 | 10.0.30.1/31 | 10.0.30.0/31 | 10.0.30.0/31 |
+| CORE-1 ↔ FW-2 | Gi0/1 | 10.0.30.3/31 | 10.0.30.2/31 | 10.0.30.2/31 |
+| CORE-2 ↔ FW-1 | Gi0/0 | 10.0.30.5/31 | 10.0.30.4/31 | 10.0.30.4/31 |
+| CORE-2 ↔ FW-2 | Gi0/1 | 10.0.30.7/31 | 10.0.30.6/31 | 10.0.30.6/31 |
+
+Se référer au fichier `plan_adressage.xlsx` (feuille *Liens-L3-Infra*) pour les IPs définitives.
+
+**Configuration (CORE-1 — répéter analogiquement sur CORE-2)**
+
+```
+interface GigabitEthernetX/Y
+ description UPLINK-FW-1
+ no switchport
+ ip address 10.0.30.1 255.255.255.254
+ ip ospf network point-to-point
+ ip ospf cost 10
+ no ip proxy-arp
+ no shutdown
+
+interface GigabitEthernetX/Z
+ description UPLINK-FW-2
+ no switchport
+ ip address 10.0.30.3 255.255.255.254
+ ip ospf network point-to-point
+ ip ospf cost 10
+ no ip proxy-arp
+ no shutdown
+```
+
+Le concept `no switchport`, `/31`, `ip ospf network point-to-point` est documenté en section 4.3.5.
+
+**Vérification**
+
+```
+show ip interface brief | exclude unassigned   ! interfaces up avec IP
+show ip ospf interface brief                   ! state FULL sur les deux liens FW
+```
+
+### 4.4.7) Interfaces L3 vers les Distribution (downlinks)
+
+**Concept**
+
+Le Core est raccordé en full-mesh à tous les Distribution des deux blocs : chaque Core a un lien vers DIST-1, DIST-2, DIST-3 et DIST-4. Cela donne 8 liens /31 au total pour les deux Core (bloc `10.0.40.0/24`). Ce full-mesh est la pièce maîtresse de la résilience LAN : si un Core tombe, les Distribution ont encore un chemin vers l'autre Core (et donc vers le FW).
+
+L'ECMP est exploité ici : une Distribution vue par CORE-1 via deux chemins équivalents (un lien direct + un chemin via le peer-link Core-Core) n'est pas dans ce design — chaque Core a un lien direct vers chaque Distribution. CORE-1 et CORE-2 voient les mêmes routes et le trafic est réparti par ECMP selon le hash de flux.
+
+**Plan d'adressage (bloc 10.0.40.0/24)**
+
+| Lien | Sous-réseau |
+|---|---|
+| CORE-1 ↔ DIST-1 | 10.0.40.0/31 |
+| CORE-1 ↔ DIST-2 | 10.0.40.2/31 |
+| CORE-1 ↔ DIST-3 | 10.0.40.4/31 |
+| CORE-1 ↔ DIST-4 | 10.0.40.6/31 |
+| CORE-2 ↔ DIST-1 | 10.0.40.8/31 |
+| CORE-2 ↔ DIST-2 | 10.0.40.10/31 |
+| CORE-2 ↔ DIST-3 | 10.0.40.12/31 |
+| CORE-2 ↔ DIST-4 | 10.0.40.14/31 |
+
+**Configuration (CORE-1 — 4 interfaces vers DIST-1, DIST-2, DIST-3, DIST-4)**
+
+```
+interface GigabitEthernetX/Y
+ description DOWNLINK-DIST-1
+ no switchport
+ ip address 10.0.40.1 255.255.255.254
+ ip ospf network point-to-point
+ ip ospf cost 10
+ no ip proxy-arp
+ no shutdown
+
+! Répéter pour DIST-2 (10.0.40.3/31), DIST-3 (10.0.40.5/31), DIST-4 (10.0.40.7/31)
+```
+
+**Vérification**
+
+```
+show ip ospf neighbor             ! 4 adjacences DIST + 2 adjacences FW en state FULL
+show ip route ospf | begin O      ! routes O apprises des Distribution et du FW
+```
+
+### 4.4.8) SVI management et loopback
+
+**Concept**
+
+Le Core n'a aucune SVI utilisateur. La seule SVI nécessaire est celle du VLAN 999 pour permettre l'accès SSH, la collecte SNMP et l'envoi de logs Syslog. La loopback sert de router-ID OSPF stable.
+
+```
+interface Vlan999
+ description MGMT-INBAND
+ ip address 10.254.0.21 255.255.255.0    ! CORE-1 : .21, CORE-2 : .22
+ no ip proxy-arp
+ no shutdown
+
+interface Loopback0
+ description ROUTER-ID-OSPF
+ ip address 10.0.0.21 255.255.255.255    ! CORE-1 : .21, CORE-2 : .22
+ no shutdown
+```
+
+- Les Core ont `ip routing` actif, donc pas besoin de `ip default-gateway`. Les routes vers le reste du réseau sont apprises via OSPF.
+
+**Vérification**
+
+```
+show ip interface brief | include Vlan|Loopback
+```
+
+### 4.4.9) OSPF area 0 — nœud central
+
+**Concept**
+
+Le Core est le nœud OSPF le plus sollicité du LAN : il forme des adjacences avec les FW d'un côté, avec toutes les Distribution de l'autre. À la différence d'une Distribution qui annonce ses propres préfixes SVI, le Core est principalement un **nœud de transit OSPF** — il n'annonce que son loopback et sa SVI management. Sa valeur réside dans sa capacité à **relayer les LSA** entre le domaine Distribution et le domaine FW/DC.
+
+Le tableau comparatif des IGP est documenté en section 4.3.9.
+
+**Ce que le Core apprend via OSPF**
+
+| Type de route | Source | Sens |
+|---|---|---|
+| Routes utilisateurs (/24, O intra-area) | Distribution (via leurs SVIs) | Distribution → Core → FW |
+| Default route (0.0.0.0/0, O E2 ou IA) | FW (apprise du WAN) | FW → Core → Distribution |
+| Routes DC (PROD, DMZ, ADMIN, MGMT) | FW (apprise des Spine) | FW → Core → Distribution |
+| Routes loopbacks Distribution | Distribution | Visibilité complète de tous les équipements |
+
+Le Core ne redistribue rien : tout est dans la même area 0, les routes se propagent naturellement.
+
+**Adjacences OSPF du Core**
+
+Chaque Core forme jusqu'à **6 adjacences OSPF simultanées** :
+- 2 vers les FW (FW-1 et FW-2, via uplinks /31 du bloc 10.0.30.0/24)
+- 4 vers les Distribution (DIST-1, DIST-2, DIST-3, DIST-4, via downlinks /31 du bloc 10.0.40.0/24)
+
+La loopback et la SVI 999 sont annoncées via des `network` statements. Elles restent passives (pas de Hello OSPF sur ces interfaces).
+
+**Configuration (CORE-1)**
+
+```
+router ospf 1
+ router-id 10.0.0.21
+ passive-interface default
+ no passive-interface GigabitEthernetX/Y   ! uplink FW-1
+ no passive-interface GigabitEthernetX/Z   ! uplink FW-2
+ no passive-interface GigabitEthernetX/A   ! downlink DIST-1
+ no passive-interface GigabitEthernetX/B   ! downlink DIST-2
+ no passive-interface GigabitEthernetX/C   ! downlink DIST-3
+ no passive-interface GigabitEthernetX/D   ! downlink DIST-4
+ network 10.0.30.0 0.0.0.7 area 0          ! bloc FW ↔ Core (/24 avec 4 /31)
+ network 10.0.40.0 0.0.0.15 area 0         ! bloc Core ↔ Distribution (/24 avec 8 /31)
+ network 10.254.0.21 0.0.0.0 area 0        ! SVI management CORE-1
+ network 10.0.0.21 0.0.0.0 area 0          ! loopback CORE-1
+```
+
+- `router-id 10.0.0.21` : obligatoire. IP de Loopback0 pour la stabilité.
+- `passive-interface default` puis `no passive-interface` sur chaque lien actif : obligatoire. Évite que OSPF tente des adjacences sur la SVI 999 ou sur d'autres interfaces inattendues.
+- Les `network` statements couvrent les blocs entiers de liens /31 plutôt que chaque /31 individuellement — moins de lignes pour le même résultat.
+
+**Authentification OSPF**
+
+```
+router ospf 1
+ area 0 authentication message-digest
+
+interface GigabitEthernetX/Y
+ ip ospf message-digest-key 1 md5 <ospf-key>
+! Répéter sur chaque interface active OSPF
+```
+
+La même clé MD5 doit être configurée sur les FW (via FRR) et sur les Distribution. Un voisin avec une clé différente ou sans authentification ne formera pas d'adjacence.
+
+**ECMP sur les routes appris**
+
+```
+maximum-paths 4
+```
+
+- Optionnel. Active ECMP sur jusqu'à 4 chemins OSPF de coût égal. Par défaut sur IOS, l'ECMP est limité à 4 chemins (valeur configurable de 1 à 16). Dans ce design, chaque Core peut voir deux chemins de coût égal vers les mêmes destinations (via FW-1 ou FW-2, via DIST-A directement ou via le chemin du peer-link) — ECMP garantit que les deux sont utilisés.
+
+**Vérification**
+
+```
+show ip ospf neighbor                     ! 6 adjacences en state FULL
+show ip ospf database                     ! LSDB complète
+show ip route ospf                        ! routes O + O E1/E2 installées
+show ip route 10.1.10.0 255.255.255.0    ! route vers VLAN 10 (doit exister)
+show ip route 0.0.0.0                    ! default route reçue du FW
+```
+
+Test de cohérence ECMP :
+
+```
+show ip cef 10.2.100.0 detail            ! chemin CEF vers un subnet DC
+! Doit montrer plusieurs nexthops si ECMP actif
+```
+
+### 4.4.10) Supervision
+
+Identique à la section 4.3.10, avec les IP de management spécifiques aux Core :
+- CORE-1 : `10.254.0.21`
+- CORE-2 : `10.254.0.22`
+
+```
+! NTP
+ntp server 10.2.103.10 prefer
+ntp update-calendar
+clock timezone CET 1
+clock summer-time CEST recurring last Sun Mar 2:00 last Sun Oct 3:00
+
+! Syslog
+logging on
+logging host 10.4.306.10 transport udp port 514
+logging source-interface vlan 999
+logging trap informational
+logging buffered 16384 informational
+
+! SNMPv3
+snmp-server group MONITORING v3 priv
+snmp-server user snmp-monitor MONITORING v3 auth sha <auth-key> priv aes 128 <priv-key>
+snmp-server host 10.4.302.10 version 3 priv snmp-monitor
+snmp-server enable traps
+snmp-server location GNS3-HomeLab-CORE
+snmp-server contact admin@homelab.local
+```
+
+**Vérification**
+
+```
+show ntp status
+show logging
+show snmp user
+```
+
+### 4.4.11) Synthèse des interfaces (CORE-1)
+
+| Interface | Type | IP / VLAN | Rôle |
+|---|---|---|---|
+| Gi0/0 | L3 routed | 10.0.30.1/31 | Uplink FW-1 |
+| Gi0/1 | L3 routed | 10.0.30.3/31 | Uplink FW-2 |
+| Gi0/2 | L3 routed | 10.0.40.1/31 | Downlink DIST-1 |
+| Gi0/3 | L3 routed | 10.0.40.3/31 | Downlink DIST-2 |
+| Gi0/4 | L3 routed | 10.0.40.5/31 | Downlink DIST-3 |
+| Gi0/5 | L3 routed | 10.0.40.7/31 | Downlink DIST-4 |
+| Po1 | trunk LACP | VLAN 999 | Peer-link CORE-2 |
+| Vlan999 | SVI | 10.254.0.21/24 | Management CORE-1 |
+| Loopback0 | loopback | 10.0.0.21/32 | Router-ID OSPF |
+
+**CORE-2 — interfaces :** idem avec décalage d'adresse (IP pair +1 sur chaque /31, `10.254.0.22` pour management, loopback `10.0.0.22`). Se référer à `plan_adressage.xlsx` pour les IPs définitives de chaque lien.
 
 ## 4.5) Spine DC (SPINE-1, SPINE-2)
 

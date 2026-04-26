@@ -10,7 +10,7 @@
     "scene_height": 1000,
     "scene_width": 2000,
     "show_grid": false,
-    "show_interface_labels": true,
+    "show_interface_labels": false,
     "show_layers": false,
     "snap_to_grid": false,
     "supplier": null,
@@ -2268,8 +2268,8 @@
                 "symbol": ":/symbols/classic/multilayer_switch.svg",
                 "template_id": "685c0d40-2f49-41da-b67e-655440539357",
                 "width": 51,
-                "x": -151,
-                "y": 287,
+                "x": -150,
+                "y": 285,
                 "z": 1
             },
             {
@@ -3080,7 +3080,7 @@
             },
             {
                 "compute_id": "local",
-                "console": 5020,
+                "console": 5029,
                 "console_auto_start": false,
                 "console_type": "telnet",
                 "custom_adapters": [],
@@ -3150,7 +3150,7 @@
             },
             {
                 "compute_id": "local",
-                "console": 5023,
+                "console": 5031,
                 "console_auto_start": false,
                 "console_type": "telnet",
                 "custom_adapters": [],
@@ -3220,7 +3220,7 @@
             },
             {
                 "compute_id": "local",
-                "console": 5026,
+                "console": 5033,
                 "console_auto_start": false,
                 "console_type": "telnet",
                 "custom_adapters": [],
@@ -3290,7 +3290,7 @@
             },
             {
                 "compute_id": "local",
-                "console": 5028,
+                "console": 5035,
                 "console_auto_start": false,
                 "console_type": "telnet",
                 "custom_adapters": [],
@@ -3360,7 +3360,7 @@
             },
             {
                 "compute_id": "local",
-                "console": 5034,
+                "console": 5037,
                 "console_auto_start": false,
                 "console_type": "telnet",
                 "custom_adapters": [],
@@ -3433,5 +3433,5 @@
     "type": "topology",
     "variables": null,
     "version": "2.2.58.1",
-    "zoom": 140
+    "zoom": 99
 }

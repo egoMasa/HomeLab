@@ -324,3 +324,51 @@ Ordre recommandé (à affiner) :
 ## Phase 3 — Conformité SI
 
 À venir. Couvrira : référentiels (ISO 27001, ANSSI PGSSI-S, NIS2), cartographie des risques, PCA/PRA, gouvernance, plan de remédiation.
+
+---
+
+## Notes de documentation — À compléter
+
+### Tableaux descriptifs par couche d'équipements
+
+Chaque couche de l'infrastructure doit faire l'objet d'un tableau détaillé expliquant le rôle de chaque équipement, ses responsabilités dans la topologie, et les protocoles qu'il porte. Ces tableaux sont destinés à la section rapport (Section 4) et servent de référence pédagogique.
+
+Couches à documenter :
+
+| Couche | Équipements | À créer |
+|---|---|---|
+| Core LAN | CORE-1, CORE-2 | ⬜ |
+| Distribution LAN | DIST-1, DIST-2, DIST-3, DIST-4 | ⬜ |
+| Access LAN | ACC-1, ACC-2, ACC-3, ACC-4 | ⬜ |
+| Spine DC | SPINE-1, SPINE-2 | ⬜ |
+| Leaf DC | LEAF-1, LEAF-2, LEAF-3 | ⬜ |
+| Firewall | FW-1, FW-2 | ⬜ |
+| Hyperviseurs | HV-1, HV-2, HV-3 | ⬜ |
+
+Pour chaque tableau : nom de l'équipement, rôle dans la topologie, protocoles actifs, interfaces et leurs fonctions, mécanismes de redondance portés, et points de vérification clés.
+
+---
+
+## Note — Credentials et gestion des accès
+
+### État actuel (Phase 1 — initialisation)
+
+Les configurations actuelles utilisent un mot de passe placeholder uniforme `HomeLabSecret!` sur tous les équipements LAN (enable secret + username admin). Ce choix est **volontaire et temporaire** : à ce stade du déploiement, l'objectif est de rendre les équipements accessibles rapidement depuis GNS3 pour valider les configs fonctionnelles. La sécurité des accès est un sujet Phase 2.
+
+Credentials en place :
+- `enable secret HomeLabSecret!` — accès mode privilégié
+- `username admin privilege 15 secret HomeLabSecret!` — compte SSH/console, priv 15 (bypass enable)
+- Clé OSPF MD5 : `HomeLab-OSPF` (protocole interne, non exposé)
+- Clé VRRP MD5 : `HomeLab-VRRP` (protocole interne, non exposé)
+
+### Mise à jour prévue (Phase 2 — après déploiement FreeRADIUS)
+
+Une fois les hyperviseurs Proxmox opérationnels et FreeRADIUS déployé (Phase 2, étape 3 — AAA), l'authentification sera migrée vers **TACACS+** selon les bonnes pratiques :
+
+- Remplacement de l'auth locale par TACACS+ sur tous les équipements réseau Cisco
+- Comptes nominatifs par administrateur (traçabilité complète)
+- Séparation `enable secret` / mot de passe de connexion
+- Suppression du compte `admin` générique ou restriction à un usage break-glass uniquement
+- Rotation des clés OSPF et VRRP avec des valeurs aléatoires fortes
+
+Cette mise à jour est un **prérequis Phase 3** (Conformité SI) pour satisfaire les exigences de traçabilité et d'accountability des référentiels ISO 27001 et ANSSI.

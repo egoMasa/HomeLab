@@ -1,0 +1,381 @@
+! ============================================================
+! DIST-4 — Switch Distribution LAN — Bloc 2
+! Plateforme : Cisco IOSvL2 15.2
+! Role       : Distribution master VRRP instance 2 (VLANs 20,41,90,999)
+!              Root STP MST instance 2 — Bloc 2
+!
+! Connexions :
+!   Gi0/0  -> CORE-1 Gi1/0   (L3 /31 uplink, 10.0.40.6/31)
+!   Gi0/1  -> CORE-2 Gi1/0   (L3 /31 uplink, 10.0.40.14/31)
+!   Gi0/2  -> DIST-3 Gi0/2   (peer-link Po1 membre 1)
+!   Gi0/3  -> DIST-3 Gi0/3   (peer-link Po1 membre 2)
+!   Gi1/0  -> ACC-3  Gi1/0   (trunk downlink)
+!   Gi1/1  -> ACC-4  Gi1/0   (trunk downlink)
+!
+! Adressage :
+!   Loopback0  : 10.0.0.34/32  (router-id OSPF)
+!   Vlan999    : 10.254.0.34/24  (VIP Bloc2 = 10.254.0.3)
+!   SVIs Bloc2 : DIST-3 = .2, DIST-4 = .3, VIP = .1
+!
+! SECURITE : changer les mots de passe avant deploiement reel.
+! ============================================================
+
+version 15.2
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+no service pad
+!
+hostname DIST-4
+!
+ip domain-name homelab.local
+ip routing
+!
+enable secret HomeLabSecret!
+!
+username admin privilege 15 secret HomeLabSecret!
+!
+aaa new-model
+aaa authentication login default local
+aaa authorization exec default local
+!
+ip ssh version 2
+ip ssh time-out 60
+ip ssh authentication-retries 3
+!
+! ============================================================
+! VLAN DATABASE
+! ============================================================
+vlan 10
+ name USERS
+vlan 20
+ name VOICE
+vlan 30
+ name IOT
+vlan 40
+ name WIFI-CORP
+vlan 41
+ name WIFI-GUEST
+vlan 42
+ name WIFI-BYOD
+vlan 50
+ name PRINTERS
+vlan 90
+ name LAB-DEV
+vlan 999
+ name MGMT-INFRA
+!
+! ============================================================
+! SPANNING TREE — MSTP
+! DIST-4 : root primaire instance 2, secondaire instance 1
+! ============================================================
+spanning-tree mode mst
+spanning-tree mst configuration
+ name HOMELAB
+ revision 1
+ instance 1 vlan 10,30,40,42,50
+ instance 2 vlan 20,41,90,999
+!
+spanning-tree mst 1 priority 8192
+spanning-tree mst 2 priority 4096
+!
+! ============================================================
+! PEER-LINK LACP — Port-Channel1 vers DIST-3
+! ============================================================
+interface Port-channel1
+ description PEER-LINK-DIST-3
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,41,42,50,90,999
+ switchport nonegotiate
+!
+interface GigabitEthernet0/2
+ description PEER-LINK-DIST-3-MBR1
+ channel-group 1 mode active
+ no shutdown
+!
+interface GigabitEthernet0/3
+ description PEER-LINK-DIST-3-MBR2
+ channel-group 1 mode active
+ no shutdown
+!
+! ============================================================
+! INTERFACES L3 — UPLINKS vers Core
+! ============================================================
+interface GigabitEthernet0/0
+ description UPLINK-CORE-1
+ no switchport
+ ip address 10.0.40.6 255.255.255.254
+ ip ospf network point-to-point
+ ip ospf cost 10
+ ip ospf message-digest-key 1 md5 HomeLab-OSPF
+ no ip proxy-arp
+ lldp transmit
+ lldp receive
+ cdp enable
+ no shutdown
+!
+interface GigabitEthernet0/1
+ description UPLINK-CORE-2
+ no switchport
+ ip address 10.0.40.14 255.255.255.254
+ ip ospf network point-to-point
+ ip ospf cost 10
+ ip ospf message-digest-key 1 md5 HomeLab-OSPF
+ no ip proxy-arp
+ lldp transmit
+ lldp receive
+ cdp enable
+ no shutdown
+!
+! ============================================================
+! INTERFACES TRUNK — DOWNLINKS vers Access
+! Root Guard sur tous les downlinks.
+! ============================================================
+interface GigabitEthernet1/0
+ description DOWNLINK-ACC-3
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,41,42,50,90,999
+ switchport nonegotiate
+ spanning-tree guard root
+ lldp transmit
+ lldp receive
+ cdp enable
+ no shutdown
+!
+interface GigabitEthernet1/1
+ description DOWNLINK-ACC-4
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,41,42,50,90,999
+ switchport nonegotiate
+ spanning-tree guard root
+ lldp transmit
+ lldp receive
+ cdp enable
+ no shutdown
+!
+! ============================================================
+! LOOPBACK — Router-ID OSPF
+! ============================================================
+interface Loopback0
+ description ROUTER-ID-OSPF
+ ip address 10.0.0.34 255.255.255.255
+ no shutdown
+!
+! ============================================================
+! SVIs — VLAN utilisateurs Bloc 2 (subnets 10.1.1XX.0/24)
+! DIST-4 master inst2 (prio 120), backup inst1 (prio 100)
+! Convention : VIP = .1, DIST-3 = .2, DIST-4 = .3
+! DHCP relay -> 10.2.103.10 (ISC Kea Phase 2, placeholder)
+! ============================================================
+interface Vlan10
+ description USERS-BLOC2
+ ip address 10.1.110.3 255.255.255.0
+ ip helper-address 10.2.103.10
+ no ip proxy-arp
+ no ip directed-broadcast
+ standby version 2
+ standby 10 ip 10.1.110.1
+ standby 10 priority 100
+ standby 10 preempt delay minimum 30
+ standby 10 authentication md5 key-string HomeLab-VRRP
+ standby 10 timers 1 3
+ no shutdown
+!
+interface Vlan20
+ description VOICE-BLOC2
+ ip address 10.1.120.3 255.255.255.0
+ ip helper-address 10.2.103.10
+ no ip proxy-arp
+ no ip directed-broadcast
+ standby version 2
+ standby 20 ip 10.1.120.1
+ standby 20 priority 120
+ standby 20 preempt delay minimum 30
+ standby 20 authentication md5 key-string HomeLab-VRRP
+ standby 20 timers 1 3
+ standby 20 track 1 decrement 30
+ standby 20 track 2 decrement 30
+ no shutdown
+!
+interface Vlan30
+ description IOT-BLOC2
+ ip address 10.1.130.3 255.255.255.0
+ ip helper-address 10.2.103.10
+ no ip proxy-arp
+ no ip directed-broadcast
+ standby version 2
+ standby 30 ip 10.1.130.1
+ standby 30 priority 100
+ standby 30 preempt delay minimum 30
+ standby 30 authentication md5 key-string HomeLab-VRRP
+ standby 30 timers 1 3
+ no shutdown
+!
+interface Vlan40
+ description WIFI-CORP-BLOC2
+ ip address 10.1.140.3 255.255.255.0
+ ip helper-address 10.2.103.10
+ no ip proxy-arp
+ no ip directed-broadcast
+ standby version 2
+ standby 40 ip 10.1.140.1
+ standby 40 priority 100
+ standby 40 preempt delay minimum 30
+ standby 40 authentication md5 key-string HomeLab-VRRP
+ standby 40 timers 1 3
+ no shutdown
+!
+interface Vlan41
+ description WIFI-GUEST-BLOC2
+ ip address 10.1.141.3 255.255.255.0
+ ip helper-address 10.2.103.10
+ no ip proxy-arp
+ no ip directed-broadcast
+ standby version 2
+ standby 41 ip 10.1.141.1
+ standby 41 priority 120
+ standby 41 preempt delay minimum 30
+ standby 41 authentication md5 key-string HomeLab-VRRP
+ standby 41 timers 1 3
+ standby 41 track 1 decrement 30
+ standby 41 track 2 decrement 30
+ no shutdown
+!
+interface Vlan42
+ description WIFI-BYOD-BLOC2
+ ip address 10.1.142.3 255.255.255.0
+ ip helper-address 10.2.103.10
+ no ip proxy-arp
+ no ip directed-broadcast
+ standby version 2
+ standby 42 ip 10.1.142.1
+ standby 42 priority 100
+ standby 42 preempt delay minimum 30
+ standby 42 authentication md5 key-string HomeLab-VRRP
+ standby 42 timers 1 3
+ no shutdown
+!
+interface Vlan50
+ description PRINTERS-BLOC2
+ ip address 10.1.150.3 255.255.255.0
+ ip helper-address 10.2.103.10
+ no ip proxy-arp
+ no ip directed-broadcast
+ standby version 2
+ standby 50 ip 10.1.150.1
+ standby 50 priority 100
+ standby 50 preempt delay minimum 30
+ standby 50 authentication md5 key-string HomeLab-VRRP
+ standby 50 timers 1 3
+ no shutdown
+!
+interface Vlan90
+ description LAB-DEV-BLOC2
+ ip address 10.1.190.3 255.255.255.0
+ ip helper-address 10.2.103.10
+ no ip proxy-arp
+ no ip directed-broadcast
+ standby version 2
+ standby 90 ip 10.1.190.1
+ standby 90 priority 120
+ standby 90 preempt delay minimum 30
+ standby 90 authentication md5 key-string HomeLab-VRRP
+ standby 90 timers 1 3
+ standby 90 track 1 decrement 30
+ standby 90 track 2 decrement 30
+ no shutdown
+!
+interface Vlan999
+ description MGMT-INBAND
+ ip address 10.254.0.34 255.255.255.0
+ no ip proxy-arp
+ standby version 2
+ standby 199 ip 10.254.0.3
+ standby 199 priority 120
+ standby 199 preempt delay minimum 30
+ standby 199 authentication md5 key-string HomeLab-VRRP
+ standby 199 timers 1 3
+ standby 199 track 1 decrement 30
+ standby 199 track 2 decrement 30
+ no shutdown
+!
+! ============================================================
+! TRACK OBJECTS — uplinks Core
+! decrement 30 : 120 - 30 = 90 < 100 de DIST-3 → DIST-3 devient master
+! ============================================================
+track 1 interface GigabitEthernet0/0 line-protocol
+!
+track 2 interface GigabitEthernet0/1 line-protocol
+!
+! ============================================================
+! OSPF area 0
+! Passive par defaut. Actif sur uplinks Core uniquement.
+! ============================================================
+router ospf 1
+ router-id 10.0.0.34
+ area 0 authentication message-digest
+ passive-interface default
+ no passive-interface GigabitEthernet0/0
+ no passive-interface GigabitEthernet0/1
+ network 10.0.0.34 0.0.0.0 area 0
+ network 10.0.40.6 0.0.0.1 area 0
+ network 10.0.40.14 0.0.0.1 area 0
+ network 10.1.110.0 0.0.0.255 area 0
+ network 10.1.120.0 0.0.0.255 area 0
+ network 10.1.130.0 0.0.0.255 area 0
+ network 10.1.140.0 0.0.0.255 area 0
+ network 10.1.141.0 0.0.0.255 area 0
+ network 10.1.142.0 0.0.0.255 area 0
+ network 10.1.150.0 0.0.0.255 area 0
+ network 10.1.190.0 0.0.0.255 area 0
+ network 10.254.0.0 0.0.0.255 area 0
+!
+! ============================================================
+! LLDP
+! ============================================================
+lldp run
+!
+! ============================================================
+! LIGNES VTY et CONSOLE
+! ============================================================
+line con 0
+ logging synchronous
+ exec-timeout 5 0
+!
+line vty 0 15
+ transport input ssh
+ login authentication default
+ exec-timeout 10 0
+ logging synchronous
+!
+! ============================================================
+! NTP / SYSLOG / SNMP
+! Source = Loopback0 (reachable via OSPF depuis partout)
+! ============================================================
+ntp server 192.168.122.1 prefer
+clock timezone CET 1
+clock summer-time CEST recurring last Sun Mar 2:00 last Sun Oct 3:00
+!
+logging on
+logging buffered 16384 informational
+logging source-interface Loopback0
+! logging host 10.4.306.10 transport udp port 514
+!
+snmp-server location GNS3-HomeLab-DIST-4
+snmp-server contact admin@homelab.local
+!
+banner motd ^
+*******************************************************************************
+*  Acces reserve aux personnes habilitees - HomeLab Infrastructure            *
+*  DIST-4 | Bloc 2 | Switch Distribution LAN                                  *
+*  VRRP Master : inst2 (VLAN 20,41,90,999) | STP Root : inst2                *
+*******************************************************************************
+^
+!
+end

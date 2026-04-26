@@ -12,16 +12,16 @@ Ce dossier contient les configurations CLI de chaque équipement de la maquette 
 
 | Équipement | Zone | Fichier | Base | L2/L3 | Proto | Sécurité | État |
 |---|---|---|:---:|:---:|:---:|:---:|---|
-| ACC-1 | LAN | `lan/ACC-1.txt` | ⬜ | ⬜ | ⬜ | ⬜ | À faire |
-| ACC-2 | LAN | `lan/ACC-2.txt` | ⬜ | ⬜ | ⬜ | ⬜ | À faire |
-| ACC-3 | LAN | `lan/ACC-3.txt` | ⬜ | ⬜ | ⬜ | ⬜ | À faire |
-| ACC-4 | LAN | `lan/ACC-4.txt` | ⬜ | ⬜ | ⬜ | ⬜ | À faire |
-| DIST-1 | LAN | `lan/DIST-1.txt` | ⬜ | ⬜ | ⬜ | ⬜ | À faire |
-| DIST-2 | LAN | `lan/DIST-2.txt` | ⬜ | ⬜ | ⬜ | ⬜ | À faire |
-| DIST-3 | LAN | `lan/DIST-3.txt` | ⬜ | ⬜ | ⬜ | ⬜ | À faire |
-| DIST-4 | LAN | `lan/DIST-4.txt` | ⬜ | ⬜ | ⬜ | ⬜ | À faire |
-| CORE-1 | LAN | `lan/CORE-1.txt` | ⬜ | ⬜ | ⬜ | ⬜ | À faire |
-| CORE-2 | LAN | `lan/CORE-2.txt` | ⬜ | ⬜ | ⬜ | ⬜ | À faire |
+| ACC-1 | LAN | `lan/ACC-1.txt` | ✅ | ✅ | ✅ | ✅ | Généré — à valider en lab |
+| ACC-2 | LAN | `lan/ACC-2.txt` | ✅ | ✅ | ✅ | ✅ | Généré — à valider en lab |
+| ACC-3 | LAN | `lan/ACC-3.txt` | ✅ | ✅ | ✅ | ✅ | Généré — à valider en lab |
+| ACC-4 | LAN | `lan/ACC-4.txt` | ✅ | ✅ | ✅ | ✅ | Généré — à valider en lab |
+| DIST-1 | LAN | `lan/DIST-1.txt` | ✅ | ✅ | ✅ | ✅ | Généré — à valider en lab |
+| DIST-2 | LAN | `lan/DIST-2.txt` | ✅ | ✅ | ✅ | ✅ | Généré — à valider en lab |
+| DIST-3 | LAN | `lan/DIST-3.txt` | ✅ | ✅ | ✅ | ✅ | Généré — à valider en lab |
+| DIST-4 | LAN | `lan/DIST-4.txt` | ✅ | ✅ | ✅ | ✅ | Généré — à valider en lab |
+| CORE-1 | LAN | `lan/CORE-1.txt` | ✅ | ✅ | ✅ | ✅ | Généré — à valider en lab |
+| CORE-2 | LAN | `lan/CORE-2.txt` | ✅ | ✅ | ✅ | ✅ | Généré — à valider en lab |
 | SPINE-1 | DC | `dc/SPINE-1.txt` | ⬜ | ⬜ | ⬜ | ⬜ | À faire |
 | SPINE-2 | DC | `dc/SPINE-2.txt` | ⬜ | ⬜ | ⬜ | ⬜ | À faire |
 | LEAF-1 | DC | `dc/LEAF-1.txt` | ⬜ | ⬜ | ⬜ | ⬜ | À faire |
