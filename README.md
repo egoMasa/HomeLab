@@ -14,11 +14,45 @@
 	9. Plan VLAN, VNI et VRF
 	10. Cas particulier des flux datacenter (intra-VRF vs inter-VRF)
 	11. Synthèse de l'architecture retenue
-4. Déploiement et configuration des services
+4. Configuration des équipements
+	1. Méthodologie et ordre de déploiement
+	2. Switches Access LAN (ACC-1 à ACC-4)
+		1. Configuration de base
+		2. Protocole de découverte voisin : CDP et LLDP
+		3. Base de données VLAN
+		4. Spanning Tree Protocol (MSTP)
+		5. Interfaces access et trunk
+		6. PortFast, BPDU Guard et Root Guard
+		7. DTP, native VLAN et VLANs allowed
+		8. DHCP Snooping
+		9. Dynamic ARP Inspection (DAI)
+		10. Storm Control
+		11. Port Security
+		12. 802.1X et MAB (authentification par port)
+		13. Interface de management et supervision
+	3. Switches Distribution LAN (DIST-1 à DIST-4)
+		1. Activation du routage IP
+		2. Spanning Tree — root primaire et secondaire
+		3. Agrégation de liens : LACP
+		4. Interfaces trunk vers les Access (downlinks)
+		5. Interfaces L3 routées vers les Core (uplinks)
+		6. SVI utilisateurs
+		7. Redondance de passerelle : VRRP
+		8. DHCP Relay
+		9. OSPF area 0
+		10. Supervision
+		11. Synthèse des interfaces par équipement (bloc 1)
+	4. Switches Core LAN (CORE-1, CORE-2)
+	5. Spine DC (SPINE-1, SPINE-2)
+	6. Leaf DC (LEAF-1, LEAF-2, LEAF-3)
+	7. Hyperviseurs Proxmox (HV-1, HV-2, HV-3)
+	8. Firewall pfSense HA (FW-1, FW-2)
+	9. Scénarios de validation et tests
+5. Déploiement et configuration des services
 	1. Service 1 : Notion/Concept, étude de marché, sélection, configuration, sécurisation & administration
 	2. Service 2 : idem
 	3. ...
-5. Mise en conformité des SI
+6. Mise en conformité des SI
 
 ---
 
@@ -1337,5 +1371,1466 @@ Les étapes restantes pour clore la Phase 1 :
 | Configuration des HV Proxmox (bridges, cluster, QDevice) | À faire |
 | Scénarios de test (convergence OSPF, bascule CARP, apprentissage EVPN, U-turn inter-VRF) | À faire |
 
-Une fois la Phase 1 validée, on enchaînera sur la **Phase 2** (déploiement des services applicatifs selon le canevas : notion → état du marché → sélection → dimensionnement → installation → sécurisation → administration → intégration). La **Phase 3** (mise en conformité SI : référentiels, cartographie des risques, PCA/PRA, gouvernance) interviendra en clôture.
+Une fois les équipements configurés et la maquette validée (Section 4), on enchaînera sur la **Section 5** (déploiement des services applicatifs selon le canevas : notion → état du marché → sélection → dimensionnement → installation → sécurisation → administration → intégration). La **Section 6** (mise en conformité SI : référentiels, cartographie des risques, PCA/PRA, gouvernance) interviendra en clôture.
+
+# 4) Configuration des équipements
+
+Cette section documente la configuration CLI complète de chaque équipement de la maquette. Elle est le pont entre l'architecture décrite en Section 3 et les services déployés en Section 5 : on passe de la décision à l'implémentation. Pour chaque équipement, on suit le même canevas : rappel du rôle et des interfaces concernées, explication des choix de configuration, configuration CLI annotée, et procédure de vérification.
+
+Les fichiers de configuration bruts (output de `show running-config`) sont archivés dans le dossier `configs/` du repository, organisé par zone. La présente section en est la documentation explicative.
+
+L'ordre de déploiement retenu et sa justification sont détaillés dans le fichier `ROADMAP.md`. En résumé : LAN (Access → Distribution → Core) en premier, puis DC (underlay OSPF → overlay BGP EVPN) en second, puis Proxmox, et enfin pfSense HA qui connecte les deux îlots OSPF en dernier étape.
+
+## 4.1) Méthodologie et ordre de déploiement
+
+*À rédiger — voir `ROADMAP.md` pour le détail complet.*
+
+## 4.2) Switches Access LAN (ACC-1 à ACC-4)
+
+Les Access switches sont la couche d'entrée du réseau utilisateur. Leur rôle est strictement L2 : ils connectent les endpoints, portent les VLAN, appliquent la politique de sécurité de port, et remontent vers les Distribution via des trunks 802.1Q. Ils ne font aucun routage. Leur configuration se lit donc comme une superposition de couches, du plus fondamental au plus défensif.
+
+Le bloc 1 couvre **ACC-1** et **ACC-2**, raccordés à DIST-1 et DIST-2. ACC-1 héberge W-CLIENT (Windows 11, VLAN 10) et PC1 (VPCS). ACC-2 héberge L-CLIENT (Xubuntu, VLAN 10) et PC4 (VPCS). ACC-3 et ACC-4 (bloc 2) suivent exactement le même schéma avec DIST-3/DIST-4 et un offset `+100` sur le 3e octet des subnets.
+
+La pile de configuration est abordée dans l'ordre suivant, du plus fondamental au plus avancé :
+
+```
+1.  Configuration de base universelle       (hostname, SSH, bannière, AAA local)
+2.  Base de données VLAN                    (création + nommage)
+3.  Spanning Tree                           (mode MSTP, instances)
+4.  Interfaces access (endpoints)           (VLAN, voice VLAN, descriptions)
+5.  PortFast                                (convergence immédiate sur ports terminaux)
+6.  BPDU Guard                              (protection contre switchs parasites)
+7.  Interfaces trunk (uplinks Distribution) (DTP off, VLANs allowed, native VLAN)
+8.  Root Guard sur uplinks                  (protection du root bridge)
+9.  DHCP Snooping                           (filtrage des DHCP rouges + binding table)
+10. Dynamic ARP Inspection                  (protection anti-ARP spoofing)
+11. Storm Control                           (limitation des tempêtes broadcast/unknown)
+12. Port Security                           (restriction MAC par port)
+13. 802.1X + MAB                            (authentification par port via RADIUS)
+14. Interface de management                 (VLAN 999 + gateway)
+15. Supervision                             (NTP, Syslog, SNMPv3)
+```
+
+### 4.2.1) Configuration de base
+
+**Concept**
+
+La configuration de base sécurise le plan d'administration avant toute config fonctionnelle. Un équipement qui boot sans elle est accessible en Telnet en clair, sans authentification sérieuse, depuis n'importe quel port actif. C'est un vecteur d'attaque trivial.
+
+**Protocole d'accès distant : Telnet vs SSH**
+
+| Critère | Telnet | SSH v1 | SSH v2 |
+|---|---|---|---|
+| Chiffrement | Aucun (texte clair) | RC4/DES (vulnérable) | AES/ChaCha20 (robuste) |
+| Authentification | Mot de passe en clair | Faible (session hijacking possible) | Robuste (clé RSA/ECDSA) |
+| Standard | RFC 854 (1983) | Obsolète — vulnérabilités connues (CVE-2001-0361) | RFC 4251 (2006) |
+| Usage | Jamais en production | Jamais | Oui, exclusivement |
+
+**Hashage des mots de passe sur IOS**
+
+IOS supporte plusieurs niveaux de protection pour les mots de passe stockés dans la config :
+
+| Type | Algorithme | Force | Commande |
+|---|---|---|---|
+| 0 | Texte clair | Aucune | `password <pwd>` |
+| 7 | XOR réversible | Faible (déchiffrable en quelques secondes) | `service password-encryption` |
+| 5 | MD5 | Acceptable mais déprécié | `secret 5 <hash>` |
+| 8 | PBKDF2-SHA256 | Bonne | `algorithm-type sha256 secret` |
+| 9 | Scrypt | Très bonne — recommandé | `algorithm-type scrypt secret` |
+
+**Configuration étape par étape**
+
+Étape 1 — Identité de l'équipement
+
+```
+hostname ACC-1
+ip domain-name homelab.local
+```
+
+- `hostname` : obligatoire. Fixe le prompt CLI, le nom dans les outils de supervision, et est requis pour nommer la clé RSA SSH.
+- `ip domain-name` : obligatoire pour SSH. La commande `crypto key generate rsa` échoue sans domaine configuré.
+
+Étape 2 — Clé RSA pour SSH
+
+```
+crypto key generate rsa modulus 4096
+```
+
+- `modulus 4096` : obligatoire. Taille de la clé en bits. Minimum acceptable : 2048. En dessous, la clé est considérée faible (NIST SP 800-57). 4096 bits est recommandé.
+
+Étape 3 — SSH v2 exclusif
+
+```
+ip ssh version 2
+ip ssh time-out 60
+ip ssh authentication-retries 3
+```
+
+- `ip ssh version 2` : obligatoire. Interdit SSHv1.
+- `ip ssh time-out 60` : optionnel (défaut : 120s). Déconnecte une session non-authentifiée après 60 secondes.
+- `ip ssh authentication-retries 3` : optionnel (défaut : 3). Nombre max de tentatives avant déconnexion.
+
+Étape 4 — AAA et utilisateurs locaux
+
+```
+aaa new-model
+aaa authentication login default local
+aaa authorization exec default local
+
+username admin privilege 15 algorithm-type scrypt secret <password>
+enable algorithm-type scrypt secret <enable-password>
+```
+
+- `aaa new-model` : obligatoire pour activer le framework AAA (changement de comportement des lignes VTY).
+- `username admin privilege 15` : obligatoire. Privilege 15 = accès direct au mode privileged sans `enable`.
+- `algorithm-type scrypt` : optionnel mais fortement recommandé (génère un hash type 9). Sans cette option, IOS génère un hash type 5 (MD5).
+
+Étape 5 — Lignes VTY et console
+
+```
+line vty 0 15
+ transport input ssh
+ login authentication default
+ exec-timeout 10 0
+ logging synchronous
+
+line con 0
+ logging synchronous
+ exec-timeout 5 0
+```
+
+- `transport input ssh` : obligatoire. Bloque Telnet sur les VTY.
+- `exec-timeout 10 0` : optionnel (défaut : 10 minutes). Format : minutes secondes. `0 0` = jamais (déconseillé).
+- `logging synchronous` : optionnel mais très recommandé. Évite que les messages syslog coupent la saisie CLI.
+
+Étape 6 — Bannière et désactivation services inutiles
+
+```
+banner motd ^
+*******************************************************************************
+*  Acces autorise aux personnes habilitees uniquement.                        *
+*  Toute connexion non autorisee est susceptible de poursuites.               *
+*  ACC-1 - HomeLab Infrastructure                                             *
+*******************************************************************************
+^
+
+service password-encryption
+service timestamps log datetime msec localtime show-timezone
+service timestamps debug datetime msec localtime show-timezone
+no service pad
+no ip http server
+no ip http secure-server
+no ip source-route
+no ip bootp server
+```
+
+- `banner motd` : obligatoire en contexte professionnel. Valeur légale en cas de contentieux.
+- `service password-encryption` : optionnel. Applique le type 7 aux mots de passe en clair restants. Pas robuste, mais évite la lecture directe d'un dump de config.
+- `service timestamps log datetime msec` : optionnel mais indispensable en pratique. Horodate les logs à la milliseconde — essentiel pour corréler des événements entre équipements.
+
+**Vérification**
+
+```
+show ip ssh                              ! version SSH active et paramètres
+show running-config | section line vty  ! vérifier transport input ssh
+show running-config | section username  ! vérifier le hash du mot de passe
+```
+
+### 4.2.2) Protocole de découverte voisin : CDP et LLDP
+
+**Concept**
+
+Les protocoles de découverte voisin permettent à un équipement réseau d'annoncer son identité, ses capacités et ses interfaces à ses voisins directement connectés, et d'en apprendre autant en retour. Ces informations sont utilisées par les outils de supervision pour construire automatiquement la topologie réseau (LibreNMS, Zabbix, Netdisco), et par les ingénieurs pour identifier quel switch est à l'autre bout d'un câble sans se déplacer physiquement.
+
+Ces annonces transitent sur chaque interface L2 sous forme de trames multicast à destination des voisins directs uniquement. Elles ne traversent pas les routeurs.
+
+**Solutions disponibles**
+
+| Critère | CDP (Cisco Discovery Protocol) | LLDP (Link Layer Discovery Protocol) |
+|---|---|---|
+| Origine | Cisco, propriétaire | IEEE 802.1AB, standard ouvert |
+| Compatibilité | Équipements Cisco uniquement | Tous constructeurs (Cisco, Arista, Juniper, HP, etc.) |
+| Informations échangées | Hostname, IP mgmt, IOS version, plateforme, VLAN natif, duplex, PoE | Hostname, IP mgmt, capacités, description port, VLAN, PoE (via LLDP-MED) |
+| Voice VLAN automatique | Oui (annonce le Voice VLAN aux téléphones IP Cisco) | Oui via LLDP-MED (Multi-Endpoint Discovery) |
+| Activation par défaut sur IOS | Oui (`cdp run`) | Non (à activer explicitement) |
+| Sécurité | Infos sensibles en clair (version IOS, topologie) | Idem |
+
+**Choix retenu : LLDP en priorité, CDP conservé sur les liens Cisco-Cisco**
+
+LLDP est le standard IEEE 802.1AB, interopérable avec tous les constructeurs. Dans cette infrastructure qui mêle Cisco (LAN), Arista (DC), pfSense (FW) et Proxmox (HV), CDP est aveugle aux équipements non-Cisco : un Spine Arista ou un hyperviseur Proxmox n'envoient pas de CDP. LLDP est compris par tous.
+
+CDP est conservé uniquement sur les liens inter-Cisco (Core ↔ Distribution ↔ Access) pour bénéficier de l'annonce automatique du Voice VLAN aux téléphones IP Cisco (qui écoutent CDP). Sur les ports endpoint et sur les équipements Arista/pfSense, CDP est désactivé.
+
+**Configuration**
+
+```
+! Activation globale de LLDP (désactivé par défaut sur IOS)
+lldp run
+
+! Sur les ports endpoint (utilisateurs) : LLDP uniquement, CDP désactivé
+interface GigabitEthernetX/Y
+ lldp transmit
+ lldp receive
+ no cdp enable
+
+! Sur les uplinks inter-switches Cisco : LLDP + CDP conservé
+interface GigabitEthernetX/Y
+ lldp transmit
+ lldp receive
+ cdp enable
+```
+
+- `lldp run` : obligatoire pour activer LLDP globalement.
+- `lldp transmit` / `lldp receive` : optionnel si LLDP est actif globalement (activé sur toutes les interfaces par défaut après `lldp run`). Utile pour contrôler port par port.
+- `no cdp enable` : obligatoire sur les ports utilisateurs. Évite de divulguer l'IOS version et la topologie aux endpoints.
+
+**Vérification**
+
+```
+show lldp neighbors
+show lldp neighbors detail
+show cdp neighbors
+```
+
+### 4.2.3) Base de données VLAN
+
+**Concept**
+
+Un VLAN (Virtual LAN) est un domaine de broadcast virtuel créé logiquement à l'intérieur d'un switch. Il permet d'isoler des groupes d'équipements comme s'ils étaient sur des switches physiques séparés, sans câblage dédié. Un port configuré sur un VLAN qui n'existe pas dans la base de données reste en état `inactive` et ne transfère pas de trames.
+
+Avant toute configuration d'interface, les VLAN doivent être créés et nommés dans la VLAN database. Un VLAN non créé mais référencé sur un port est inactif (état `inactive`) et le port n'envoie/reçoit pas de trames pour ce VLAN.
+
+Les VLAN du bloc 1 à créer sur ACC-1 et ACC-2 :
+
+| VLAN | Nom IOS | Rôle |
+|---:|---|---|
+| 10 | USERS | Postes bureautiques |
+| 20 | VOICE | Téléphonie IP |
+| 30 | IOT | Caméras, capteurs |
+| 40 | WIFI-CORP | Wi-Fi salariés WPA3-Enterprise |
+| 41 | WIFI-GUEST | Wi-Fi invités captif |
+| 42 | WIFI-BYOD | Téléphones/tablettes persos |
+| 50 | PRINTERS | Imprimantes et MFP |
+| 90 | LAB-DEV | Postes développement/test |
+| 999 | MGMT-INFRA | Management in-band équipements |
+
+**VLAN 1.** Le VLAN 1 est le VLAN natif par défaut sur Cisco IOS. Il ne doit pas être utilisé pour du trafic applicatif pour deux raisons. D'abord, c'est une cible historique des attaques VLAN hopping (attaque "double-tagging" qui exploite le fait que le VLAN 1 est le natif sur de nombreux équipements). Ensuite, certains protocoles de contrôle Cisco (CDP, VTP, STP, PAgP, LACP) utilisent le VLAN 1 par défaut, ce qui peut provoquer des comportements inattendus si du trafic utilisateur y circule. On laisse le VLAN 1 dans la base de données mais on n'y assigne aucun port, on ne lui attribue aucune SVI, et on s'assure qu'il n'est pas dans les allowed VLANs des trunks.
+
+### 4.2.4) Spanning Tree Protocol
+
+**Concept**
+
+Un réseau L2 avec des liens redondants crée des boucles. Sans protection, une trame broadcast circule indéfiniment entre les switches en se dupliquant à chaque passage : c'est une tempête broadcast, et elle peut rendre un réseau inutilisable en quelques secondes. Le Spanning Tree Protocol résout ce problème en désactivant sélectivement certains liens pour créer une topologie sans boucle, tout en conservant ces liens comme chemins de secours activables en cas de panne.
+
+Le mécanisme repose sur l'élection d'un **root bridge** (le switch au centre de l'arbre logique), puis le calcul du chemin le plus court depuis chaque switch vers ce root. Les ports qui créeraient des boucles passent en état **blocking** (ils reçoivent les trames de contrôle STP mais ne transmettent pas de trafic). Quand un lien actif tombe, les ports bloqués peuvent être réactivés automatiquement.
+
+**Solutions disponibles**
+
+| Protocole | Standard | Convergence | Multi-instance | Par VLAN | Notes |
+|---|---|---|---|---|---|
+| STP (802.1D) | IEEE 1990 | Lente (30-50s) | Non | Non | Obsolète, ne plus utiliser |
+| RSTP (802.1w) | IEEE 2001 | Rapide (1-6s) | Non | Non | Base moderne, mais un seul arbre pour tous les VLAN |
+| PVST+ | Cisco propriétaire | Lente | Oui (1 par VLAN) | Oui | 1 arbre STP par VLAN = surcharge CPU avec beaucoup de VLAN |
+| Rapid PVST+ | Cisco propriétaire (basé 802.1w) | Rapide | Oui (1 par VLAN) | Oui | Mode par défaut sur IOS récent, propriétaire |
+| MSTP (802.1s) | IEEE 2002 | Rapide | Oui (VLAN groupés) | Via instances | Standard ouvert, le seul choix rationnel |
+
+STP 802.1D avec sa convergence de 30-50 secondes est inacceptable aujourd'hui. RSTP (802.1w) réduit cela à 1-6 secondes grâce à une négociation directe entre switches voisins, mais ne propose qu'un seul arbre pour tous les VLAN — impossible d'équilibrer la charge entre deux Distribution.
+
+PVST+ et Rapid PVST+ sont les réponses Cisco à ce manque : un arbre STP indépendant par VLAN. On peut avoir DIST-1 root sur le VLAN 10 et DIST-2 root sur le VLAN 20, équilibrant le trafic. Mais ce modèle génère autant de processus STP que de VLAN : avec 100 VLAN, 100 arbres tournent simultanément.
+
+MSTP (802.1s) apporte le même équilibrage sans la surcharge : on groupe les VLAN dans des instances (ex. instance 1 = VLAN 10+30+40, instance 2 = VLAN 20+41+90). 2 ou 3 instances au lieu de N. C'est un standard IEEE interopérable avec tous les constructeurs.
+
+**Choix retenu : MSTP (IEEE 802.1s)**
+
+MSTP est le standard ouvert. Il est supporté par Cisco, Arista, Juniper, HP, et tous les équipements réseau modernes. Dans une infrastructure qui évoluera probablement vers du matériel multi-constructeur, PVST+ serait un frein. De plus, MSTP permet l'équilibrage de charge entre DIST-1 et DIST-2 via des instances distinctes, en cohérence avec les priorités VRRP.
+
+**Configuration MSTP sur les Access**
+
+Étape 1 — Activer le mode MST
+
+```
+spanning-tree mode mst
+```
+
+- Obligatoire. Change le mode STP de Rapid PVST+ (défaut IOS) vers MST. Ce changement redémarre le processus STP — à faire en maintenance ou pendant le déploiement initial.
+
+Étape 2 — Déclarer la région MST
+
+```
+spanning-tree mst configuration
+ name HOMELAB
+ revision 1
+ instance 1 vlan 10,30,40,42,50
+ instance 2 vlan 20,41,90,999
+ exit
+```
+
+- `name HOMELAB` : obligatoire. Nom de la région MST. Deux switches ne forment la même région MST que s'ils ont exactement le même nom, la même révision ET le même mapping VLAN→instance. Une différence sur l'un de ces trois paramètres les place dans des régions séparées.
+- `revision 1` : obligatoire. Numéro de version de la configuration. À incrémenter à chaque modification du mapping pour forcer la re-convergence.
+- `instance X vlan Y,Z` : obligatoire. Mappe les VLAN aux instances. Les VLAN non mappés tombent dans l'instance 0 (CIST — Common Internal Spanning Tree), qui est l'instance par défaut gérée globalement. L'instance 0 ne doit pas porter de trafic utilisateur dans ce design.
+
+La répartition des instances est cohérente avec les priorités VRRP (voir section 4.3.2) : instance 1 regroupe les VLAN dont DIST-1 sera VRRP master, instance 2 ceux dont DIST-2 sera master. Ainsi le chemin STP et le chemin VRRP sont identiques pour chaque VLAN : pas d'asymétrie.
+
+Étape 3 — Priorité sur les Access
+
+Les Access ne nécessitent pas de modification de priorité. Leur priorité par défaut (32768) est bien supérieure aux priorités configurées sur les Distribution (4096/8192), donc ils ne peuvent pas devenir root.
+
+**Vérification**
+
+```
+show spanning-tree mst              ! état de toutes les instances MST
+show spanning-tree mst 1            ! détail instance 1 (ports, root, coût)
+show spanning-tree mst configuration ! vérifier name + revision + mapping
+```
+
+### 4.2.5) Interfaces access et trunk
+
+**Concept**
+
+Chaque interface d'un switch IOS peut fonctionner en deux modes fondamentaux. Le **mode access** affecte le port à un seul VLAN : les trames entrent et sortent sans tag 802.1Q. C'est le mode des ports endpoint (PC, imprimante, téléphone IP). Le **mode trunk** porte plusieurs VLAN simultanément via des tags 802.1Q sur chaque trame. C'est le mode des liens inter-switches et des uplinks vers les Distribution.
+
+La description de chaque interface est indispensable en pratique : elle apparaît dans les `show interface`, dans les outils de supervision via SNMP (Zabbix, LibreNMS), et permet d'identifier un port sans consulter le schéma.
+
+**Configuration des ports access (endpoints)**
+
+```
+interface GigabitEthernetX/Y
+ description PC-W-CLIENT
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+ no shutdown
+```
+
+- `description` : optionnel mais indispensable en pratique.
+- `switchport mode access` : obligatoire. Fixe le mode, désactive la négociation DTP implicite.
+- `switchport access vlan 10` : obligatoire. Assigne le VLAN. Sans cette commande, le port est dans le VLAN 1 par défaut.
+- `switchport nonegotiate` : obligatoire. Désactive DTP explicitement.
+
+**Configuration des ports access avec Voice VLAN (PC + téléphone IP)**
+
+```
+interface GigabitEthernetX/Y
+ description PC-TELEPHONIE
+ switchport mode access
+ switchport access vlan 10
+ switchport voice vlan 20
+ switchport nonegotiate
+ no shutdown
+```
+
+- `switchport voice vlan 20` : optionnel (uniquement si un téléphone IP est connecté). Active un mode hybride : données non-taggées sur le VLAN 10, voix taggée sur le VLAN 20. Le switch annonce le Voice VLAN au téléphone via CDP ou LLDP-MED, qui configure automatiquement son interface vocale.
+
+**Configuration des trunks (uplinks vers Distribution)**
+
+```
+interface GigabitEthernetX/Y
+ description UPLINK-DIST-1
+ switchport mode trunk
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,41,42,50,90,999
+ switchport nonegotiate
+ no shutdown
+```
+
+- `switchport mode trunk` : obligatoire.
+- `switchport trunk encapsulation dot1q` : obligatoire sur les modèles qui supportent encore ISL (ancien format Cisco). Sur IOSvL2, dot1q est souvent le seul disponible, mais le spécifier explicitement évite toute ambiguïté.
+- `switchport trunk native vlan 999` : obligatoire pour la sécurité. Change le native VLAN de 1 à 999 (voir protection double-tagging en 4.2.8).
+- `switchport trunk allowed vlan X,Y,Z` : obligatoire. Restreint les VLAN portés. Sans restriction, tous les VLAN existants transitent, y compris ceux d'autres blocs.
+- `switchport nonegotiate` : obligatoire. DTP off même sur un trunk explicite.
+
+**Vérification**
+
+```
+show interfaces GigX/Y switchport    ! mode, VLANs, DTP state
+show interfaces trunk                 ! tous les trunks actifs et leurs VLANs
+show vlan brief                       ! VLANs actifs et ports associés
+```
+
+### 4.2.6) PortFast, BPDU Guard et Root Guard
+
+**Concept**
+
+Ces trois mécanismes sont des extensions de STP qui protègent la topologie L2 contre des problèmes distincts. Ils sont souvent confondus entre eux.
+
+| Mécanisme | Problème ciblé | Comportement | Où configurer |
+|---|---|---|---|
+| **PortFast** | Port trop lent à passer en forwarding (30s par défaut) | Passe directement en forwarding sans listening/learning | Ports access vers endpoints uniquement |
+| **BPDU Guard** | Switch non-autorisé branché sur un port endpoint | Err-disable le port dès réception d'un BPDU | Ports PortFast (access) |
+| **Root Guard** | Équipement qui tente de devenir root bridge | Bloque le port en root-inconsistent si BPDU supérieur reçu | Ports trunk vers équipements "inférieurs" |
+| **BPDU Filter** | BPDU parasites depuis un équipement non-STP | Supprime silencieusement les BPDU entrants et sortants | Usage marginal, à éviter |
+
+**PortFast**
+
+Par défaut STP impose un cycle listening (15s) puis learning (15s) avant de passer un port en forwarding. Ces 30 secondes sont conçues pour détecter les boucles, mais pour un endpoint c'est problématique : un PC qui boot par PXE rate sa fenêtre DHCP Discover, un téléphone IP rate son enregistrement SIP.
+
+PortFast passe le port directement en forwarding à l'activation du lien. C'est sûr uniquement sur les ports terminal — un endpoint ne crée pas de boucle. Sur un port trunk relié à un switch, PortFast serait dangereux car il supprimerait la protection STP sur ce lien.
+
+**BPDU Guard**
+
+Un port PortFast qui reçoit un BPDU signifie que quelqu'un a branché un switch non-autorisé sur un port utilisateur. BPDU Guard réagit immédiatement en err-disablant le port. Ce mécanisme force une intervention manuelle pour réactiver le port, ce qui est voulu : une violation mérite investigation.
+
+L'auto-recovery (`errdisable recovery cause bpduguard` + `errdisable recovery interval 300`) réactive le port après un délai. Pratique mais déconseillé pour la sécurité : un switch temporairement branché serait automatiquement reconnecté.
+
+**Root Guard**
+
+Sur les ports trunk des Distribution vers les Access, Root Guard empêche qu'un switch "inférieur" annonce une priorité très basse et vole le rôle de root bridge. À la différence de BPDU Guard, Root Guard ne fait pas d'err-disable complet : il place le port en root-inconsistent (les BPDU supérieurs sont ignorés, le trafic normal est bloqué sur ce port). Dès que les BPDU supérieurs cessent, le port revient automatiquement à son état normal.
+
+**Configuration**
+
+```
+! Sur chaque port access (endpoints) : PortFast + BPDU Guard
+interface GigabitEthernetX/Y
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+! Sur les uplinks vers Distribution (côté Distribution) : Root Guard
+interface GigabitEthernetX/Y
+ spanning-tree guard root
+```
+
+- `spanning-tree portfast` : obligatoire sur les ports endpoint. Interdit sur les trunks.
+- `spanning-tree bpduguard enable` : obligatoire sur les ports PortFast. Complément indispensable.
+- `spanning-tree guard root` : configuré sur les Distribution (côté downlink vers Access), pas sur les Access eux-mêmes. Le principe : "je refuse que l'équipement en face devienne root."
+
+Activation globale en option (plus rapide mais moins précis) :
+
+```
+spanning-tree portfast default            ! PortFast sur tous les ports non-trunk
+spanning-tree portfast bpduguard default  ! BPDU Guard sur tous les ports PortFast
+```
+
+**Vérification**
+
+```
+show spanning-tree detail | include portfast|bpduguard|rootguard
+show errdisable detect
+show interfaces status err-disabled       ! ports err-disabled (BPDU Guard déclenché)
+```
+
+### 4.2.7) DTP, native VLAN et VLANs allowed
+
+**Concept**
+
+Deux menaces L2 classiques ciblent les trunks 802.1Q : la **négociation DTP abusive** et l'**attaque double-tagging** sur le native VLAN. Les deux permettent à un attaquant de contourner la segmentation VLAN. Ces deux protections sont configurées sur tous les trunks du projet.
+
+**DTP et son désactivation**
+
+DTP (Dynamic Trunking Protocol) est un protocole Cisco propriétaire qui permet à deux ports de négocier automatiquement leur mode (access ou trunk). Par défaut, les ports Cisco sont en `dynamic auto` ou `dynamic desirable`, ce qui signifie qu'ils peuvent passer en trunk si l'autre côté le demande.
+
+L'attaque DTP negotiation : un attaquant envoie des trames DTP forgées depuis son PC pour convaincre le switch de passer son port en trunk. Une fois le port en trunk, il reçoit les trames de tous les VLAN portés. La parade est `switchport nonegotiate` combiné à `switchport mode trunk` ou `switchport mode access` explicite — le mode est fixé, DTP ne peut rien négocier.
+
+**Native VLAN et double-tagging**
+
+Le native VLAN est le VLAN dont les trames transitent sans tag sur un trunk 802.1Q. Par défaut, c'est le VLAN 1. L'attaque double-tagging exploite ce comportement : l'attaquant envoie une trame avec deux tags empilés — un tag VLAN 1 externe et un tag VLAN-cible interne. Le premier switch retire le tag VLAN 1 (natif, non retaggeré en sortie) et retransmet la trame avec uniquement le tag VLAN-cible. Le second switch délivre la trame dans le VLAN-cible sans filtrage.
+
+La protection : changer le native VLAN de tous les trunks vers un VLAN dédié qui ne porte aucun trafic utilisateur (VLAN 999 dans ce projet). Pour que l'attaque fonctionne, l'attaquant devrait connaître et usurper le VLAN 999, qui n'est pas présent sur les ports access utilisateurs.
+
+**VLANs allowed**
+
+Sans restriction explicite, un trunk porte tous les VLAN existants. Un trunk entre ACC-1 et DIST-1 n'a aucune raison de porter des VLAN DC (100-306) ou des VLAN d'un autre bloc. La commande `switchport trunk allowed vlan` restreint exactement ce qui transite.
+
+**La config trunk complète est dans la section 4.2.6** (interfaces). Cette section documente le raisonnement derrière ces paramètres.
+
+### 4.2.8) DHCP Snooping
+
+**Concept**
+
+Sans protection, n'importe quel équipement connecté au réseau peut répondre aux DHCP Discover des clients et distribuer de fausses IP, une fausse passerelle et un faux DNS. C'est une attaque DHCP rogue, triviale à mettre en œuvre. Les victimes envoient tout leur trafic vers l'attaquant qui peut l'inspecter ou le manipuler.
+
+DHCP Snooping introduit une distinction entre ports trusted (autorisés à émettre des réponses DHCP) et untrusted (les réponses DHCP sont bloquées) :
+- **Trusted** : uplinks vers les Distribution, qui relayent les réponses du serveur DHCP légitime.
+- **Untrusted** : tous les ports endpoint par défaut. Les DHCP Offer reçus depuis un port untrusted sont droppés silencieusement.
+
+La **binding table** est le produit secondaire de DHCP Snooping : chaque DHCP Ack légitime est enregistré sous la forme `{IP client, MAC client, port, VLAN, TTL}`. Cette table est la base sur laquelle DAI (section 4.2.10) valide les ARP.
+
+**Configuration**
+
+Étape 1 — Activation globale et par VLAN
+
+```
+ip dhcp snooping
+ip dhcp snooping vlan 10,20,30,40,41,42,50,90
+```
+
+- `ip dhcp snooping` : obligatoire. Active le moteur globalement.
+- `ip dhcp snooping vlan` : obligatoire. Spécifie les VLAN surveillés. Ne pas inclure le VLAN 999 si le serveur DHCP n'y réside pas.
+
+Étape 2 — Trust des uplinks
+
+```
+interface GigabitEthernetX/Y    ! uplink vers Distribution
+ ip dhcp snooping trust
+```
+
+- Obligatoire sur les uplinks. Sans ça, les DHCP Ack du serveur légitime sont droppés par le switch Access.
+
+Étape 3 — Désactivation de l'Option 82
+
+```
+no ip dhcp snooping information option
+```
+
+- Optionnel mais souvent nécessaire. IOS injecte par défaut l'Option 82 (DHCP Relay Agent Information) dans les requêtes des clients. Certains serveurs DHCP (ISC Kea notamment) rejettent les requêtes avec cette option si elles ne viennent pas d'un relay agent officiel. Symptôme : les clients ne reçoivent pas d'IP malgré un serveur DHCP fonctionnel. À tester avec le serveur retenu en Phase 2.
+
+Étape 4 — Persistance de la binding table
+
+```
+ip dhcp snooping database flash:dhcp-snooping.db
+ip dhcp snooping database write-delay 300
+```
+
+- Optionnel mais critique en production. La binding table est volatile par défaut. Si le switch redémarre, tous les clients qui conservent leur IP (sans re-DHCP immédiat) n'ont plus d'entrée dans la table — DAI bloquera tous leurs ARP jusqu'au prochain cycle DHCP. Peut ressembler à une panne réseau totale.
+- `write-delay 300` : écrit la table toutes les 300 secondes. Valeur sans cette option : écriture immédiate à chaque changement (beaucoup d'I/O flash).
+
+Étape 5 — Rate limiting sur les ports untrusted
+
+```
+interface GigabitEthernetX/Y    ! port endpoint
+ ip dhcp snooping limit rate 15
+```
+
+- Optionnel. Limite à 15 paquets DHCP/s sur ce port. Protège contre les attaques DHCP starvation (envoi de milliers de Discover avec des MAC différentes pour épuiser le pool d'adresses).
+
+**Vérification**
+
+```
+show ip dhcp snooping                  ! état global et VLANs actifs
+show ip dhcp snooping binding          ! binding table (IP-MAC-port-VLAN)
+show ip dhcp snooping statistics       ! compteurs de trames droppées
+```
+
+### 4.2.9) Dynamic ARP Inspection (DAI)
+
+**Concept**
+
+ARP (Address Resolution Protocol) n'a aucun mécanisme d'authentification : n'importe quel équipement peut envoyer une réponse ARP affirmant être propriétaire de n'importe quelle IP, et les autres équipements l'accepteront sans vérification. Une attaque ARP spoofing exploite cette faiblesse : l'attaquant envoie des ARP Gratuitous en affirmant que son adresse MAC correspond à l'IP de la passerelle. Les machines du segment mettent à jour leur table ARP et envoient tout leur trafic vers l'attaquant (Man-in-the-Middle).
+
+DAI valide chaque réponse ARP reçue sur les ports untrusted en la comparant à la binding table construite par DHCP Snooping. Si la paire IP-MAC dans l'ARP ne correspond pas à une entrée connue, la trame est droppée.
+
+**Configuration**
+
+Étape 1 — Activation par VLAN
+
+```
+ip arp inspection vlan 10,20,30,40,41,42,50,90
+```
+
+- Obligatoire. Active DAI sur les VLAN spécifiés.
+
+Étape 2 — Trust des uplinks
+
+```
+interface GigabitEthernetX/Y    ! uplink vers Distribution
+ ip arp inspection trust
+```
+
+- Obligatoire sur les uplinks. Les ARP entrant depuis les Distribution sont présumés légitimes.
+
+Étape 3 — Validations supplémentaires
+
+```
+ip arp inspection validate src-mac dst-mac ip
+```
+
+- Optionnel mais recommandé. Active trois vérifications additionnelles :
+  - `src-mac` : la MAC source dans l'en-tête Ethernet correspond à la MAC dans le payload ARP. Détecte les ARP forgés où les deux diffèrent.
+  - `dst-mac` : pour les ARP Reply, la MAC destination est cohérente.
+  - `ip` : rejette les ARP avec des IP invalides (0.0.0.0, 255.255.255.255, adresses multicast).
+
+Étape 4 — Gestion des équipements à IP statique
+
+Un équipement configuré avec une IP statique (imprimante, caméra) n'a pas de DHCP Ack dans la binding table. DAI bloquera tous ses ARP. Solution : créer une ARP ACL statique.
+
+```
+arp access-list STATIC-DEVICES
+ permit ip host 10.1.50.10 mac host aaaa.bbbb.cccc   ! IP imprimante / MAC imprimante
+ permit ip host 10.1.30.10 mac host dddd.eeee.ffff   ! IP caméra / MAC caméra
+
+ip arp inspection filter STATIC-DEVICES vlan 50,30
+```
+
+- Obligatoire pour chaque équipement à IP statique dans les VLAN surveillés. La MAC de chaque équipement est à relever lors de l'inventaire.
+
+**Vérification**
+
+```
+show ip arp inspection               ! état global, VLANs actifs
+show ip arp inspection vlan 10       ! détail VLAN 10
+show ip arp inspection statistics    ! trames droppées par interface
+```
+
+### 4.2.10) Storm Control
+
+**Concept**
+
+Une tempête réseau survient quand un ou plusieurs équipements génèrent un volume anormalement élevé de trames broadcast, multicast ou unknown unicast. Les causes possibles : boucle STP non détectée, bug logiciel d'un endpoint, virus de type worm qui scanne via ARP broadcast, ou flood délibéré. Sans protection, ces trames saturent la bande passante et consomment le CPU de tous les équipements du segment (chaque broadcast est traité par chaque port actif).
+
+Storm Control surveille en permanence le taux de chaque type de trafic par port. Quand le taux dépasse un seuil haut (rising threshold), une action est déclenchée. Quand il redescend sous un seuil bas (falling threshold), l'action peut être levée.
+
+**Configuration**
+
+```
+interface GigabitEthernetX/Y
+ storm-control broadcast level 20.00 10.00
+ storm-control multicast level 20.00 10.00
+ storm-control unknown-unicast level 10.00 5.00
+ storm-control action shutdown
+```
+
+- `storm-control broadcast level 20.00 10.00` : obligatoire pour activer. Premier chiffre = seuil rising en % de bande passante, second = seuil falling. Valeur type broadcast : 20%/10%.
+- `storm-control multicast level 20.00 10.00` : idem pour le multicast. Attention si OSPF ou VoIP multicast est actif sur le port : le seuil doit rester au-dessus du trafic multicast légitime attendu.
+- `storm-control unknown-unicast level 10.00 5.00` : idem pour les unicasts inconnus (MAC destination absente de la table CAM). Un volume élevé d'unknown unicast est souvent symptomatique d'une table CAM pleine ou d'un flood. Valeur type : 10%/5%.
+- `storm-control action shutdown` : optionnel (défaut : drop silencieux). `shutdown` err-disable le port dès dépassement. `trap` envoie une alerte SNMP sans couper. En production, `trap` permet la supervision sans couper les utilisateurs légitimes ; `shutdown` est plus radical.
+
+**Vérification**
+
+```
+show storm-control broadcast           ! seuils configurés et taux courant
+show storm-control interface GigX/Y   ! état par interface
+```
+
+### 4.2.11) Port Security
+
+**Concept**
+
+Port Security restreint les adresses MAC autorisées sur un port et définit le comportement en cas de violation. Il protège contre deux menaces : la connexion d'équipements non-autorisés (PC personnel à la place du PC entreprise) et les attaques CAM table flooding (envoi de trames avec des MAC source aléatoires pour saturer la table MAC du switch et le forcer à broadcaster tout le trafic en clair).
+
+**Modes de violation**
+
+| Mode | Trafic MAC non-autorisée | Compteur | Log/Trap | Action port |
+|---|---|---|---|---|
+| `protect` | Droppé silencieusement | Non | Non | Aucune |
+| `restrict` | Droppé | Oui | Oui | Aucune |
+| `shutdown` | Droppé | Oui | Oui | Err-disable |
+
+`shutdown` est recommandé : une violation est un événement anormal qui mérite investigation, pas un simple drop silencieux.
+
+**Modes d'apprentissage MAC**
+
+| Mode | Apprentissage | Survie au reboot | Usage |
+|---|---|---|---|
+| Manuel | MAC configurées explicitement | Oui | Inventaire MAC connu, contraignant |
+| Dynamic | Premières MAC vues, stockées en RAM | Non | Déploiement rapide, volatile |
+| Sticky | Premières MAC vues, écrites dans running-config | Oui (après `write mem`) | Déploiement sans inventaire préalable |
+
+**Configuration**
+
+```
+interface GigabitEthernetX/Y
+ switchport port-security
+ switchport port-security maximum 2
+ switchport port-security violation shutdown
+ switchport port-security mac-address sticky
+ switchport port-security aging time 60
+ switchport port-security aging type inactivity
+```
+
+- `switchport port-security` : obligatoire. Active Port Security sur le port.
+- `switchport port-security maximum 2` : obligatoire. 1 pour le PC + 1 pour le téléphone IP. Valeur par défaut : 1.
+- `switchport port-security violation shutdown` : optionnel (défaut sur IOS : shutdown). Spécifier explicitement pour la clarté.
+- `switchport port-security mac-address sticky` : optionnel. Mode sticky : les MAC apprises sont écrites dans la running-config.
+- `switchport port-security aging time 60` : optionnel. Les MAC apprises dynamiquement sont oubliées après 60 minutes d'inactivité. Utile dans les environnements avec rotation de postes.
+- `switchport port-security aging type inactivity` : optionnel. L'aging se déclenche sur l'inactivité (et non sur un timer absolu depuis l'apprentissage).
+
+**Port Security vs 802.1X**
+
+Port Security et 802.1X couvrent partiellement le même périmètre mais leurs mécanismes peuvent entrer en conflit : Port Security peut bloquer la MAC du supplicant 802.1X avant que RADIUS ait eu le temps de la valider. La règle est : soit Port Security, soit 802.1X sur un même port, jamais les deux simultanément. Dans ce projet, Port Security est actif pendant la phase transitoire (avant déploiement de FreeRADIUS), puis retiré quand 802.1X est opérationnel.
+
+**Vérification**
+
+```
+show port-security interface GigX/Y    ! état, MAC apprises, violations
+show port-security address             ! table des MAC sécurisées
+```
+
+### 4.2.12) 802.1X et MAB (authentification par port)
+
+**Concept**
+
+802.1X (IEEE 802.1X-2010) est le standard d'authentification réseau basée sur le port physique. Avant qu'un équipement puisse envoyer du trafic, il doit s'identifier et être autorisé par un serveur d'authentification centralisé.
+
+Trois acteurs participent au protocole :
+- Le **supplicant** : le client qui veut accéder au réseau (PC, téléphone IP). Il dispose d'un supplicant logiciel (natif sous Windows, Linux, macOS) qui répond aux challenges.
+- L'**authenticator** : le switch Access, intermédiaire. Il bloque tout le trafic d'un port non-authentifié sauf les trames EAPOL.
+- L'**authentication server** : FreeRADIUS dans ce projet. Il valide les credentials et renvoie Accept/Reject avec des attributs optionnels (VLAN d'affectation, ACL, etc.).
+
+Le protocole sous-jacent est **EAP** (Extensible Authentication Protocol), transporté entre le supplicant et le switch via **EAPOL** (EAP over LAN, trames L2), et entre le switch et RADIUS via **UDP**.
+
+**Méthodes EAP — comparatif**
+
+| Méthode | Standard | Authentification | Certificat requis | Sécurité | Usage |
+|---|---|---|---|---|---|
+| EAP-MD5 | RFC 3748 | Mot de passe (MD5) | Non | Faible — pas d'auth mutuelle, brute-force possible | Déprécié |
+| LEAP | Cisco propriétaire | MS-CHAPv1 | Non | Très faible — cassable (outil asleap) | Déprécié, à proscrire |
+| PEAP-MSCHAPv2 | Microsoft/IETF | Tunnel TLS + MSCHAPv2 | Serveur uniquement | Bonne | Standard entreprise Windows/AD |
+| EAP-TTLS | RFC 5281 | Tunnel TLS + auth interne flexible | Serveur uniquement | Bonne | Multi-OS, flexible |
+| EAP-TLS | RFC 5216 | Mutuel TLS (certificats des deux côtés) | Serveur + client | Très forte | High-security, nécessite PKI déployée |
+
+LEAP est propriétaire Cisco et cryptographiquement cassé. Ne jamais l'utiliser. EAP-MD5 n'offre pas d'authentification mutuelle (le client ne peut pas vérifier l'identité du serveur RADIUS) et est vulnérable au brute-force hors ligne.
+
+Dans ce projet : **PEAP-MSCHAPv2** pour les postes Windows et Linux (supplicant natif, certificat serveur uniquement, compatible avec un annuaire LDAP/AD). **EAP-TLS** sera envisagé pour les équipements critiques une fois la PKI interne déployée (Phase 2, HashiCorp Vault).
+
+**MAB — MAC Authentication Bypass**
+
+Tous les équipements n'ont pas de supplicant 802.1X : imprimantes, caméras IP, IoT, téléphones non-Cisco. MAB pallie ce manque : quand aucune trame EAPOL n'est reçue dans un délai (après N tentatives), le switch envoie à RADIUS la MAC source de la première trame comme identifiant. RADIUS l'accepte ou la refuse selon une base de MACs connues. MAB est moins sécurisé (une MAC peut être usurpée) mais c'est la seule option pour les équipements sans supplicant.
+
+**Modes d'hôte (host-mode)**
+
+| Mode | Comportement | Usage typique |
+|---|---|---|
+| `single-host` | Un seul équipement authentifié, les autres bloqués | Poste bureautique seul |
+| `multi-host` | Un s'authentifie, tous bénéficient de l'accès | Non recommandé (trop permissif) |
+| `multi-domain` | Un en domaine data + un en domaine voice | Port PC + téléphone IP |
+| `multi-auth` | Chaque équipement s'authentifie individuellement | Le plus sécurisé |
+
+**VLANs spéciaux**
+
+| VLAN | Déclencheur | Rôle |
+|---|---|---|
+| Guest VLAN | Aucune réponse EAPOL (pas de supplicant) | Accès limité pour les équipements legacy |
+| Auth-fail VLAN | Credentials invalides | Quarantaine, investigation |
+| Critical VLAN | Serveur RADIUS inaccessible | Continuité de service minimale |
+
+**Configuration**
+
+Étape 1 — Framework AAA pour 802.1X
+
+```
+aaa new-model
+dot1x system-auth-control
+
+aaa authentication dot1x default group radius local
+aaa authorization network default group radius
+aaa accounting dot1x default start-stop group radius
+```
+
+- `dot1x system-auth-control` : obligatoire. Active 802.1X globalement.
+- `aaa authentication dot1x default group radius local` : obligatoire. RADIUS en premier, base locale en fallback.
+- `aaa authorization network default group radius` : obligatoire pour l'affectation dynamique de VLAN depuis RADIUS.
+- `aaa accounting dot1x` : optionnel. Journalise les authentifications dans RADIUS pour l'audit.
+
+Étape 2 — Déclaration du serveur RADIUS
+
+```
+radius server FREERADIUS
+ address ipv4 10.4.303.10 auth-port 1812 acct-port 1813
+ key <shared-secret>
+```
+
+- `address ipv4` : obligatoire. IP du serveur FreeRADIUS (Phase 2, VLAN 303 ADMIN-AAA).
+- `key <shared-secret>` : obligatoire. Clé partagée entre le switch et FreeRADIUS. Doit être identique des deux côtés.
+
+Étape 3 — Configuration par port
+
+```
+interface GigabitEthernetX/Y
+ authentication host-mode multi-domain
+ authentication order mab dot1x
+ authentication priority dot1x mab
+ authentication port-control auto
+ authentication periodic
+ authentication timer reauthenticate server
+ dot1x pae authenticator
+ dot1x timeout tx-period 10
+ mab
+ spanning-tree portfast
+```
+
+- `authentication host-mode multi-domain` : obligatoire pour les ports PC + téléphone IP. `single-host` pour les ports PC seuls.
+- `authentication order mab dot1x` : optionnel. Tente MAB d'abord (plus rapide pour les équipements sans supplicant), puis 802.1X.
+- `authentication priority dot1x mab` : optionnel. Si les deux réussissent, dot1x prend la priorité.
+- `authentication port-control auto` : obligatoire. Le port est bloqué jusqu'à authentification réussie.
+- `dot1x pae authenticator` : obligatoire. Configure le port comme authenticator 802.1X.
+- `mab` : obligatoire pour le fallback MAC Authentication Bypass.
+- `dot1x timeout tx-period 10` : optionnel (défaut : 30s). Délai entre les retransmissions EAPOL. 10s est un bon compromis.
+
+Étape 4 — VLANs spéciaux (optionnel)
+
+```
+authentication event no-response action authorize vlan 41   ! Guest → WIFI-GUEST
+authentication event fail action authorize vlan 41          ! Auth-fail → quarantaine
+authentication event server dead action authorize vlan 10   ! Critical → USERS de secours
+```
+
+**Vérification**
+
+```
+show authentication sessions              ! état d'auth par port
+show dot1x all                            ! état 802.1X global
+show radius server-group all              ! état des serveurs RADIUS
+
+! Test sans RADIUS (mode open pour validation Phase 1)
+authentication open                       ! permet le trafic même si auth échoue
+```
+
+**Note de déploiement.** 802.1X + MAB dépend de FreeRADIUS (Phase 2). En Phase 1, on pose le framework AAA et la config des interfaces, mais les ports restent en mode `open` ou avec un VLAN par défaut. La validation complète attend le déploiement de FreeRADIUS.
+
+### 4.2.13) Interface de management et supervision
+
+**Concept**
+
+Les Access switches n'ont pas de routage IP mais ont besoin d'une adresse pour être administrés (SSH, SNMP, Syslog). Cette adresse est configurée sur la SVI du VLAN 999 (MGMT-INFRA). Comme il n'y a pas de `ip routing` sur les Access, une default gateway est nécessaire pour joindre des équipements hors du subnet MGMT.
+
+**SNMP : SNMPv2c vs SNMPv3**
+
+| Critère | SNMPv2c | SNMPv3 |
+|---|---|---|
+| Authentification | Community string (texte clair sur UDP) | HMAC-MD5 ou HMAC-SHA |
+| Confidentialité | Aucune | DES ou AES (recommandé AES-128) |
+| Niveaux de sécurité | 1 (noAuthNoPriv) | 3 : noAuth, authNoPriv, authPriv |
+| Standard | RFC 1901 (1996) | RFC 3411-3418 (2002) |
+
+SNMPv2c transmet le community string en clair. N'importe qui sur le réseau qui capture le trafic UDP peut le lire et l'utiliser pour interroger ou modifier la config du switch. SNMPv3 avec `authPriv` (authentification SHA + chiffrement AES) est le standard recommandé.
+
+**Configuration**
+
+Interface de management :
+
+```
+interface vlan 999
+ description MGMT-INBAND
+ ip address 10.254.0.41 255.255.255.0   ! ACC-1: .41, ACC-2: .42, ACC-3: .43, ACC-4: .44
+ no shutdown
+
+ip default-gateway 10.254.0.1
+```
+
+- `ip default-gateway` : obligatoire sur les switches sans `ip routing`. Permet d'atteindre les serveurs de supervision, le bastion, etc.
+
+NTP :
+
+```
+ntp server 10.2.103.10 prefer           ! serveur NTP interne (Chrony, Phase 2)
+ntp update-calendar
+clock timezone CET 1
+clock summer-time CEST recurring last Sun Mar 2:00 last Sun Oct 3:00
+```
+
+- `ntp server` : obligatoire. En Phase 1, pointer temporairement sur `192.168.122.1` (NAT Cloud → Internet). Remplacer par l'IP du serveur Chrony interne en Phase 2.
+- `ntp update-calendar` : optionnel. Synchronise le calendrier matériel (RTC) avec l'heure NTP.
+
+Syslog :
+
+```
+logging on
+logging host 10.4.306.10 transport udp port 514   ! Graylog (Phase 2)
+logging source-interface vlan 999
+logging trap informational
+logging buffered 16384 informational
+```
+
+- `logging source-interface vlan 999` : obligatoire. Le serveur Syslog reçoit les logs avec l'IP de management connue, pas une IP de port aléatoire.
+- `logging buffered 16384` : optionnel. Conserve les derniers logs en mémoire locale quand le serveur Syslog est inaccessible.
+
+SNMPv3 :
+
+```
+snmp-server group MONITORING v3 priv
+snmp-server user snmp-monitor MONITORING v3 auth sha <auth-key> priv aes 128 <priv-key>
+snmp-server host 10.4.302.10 version 3 priv snmp-monitor
+snmp-server enable traps
+snmp-server location GNS3-HomeLab
+snmp-server contact admin@homelab.local
+```
+
+- `v3 priv` : niveau `authPriv` — authentification SHA + chiffrement AES 128. Le niveau de sécurité maximum.
+- `snmp-server user` : obligatoire. Crée l'utilisateur SNMPv3 avec ses clés d'auth et de chiffrement.
+
+**Vérification**
+
+```
+show ntp status                          ! synchronisation NTP
+show logging                             ! logs locaux et état syslog
+show snmp user                           ! utilisateurs SNMPv3 configurés
+```
+
+## 4.3) Switches Distribution LAN (DIST-1 à DIST-4)
+
+Les Distribution switches sont la couche pivot du LAN Tier-3. Ils cumulent plusieurs rôles : agrégation des Access, commutation L3 (routage inter-VLAN), redondance de passerelle via VRRP, annonce OSPF des préfixes LAN vers le Core, et relais DHCP. Leur configuration est notablement plus complexe que celle des Access car elle touche à la fois à la L2 (STP root, trunks) et à la L3 (SVI, OSPF, VRRP).
+
+Le bloc 1 couvre **DIST-1** et **DIST-2**. DIST-3 et DIST-4 (bloc 2) suivent le même schéma, avec les VLAN `10X` au lieu des VLAN `1X` (offset +100 sur le 3e octet des subnets, même VLAN IDs).
+
+La pile de configuration :
+
+```
+1.  Configuration de base universelle        (identique aux Access)
+2.  Activation du routage IP                 (ip routing)
+3.  Base de données VLAN                     (idem Access + VLAN spécifiques bloc)
+4.  Spanning Tree — root primaire/secondaire (DIST-1 root instance 1, DIST-2 root instance 2)
+5.  Peer-link LACP intra-bloc                (Port-Channel DIST-1 ↔ DIST-2)
+6.  Interfaces trunk vers les Access         (downlinks)
+7.  Interfaces L3 routées vers les Core      (uplinks /31, pas de trunk)
+8.  SVI utilisateurs                         (une interface VLAN par VLAN LAN)
+9.  SVI management                           (VLAN 999)
+10. VRRP par VLAN                            (VIP, priorités, preempt, tracking)
+11. DHCP Relay                               (ip helper-address sur chaque SVI)
+12. OSPF area 0                              (adjacences vers Core, annonce des SVI)
+13. Supervision                              (NTP, Syslog, SNMPv3)
+```
+
+### 4.3.1) Activation du routage IP
+
+**Concept**
+
+Par défaut, un switch Cisco IOSvL2 n'a pas de table de routage active entre ses interfaces. La commande `ip routing` bascule le switch en mode routeur L3 : il peut désormais faire du routage inter-VLAN (via les SVI), participer à OSPF, et installer des routes dans sa FIB.
+
+Sans `ip routing`, les SVI sont de simples interfaces de gestion — elles ont une IP mais le switch ne route pas entre elles. Un paquet arrivant sur le VLAN 10 et destiné au VLAN 20 serait droppé.
+
+**Configuration**
+
+```
+ip routing
+```
+
+- Obligatoire sur les Distribution et les Core. Non activé sur les Access.
+
+**Vérification**
+
+```
+show ip route            ! table de routage (doit exister et contenir des routes C et O)
+```
+
+### 4.3.2) Spanning Tree — root primaire et secondaire
+
+**Concept**
+
+Les Distribution doivent être root bridge de leur bloc pour garantir une topologie STP prévisible. Si un Access devenait root (par priorité anormalement basse ou suite à une mauvaise config), tout le trafic L2 du bloc serait redirigé à travers lui — un goulot d'étranglement potentiel.
+
+La priorité STP est un multiple de 4096. Par défaut : 32768. Plus la valeur est basse, plus le switch a de chances d'être élu root.
+
+Pour équilibrer la charge entre DIST-1 et DIST-2, on alterne les rôles root par instance MST, en cohérence avec les priorités VRRP :
+
+| Distribution | Instance MST | Priorité STP | VLAN | Rôle VRRP |
+|---|---|---|---|---|
+| DIST-1 | 1 | 4096 (root primaire) | 10, 30, 40, 42, 50 | Master |
+| DIST-1 | 2 | 8192 (root secondaire) | 20, 41, 90, 999 | Backup |
+| DIST-2 | 1 | 8192 (root secondaire) | 10, 30, 40, 42, 50 | Backup |
+| DIST-2 | 2 | 4096 (root primaire) | 20, 41, 90, 999 | Master |
+
+L'alignement STP/VRRP garantit que pour chaque VLAN, le root STP et le master VRRP sont le même équipement : le trafic ne fait pas un chemin STP différent du chemin VRRP.
+
+**Configuration sur DIST-1**
+
+```
+spanning-tree mode mst
+spanning-tree mst configuration
+ name HOMELAB
+ revision 1
+ instance 1 vlan 10,30,40,42,50
+ instance 2 vlan 20,41,90,999
+ exit
+
+spanning-tree mst 1 priority 4096
+spanning-tree mst 2 priority 8192
+```
+
+**Configuration sur DIST-2**
+
+```
+spanning-tree mode mst
+spanning-tree mst configuration
+ name HOMELAB
+ revision 1
+ instance 1 vlan 10,30,40,42,50
+ instance 2 vlan 20,41,90,999
+ exit
+
+spanning-tree mst 1 priority 8192
+spanning-tree mst 2 priority 4096
+```
+
+Root Guard sur les downlinks vers les Access (`spanning-tree guard root` sur chaque interface vers ACC-1/ACC-2) : protège contre un Access qui enverrait un BPDU de priorité supérieure pour tenter de devenir root.
+
+**Vérification**
+
+```
+show spanning-tree mst 1     ! DIST-1 doit apparaître en role "Root"
+show spanning-tree mst 2     ! DIST-2 doit apparaître en role "Root"
+```
+
+### 4.3.3) Agrégation de liens : LACP
+
+**Concept**
+
+L'agrégation de liens (Link Aggregation) groupe plusieurs interfaces physiques en une interface logique unique. Le trafic est réparti entre les liens membres, augmentant la bande passante disponible et apportant la redondance : si un lien physique tombe, les autres continuent sans interruption.
+
+Le peer-link entre DIST-1 et DIST-2 est un Port-Channel de 2 liens physiques. Il porte tous les VLAN du bloc et sert à :
+- Faire transiter les trames entre les deux Distribution (notamment vers les Access rattachées à l'autre Distribution).
+- Synchroniser les tables MAC entre les deux switches.
+- Transporter les BPDU STP de contrôle intra-bloc.
+
+**Solutions disponibles**
+
+| Critère | PAgP (Port Aggregation Protocol) | LACP (Link Aggregation Control Protocol) |
+|---|---|---|
+| Origine | Cisco, propriétaire | IEEE 802.3ad / 802.1AX, standard ouvert |
+| Compatibilité | Équipements Cisco uniquement | Tous constructeurs |
+| Modes | `desirable` (initie) / `auto` (attend) | `active` (initie) / `passive` (attend) |
+| Détection d'erreur | Oui | Oui |
+| Fonctionnalités | Équivalentes à LACP | Standard de référence |
+
+PAgP est fonctionnellement équivalent à LACP mais propriétaire Cisco. Dans une infrastructure qui pourrait un jour intégrer des équipements non-Cisco, PAgP ne fonctionnerait pas. LACP est le choix rationnel.
+
+**Modes LACP**
+
+| Mode | Comportement | Port-Channel formé si... |
+|---|---|---|
+| `active` | Envoie des LACPDU, négocie activement | L'autre côté est en `active` ou `passive` |
+| `passive` | Attend des LACPDU, ne prend pas l'initiative | L'autre côté est en `active` uniquement |
+| `on` | Force le Port-Channel sans LACP | Toujours — mais sans détection d'erreur |
+
+Le mode `on` est à éviter : il force l'agrégation sans vérification. Un câble mal branché ou une mauvaise config côté ne seront pas détectés. On utilise `active` des deux côtés.
+
+**Configuration**
+
+Étape 1 — Créer le Port-Channel et le configurer en trunk
+
+```
+interface Port-channel1
+ description PEER-LINK-DIST-2
+ switchport mode trunk
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,41,42,50,90,999
+ switchport nonegotiate
+```
+
+Étape 2 — Assigner les interfaces physiques au Port-Channel
+
+```
+interface GigabitEthernetX/Y
+ description PEER-LINK-DIST-2-MBR1
+ channel-group 1 mode active
+ no shutdown
+
+interface GigabitEthernetX/Z
+ description PEER-LINK-DIST-2-MBR2
+ channel-group 1 mode active
+ no shutdown
+```
+
+- `channel-group 1 mode active` : obligatoire. Assigne l'interface au Port-Channel 1 en mode LACP actif.
+- La configuration trunk (allowed VLANs, native, etc.) se fait sur `interface Port-channel1`, pas sur les membres individuels — ils héritent de la config du Port-Channel parent.
+
+Paramètre optionnel notable :
+
+```
+port-channel load-balance src-dst-mac
+```
+
+- `port-channel load-balance` : optionnel. Détermine comment le trafic est réparti entre les liens membres. Options : `src-mac`, `dst-mac`, `src-dst-mac`, `src-ip`, `dst-ip`, `src-dst-ip`. `src-dst-mac` ou `src-dst-ip` donnent la meilleure distribution.
+
+**Vérification**
+
+```
+show etherchannel summary               ! état du bundle (SU = active)
+show etherchannel 1 detail              ! membres actifs, LACP state
+show lacp neighbor                      ! voisins LACP et leur état
+```
+
+**Trunk sur le peer-link.** Le Port-Channel est configuré en trunk 802.1Q avec tous les VLAN du bloc. Il porte le VLAN 999 (management) et les VLAN utilisateurs. Contrairement à un design MLAG, le peer-link ici est un trunk classique, pas un lien de synchronisation d'état — IOSvL2 ne supporte pas le MLAG (voir section 3.5.6 du rapport).
+
+### 4.3.4) Interfaces trunk vers les Access (downlinks)
+
+**Concept**
+
+Les downlinks vers les Access sont des trunks 802.1Q identiques aux uplinks côté Access (même politique DTP, même native VLAN, même liste de VLANs allowed). La différence est le Root Guard, qui se configure ici côté Distribution pour protéger l'élection du root bridge.
+
+**Configuration**
+
+```
+interface GigabitEthernetX/Y
+ description DOWNLINK-ACC-1
+ switchport mode trunk
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,41,42,50,90,999
+ switchport nonegotiate
+ spanning-tree guard root
+ no shutdown
+```
+
+- `spanning-tree guard root` : obligatoire sur les downlinks. Si un Access envoie un BPDU de priorité supérieure (attaque ou mauvaise config), le port passe en root-inconsistent et bloque le BPDU. La Distribution reste root.
+- Les autres paramètres trunk sont identiques à ceux documentés en section 4.2.6 et 4.2.8.
+
+**Vérification**
+
+```
+show interfaces GigX/Y trunk             ! VLANs portés, native VLAN
+show spanning-tree mst detail | include root
+```
+
+### 4.3.5) Interfaces L3 routées vers les Core (uplinks)
+
+**Concept**
+
+Les uplinks Distribution ↔ Core sont des interfaces L3 routées point-à-point en /31 (RFC 3021). Il n'y a pas de VLAN, pas de trunk : chaque interface physique porte une IP et une adjacence OSPF. Ce design "L3 partout dès la Distribution" supprime les domaines de broadcast sur les liens inter-étages et exploite pleinement ECMP.
+
+Sur un switch IOSvL2, les interfaces sont en mode L2 (switching) par défaut. La commande `no switchport` bascule une interface en mode L3 routed.
+
+**Configuration**
+
+```
+interface GigabitEthernetX/Y
+ description UPLINK-CORE-1
+ no switchport
+ ip address 10.0.40.X 255.255.255.254
+ ip ospf network point-to-point
+ ip ospf cost 10
+ no ip proxy-arp
+ no shutdown
+```
+
+- `no switchport` : obligatoire. Bascule l'interface de mode L2 switching vers L3 routed. Irréversible sans effacer la config de l'interface.
+- `ip address 10.0.40.X 255.255.255.254` : obligatoire. /31 = masque 255.255.255.254 (2 IP utilisables, 0 gaspillage, RFC 3021).
+- `ip ospf network point-to-point` : obligatoire. Désactive l'élection DR/BDR sur ce lien. OSPF sait que le lien n'a que deux participants et converge plus vite (pas d'attente du dead interval pour déclarer le DR mort).
+- `ip ospf cost 10` : optionnel. Explicite le coût (défaut IOS pour 1 Gbps : 1). Mettre 10 laisse de la marge pour des coûts différenciés sur d'autres liens.
+- `no ip proxy-arp` : optionnel. Désactive le proxy ARP sur cette interface.
+
+**Vérification**
+
+```
+show ip interface GigX/Y     ! adresse IP, proxy-arp, etc.
+show ip ospf interface GigX/Y ! mode point-to-point, coût, état
+```
+
+### 4.3.6) SVI utilisateurs
+
+**Concept**
+
+Les SVI (Switched Virtual Interfaces) sont les interfaces IP des VLAN sur les Distribution. Elles jouent le rôle de passerelle par défaut pour les endpoints du VLAN correspondant et sont le point d'injection des routes dans OSPF.
+
+Chaque VLAN a une SVI sur DIST-1 ET sur DIST-2 avec des IP distinctes, et une VIP VRRP partagée que les endpoints utilisent comme passerelle.
+
+| Équipement | IP SVI (VLAN 10) | Rôle VRRP | Priorité VRRP |
+|---|---|---|---|
+| DIST-1 | 10.1.10.2/24 | Master (instance 1) | 120 |
+| DIST-2 | 10.1.10.3/24 | Backup | 100 |
+| VIP VRRP | 10.1.10.1 | Passerelle endpoints | — |
+
+**Configuration (répétée pour chaque VLAN LAN)**
+
+```
+interface Vlan10
+ description USERS-BLOC1
+ ip address 10.1.10.2 255.255.255.0    ! DIST-1 : .2, DIST-2 : .3
+ no ip proxy-arp
+ no ip directed-broadcast
+ no shutdown
+```
+
+- `ip address` : obligatoire. Selon le plan d'adressage : DIST-1 prend le .2, DIST-2 prend le .3, .1 est la VIP VRRP.
+- `no ip proxy-arp` : obligatoire. Proxy ARP est activé par défaut sur IOS. Il répond aux ARP pour des IP hors interface, masquant des erreurs de config et créant des flux asymétriques. À désactiver sur toutes les SVI.
+- `no ip directed-broadcast` : obligatoire. Bloque les directed broadcasts (utilisés dans les attaques Smurf). Désactivé par défaut depuis IOS 12.0 mais à spécifier explicitement.
+
+Appliquer la même configuration pour les VLAN 20, 30, 40, 41, 42, 50, 90 avec les IP correspondantes du plan d'adressage. Ajouter la SVI management :
+
+```
+interface Vlan999
+ description MGMT-INBAND
+ ip address 10.254.0.31 255.255.255.0   ! DIST-1: .31, DIST-2: .32
+ no ip proxy-arp
+ no shutdown
+```
+
+**Loopback (Router-ID OSPF)**
+
+```
+interface Loopback0
+ description ROUTER-ID-OSPF
+ ip address 10.0.0.31 255.255.255.255   ! DIST-1: .31, DIST-2: .32
+ no shutdown
+```
+
+**Vérification**
+
+```
+show ip interface brief | include Vlan   ! état UP/UP de toutes les SVI
+```
+
+### 4.3.7) Redondance de passerelle : VRRP
+
+**Concept**
+
+Quand deux Distribution partagent la responsabilité du routage inter-VLAN d'un bloc, les endpoints ont besoin d'une **adresse de passerelle unique et stable**. Si chaque Distribution avait sa propre IP et que les postes pointaient vers l'une ou l'autre, la panne d'un Distribution laisserait la moitié des machines sans passerelle.
+
+Les protocoles de redondance de passerelle — First Hop Redundancy Protocols (FHRP) — résolvent ce problème en faisant flotter une IP virtuelle (VIP) entre deux routeurs. L'un est master (il répond aux ARP pour la VIP et traite le trafic), l'autre est backup (prêt à reprendre si le master disparaît). Les endpoints configurent la VIP comme passerelle par défaut — elle reste valide quel que soit le routeur actif.
+
+**Solutions disponibles**
+
+| Critère | HSRP v1 | HSRP v2 | VRRP v2 | VRRP v3 |
+|---|---|---|---|---|
+| Standard | Cisco propriétaire | Cisco propriétaire | RFC 3768 (IEEE) | RFC 5798 (IEEE) |
+| Groupes max | 255 | 4096 | 255 | 255 |
+| IPv6 | Non | Oui | Non | Oui |
+| Authentification | MD5 / texte clair | MD5 | MD5 | Optionnelle (IPsec) |
+| Preempt par défaut | Désactivé | Désactivé | Activé | Activé |
+| Hello multicast | 224.0.0.2 | 224.0.0.102 | 224.0.0.18 | 224.0.0.18 |
+| Timers défaut | 3s hello / 10s dead | 3s / 10s | 1s / 3s | 1s / 3s |
+
+HSRP est propriétaire Cisco. Dans une infrastructure où les Distribution pourraient être remplacés par des équipements d'un autre constructeur, HSRP est inopérant. VRRP est le standard IEEE interopérable avec tous les constructeurs modernes. VRRP v3 (RFC 5798) ajoute le support IPv6 et est disponible sur IOS via `standby version 2`.
+
+**Choix retenu : VRRP v3 (RFC 5798)**
+
+VRRP v3 est la référence IEEE pour la redondance de passerelle. Standard ouvert, convergence plus rapide que HSRP par défaut (timers 1s/3s vs 3s/10s), et support natif IPv6 pour préparer une migration future.
+
+**Configuration VRRP (DIST-1, exemple VLAN 10)**
+
+Étape 1 — Déclarer le groupe VRRP sur la SVI
+
+```
+interface Vlan10
+ standby version 2
+ standby 10 ip 10.1.10.1
+ standby 10 priority 120
+ standby 10 preempt delay minimum 30
+ standby 10 authentication md5 key-string <vrrp-key>
+ standby 10 timers 1 3
+ standby 10 track 10 decrement 30
+```
+
+- `standby version 2` : obligatoire pour VRRP. Sans cette commande, IOS utilise HSRP par défaut.
+- `standby 10 ip 10.1.10.1` : obligatoire. Définit la VIP. Le numéro de groupe (10) est aligné sur le numéro de VLAN pour la lisibilité.
+- `standby 10 priority 120` : obligatoire pour le master. DIST-1 est master sur l'instance 1 (VLAN 10, 30, 40, 42, 50) avec priorité 120. DIST-2 reste à la priorité par défaut (100). Pour l'instance 2, inverser : DIST-1 à 100, DIST-2 à 120.
+- `standby 10 preempt delay minimum 30` : obligatoire pour un comportement déterministe. Sans `preempt`, si DIST-1 reboot, DIST-2 garde la VIP définitivement même quand DIST-1 revient. Le `delay minimum 30` laisse OSPF converger avant de reprendre la VIP — sans ce délai, DIST-1 reprend la VIP mais n'a peut-être pas encore ses routes OSPF, causant un blackhole.
+- `standby 10 authentication md5 key-string` : optionnel mais recommandé. Protège contre un équipement parasite qui enverrait des annonces VRRP avec une priorité maximale (255) pour voler la VIP.
+- `standby 10 timers 1 3` : optionnel (c'est le défaut de VRRP v2/v3 : hello 1s, dead 3s). Peut être réduit avec `msec` pour une convergence sub-seconde au prix d'un trafic de contrôle plus élevé.
+- `standby 10 track 10 decrement 30` : optionnel mais important. Si l'objet track 10 (uplink Core) tombe, la priorité diminue de 30 pts. 120 - 30 = 90 < 100 (priorité de DIST-2) → DIST-2 devient master. Sans tracking, DIST-1 garde la VIP même s'il a perdu son lien vers le Core — tous les paquets envoyés à la passerelle seraient droppés silencieusement.
+
+Étape 2 — Créer les objets track
+
+```
+track 10 interface GigabitEthernetX/Y line-protocol   ! uplink vers Core-1
+track 20 interface GigabitEthernetX/Z line-protocol   ! uplink vers Core-2
+
+! Optionnel : track composite (décrement seulement si les DEUX uplinks tombent)
+track 99 list boolean or
+ object 10
+ object 20
+```
+
+- Un track composite avec `boolean or` déclenche le décrement uniquement si les deux uplinks sont down simultanément. Si un seul est down, la Distribution garde la VIP car elle peut encore router via l'autre lien.
+
+Répéter la configuration VRRP pour chaque VLAN (20, 30, 40, 41, 42, 50, 90) en alternant les priorités selon l'instance MST : priorité 120 sur DIST-1 pour l'instance 1 (VLAN 10, 30, 40, 42, 50), priorité 120 sur DIST-2 pour l'instance 2 (VLAN 20, 41, 90, 999).
+
+**Vérification**
+
+```
+show standby brief                    ! résumé de tous les groupes VRRP
+show standby vlan 10                  ! détail du groupe, timers, priorité
+show track 10                         ! état de l'objet track (Up/Down)
+```
+
+**Timers.** Les timers hello/dead VRRP par défaut sont 1s/3s. En production, cela donne une bascule en 3 secondes maximum. C'est acceptable. Des timers plus courts (ex. 200ms/600ms via `standby X timers msec 200 msec 600`) accélèrent la convergence mais augmentent la charge CPU et le trafic de contrôle. On garde les timers par défaut pour ce projet.
+
+### 4.3.8) DHCP Relay
+
+**Concept**
+
+DHCP Discover et Request sont des broadcasts (dst 255.255.255.255) qui ne traversent pas les routeurs. Sans relay, les endpoints ne peuvent contacter qu'un serveur DHCP local à leur segment. `ip helper-address` transforme ce broadcast en unicast UDP vers le serveur DHCP centralisé. La Distribution remplit le champ `giaddr` avec l'IP de sa SVI ; le serveur DHCP s'en sert pour allouer une IP du bon pool.
+
+**Configuration**
+
+```
+interface Vlan10
+ ip helper-address 10.2.103.10   ! ISC Kea, Phase 2, VLAN PROD-INFRA
+```
+
+- `ip helper-address` : obligatoire sur chaque SVI utilisateur. Répétable pour deux serveurs en redondance (les deux reçoivent la requête, le premier à répondre l'emporte).
+
+Appliquer sur tous les VLAN 10, 20, 30, 40, 41, 42, 50, 90.
+
+Restriction optionnelle aux seuls paquets DHCP (élimine les autres protocoles relayés par défaut) :
+
+```
+no ip forward-protocol udp 69    ! TFTP
+no ip forward-protocol udp 37    ! Time
+no ip forward-protocol udp 49    ! TACACS
+no ip forward-protocol udp 53    ! DNS
+no ip forward-protocol udp 137   ! NetBIOS Name
+no ip forward-protocol udp 138   ! NetBIOS Datagram
+ip forward-protocol udp 67       ! DHCP uniquement
+```
+
+**Vérification**
+
+```
+show ip helper-address           ! relay configurés par interface
+```
+
+### 4.3.9) OSPF area 0
+
+**Concept**
+
+OSPF (Open Shortest Path First, RFC 2328) est un protocole de routage à état de lien. Chaque routeur OSPF construit une carte topologique complète du réseau (la LSDB — Link State Database) et calcule les meilleurs chemins via l'algorithme de Dijkstra. Contrairement à RIP (vecteur de distance, limité à 15 sauts, convergence lente), OSPF converge rapidement, supporte des réseaux de grande taille, et ne souffre pas des boucles de routage.
+
+Dans ce projet, une seule area OSPF (area 0 — backbone) couvre l'ensemble de l'infrastructure LAN et DC. Les Distribution y participent en formant des adjacences avec les Core sur les uplinks L3 /31 et en annonçant leurs préfixes SVI (subnets utilisateurs).
+
+**Choix de l'IGP**
+
+| Protocol | Standard | Convergence | Complexité | Usage typique |
+|---|---|---|---|---|
+| RIP v2 | RFC 2453 | Lente (30s updates) | Faible | Réseaux très petits, déprécié |
+| EIGRP | Cisco propriétaire | Rapide | Modérée | Réseaux Cisco purs |
+| OSPF | RFC 2328 (IEEE) | Rapide | Modérée | Universellement déployé |
+| IS-IS | ISO 10589 / RFC 1195 | Rapide | Élevée | ISP, très grands réseaux |
+
+EIGRP est propriétaire Cisco. OSPF est le standard ouvert qui fonctionne sur tous les équipements (Cisco, Arista, pfSense/FRR, Linux BIRD, etc.). Dans cette infra multi-constructeur, OSPF est le seul choix cohérent.
+
+**Configuration (DIST-1)**
+
+Étape 1 — Démarrer le processus OSPF
+
+```
+router ospf 1
+ router-id 10.0.0.31
+ passive-interface default
+ no passive-interface GigabitEthernetX/Y   ! uplink Core-1
+ no passive-interface GigabitEthernetX/Z   ! uplink Core-2
+```
+
+- `router ospf 1` : obligatoire. Le numéro de processus (1) est local au routeur — il n'a pas besoin d'être identique chez les voisins.
+- `router-id 10.0.0.31` : obligatoire. Identifiant unique dans le domaine OSPF. Utiliser l'IP de la Loopback0 pour la stabilité (une loopback ne tombe jamais).
+- `passive-interface default` : obligatoire pour la sécurité. Met toutes les interfaces en mode passif (pas de Hello OSPF envoyé). On retire ensuite les interfaces voulues.
+- `no passive-interface GigX/Y` : obligatoire sur les uplinks Core. OSPF formera des adjacences sur ces interfaces uniquement. Les SVI restent passives : leurs préfixes sont annoncés dans OSPF mais OSPF n'envoie pas de Hello sur les VLAN utilisateurs.
+
+Étape 2 — Annoncer les préfixes
+
+```
+router ospf 1
+ network 10.0.40.X 0.0.0.1 area 0     ! lien uplink Core-1 (/31)
+ network 10.0.40.Y 0.0.0.1 area 0     ! lien uplink Core-2 (/31)
+ network 10.1.10.0 0.0.0.255 area 0   ! SVI VLAN 10
+ network 10.1.20.0 0.0.0.255 area 0   ! SVI VLAN 20
+ network 10.1.30.0 0.0.0.255 area 0
+ network 10.1.40.0 0.0.0.255 area 0
+ network 10.1.41.0 0.0.0.255 area 0
+ network 10.1.42.0 0.0.0.255 area 0
+ network 10.1.50.0 0.0.0.255 area 0
+ network 10.1.90.0 0.0.0.255 area 0
+ network 10.254.0.0 0.0.0.255 area 0  ! SVI MGMT
+ network 10.0.0.31 0.0.0.0 area 0     ! Loopback
+```
+
+- `network X.X.X.X W.W.W.W area 0` : obligatoire. Annonce les interfaces dont l'IP matche le préfixe. Le wildcard `0.0.0.1` sur un /31 matche les deux IP du lien.
+- Les SVI sont en `passive-interface` (pas de Hello vers les endpoints) mais leurs préfixes sont quand même annoncés via ces `network` statements.
+
+Étape 3 — Authentification OSPF (optionnel mais recommandé)
+
+```
+router ospf 1
+ area 0 authentication message-digest
+
+interface GigabitEthernetX/Y    ! uplink Core-1
+ ip ospf message-digest-key 1 md5 <ospf-key>
+```
+
+- L'authentification MD5 protège contre l'injection de fausses LSA (Link State Advertisements) par un équipement non-autorisé qui formerait une adjacence OSPF parasite pour manipuler les tables de routage.
+
+**Vérification**
+
+```
+show ip ospf neighbor              ! adjacences OSPF (état FULL sur tous les liens)
+show ip ospf database              ! LSDB complète
+show ip route ospf                 ! routes O installées dans la table de routage
+show ip ospf interface brief       ! interfaces participantes, coût, état
+```
+
+### 4.3.10) Supervision
+
+La configuration de supervision est identique à celle des Access (section 4.2.14) avec les IP de management spécifiques à chaque Distribution, et sans `ip default-gateway` (le routage est actif via `ip routing` et OSPF).
+
+**Configuration**
+
+```
+interface vlan 999
+ ip address 10.254.0.31 255.255.255.0   ! DIST-1: .31, DIST-2: .32
+
+! NTP
+ntp server 10.2.103.10 prefer
+ntp update-calendar
+clock timezone CET 1
+clock summer-time CEST recurring last Sun Mar 2:00 last Sun Oct 3:00
+
+! Syslog
+logging on
+logging host 10.4.306.10 transport udp port 514
+logging source-interface vlan 999
+logging trap informational
+logging buffered 16384 informational
+
+! SNMPv3
+snmp-server group MONITORING v3 priv
+snmp-server user snmp-monitor MONITORING v3 auth sha <auth-key> priv aes 128 <priv-key>
+snmp-server host 10.4.302.10 version 3 priv snmp-monitor
+snmp-server enable traps
+snmp-server location GNS3-HomeLab-DIST
+snmp-server contact admin@homelab.local
+```
+
+**Vérification**
+
+```
+show ntp status
+show logging
+show snmp user
+```
+
+### 4.3.11) Synthèse des interfaces par équipement (bloc 1)
+
+**DIST-1 — interfaces :**
+
+| Interface | Type | VLAN / IP | Rôle |
+|---|---|---|---|
+| Gi0/0 | trunk | VLAN 10,20,30,40,41,42,50,90,999 | Downlink vers ACC-1 |
+| Gi0/1 | trunk | VLAN 10,20,30,40,41,42,50,90,999 | Downlink vers ACC-2 |
+| Gi0/2 | L3 routed | `10.0.40.0/31` | Uplink Core-1 |
+| Gi0/3 | L3 routed | `10.0.40.4/31` | Uplink Core-2 |
+| Po1 | trunk (LACP) | tous VLAN bloc | Peer-link DIST-2 |
+| Vlan10 | SVI | `10.1.10.2/24` | Passerelle USERS bloc 1 |
+| Vlan20 | SVI | `10.1.20.2/24` | Passerelle VOICE bloc 1 |
+| Vlan30 | SVI | `10.1.30.2/24` | Passerelle IOT bloc 1 |
+| Vlan40 | SVI | `10.1.40.2/24` | Passerelle WIFI-CORP bloc 1 |
+| Vlan41 | SVI | `10.1.41.2/24` | Passerelle WIFI-GUEST bloc 1 |
+| Vlan42 | SVI | `10.1.42.2/24` | Passerelle WIFI-BYOD bloc 1 |
+| Vlan50 | SVI | `10.1.50.2/24` | Passerelle PRINTERS bloc 1 |
+| Vlan90 | SVI | `10.1.90.2/24` | Passerelle LAB-DEV bloc 1 |
+| Vlan999 | SVI | `10.254.0.31/24` | Management DIST-1 |
+| Loopback0 | loopback | `10.0.0.31/32` | Router-ID OSPF |
+
+**DIST-2 — interfaces :** idem avec décalage d'adresse (.3 sur les SVI, IP uplink Core selon plan, `10.254.0.32` pour MGMT, loopback `10.0.0.32`).
+
+## 4.4) Switches Core LAN (CORE-1, CORE-2)
+
+*À rédiger.*
+
+## 4.5) Spine DC (SPINE-1, SPINE-2)
+
+*À rédiger.*
+
+## 4.6) Leaf DC (LEAF-1, LEAF-2, LEAF-3)
+
+*À rédiger.*
+
+## 4.7) Hyperviseurs Proxmox (HV-1, HV-2, HV-3)
+
+*À rédiger.*
+
+## 4.8) Firewall pfSense HA (FW-1, FW-2)
+
+*À rédiger.*
+
+## 4.9) Scénarios de validation et tests
+
+*À rédiger.*
+
+# 5) Déploiement et configuration des services
+
+*À venir — Phase 2.*
+
+# 6) Mise en conformité des SI
+
+*À venir — Phase 3.*
 
