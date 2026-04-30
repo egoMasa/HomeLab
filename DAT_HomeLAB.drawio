@@ -1220,170 +1220,278 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-2" parent="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;" value="Mécanisme de chiffrement TLS / HTTPS — Trois scénarios de certification" vertex="1">
-          <mxGeometry height="40" width="1360" x="553" y="561" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-56" parent="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;" value="Mécanisme de chiffrement TLS / HTTPS — Trois scénarios de certification et cycle de vie" vertex="1">
+          <mxGeometry height="40" width="1360" x="99.99947368421061" y="340.00209241365144" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;" value="Cas 1 — CA publique reconnue&#xa;(Let&#39;s Encrypt, TCS via RENATER, Sectigo...)" vertex="1">
-          <mxGeometry height="60" width="440" x="553" y="611" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-57" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;" value="Cas 1 — CA publique reconnue&#xa;(p. ex. Let&#39;s Encrypt, Sectigo, DigiCert, GlobalSign...)" vertex="1">
+          <mxGeometry height="60" width="440" x="99.99947368421061" y="390.00209241365144" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-4" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 1 — Provisionnement du certificat" vertex="1">
-          <mxGeometry height="20" width="440" x="553" y="681" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-58" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 1 — Provisionnement du certificat" vertex="1">
+          <mxGeometry height="20" width="440" x="99.99947368421061" y="460.00209241365144" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Serveur web&lt;br&gt;(service.exemple.fr)" vertex="1">
-          <mxGeometry height="50" width="160" x="573" y="716" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-59" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Serveur web&#xa;(service.example.com)" vertex="1">
+          <mxGeometry height="50" width="160" x="119.99947368421061" y="495.00209241365144" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="CA publique&#xa;(Let&#39;s Encrypt)" vertex="1">
-          <mxGeometry height="50" width="160" x="813" y="716" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-60" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="CA publique&#xa;(Let&#39;s Encrypt)" vertex="1">
+          <mxGeometry height="50" width="160" x="359.9994736842106" y="495.00209241365144" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-7" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-5" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" target="gYzar1hWAHHiH-qcRbtI-6">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="733" y="729" as="sourcePoint" />
-            <mxPoint x="813" y="729" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-8" parent="1" style="text;html=1;align=center;fontSize=10;" value="① CSR + validation ACME" vertex="1">
-          <mxGeometry height="20" width="155" x="738" y="711" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-9" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-6" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" target="gYzar1hWAHHiH-qcRbtI-5">
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-61" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-59" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" target="gYzar1hWAHHiH-qcRbtI-60">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-10" parent="1" style="text;html=1;align=center;fontSize=10;" value="② Certificat signé" vertex="1">
-          <mxGeometry height="20" width="135" x="748" y="751" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-62" parent="1" style="text;html=1;align=center;fontSize=10;" value="① CSR + validation ACME" vertex="1">
+          <mxGeometry height="20" width="155" x="284.9994736842106" y="490.00209241365144" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-11" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 2 — Établissement de la connexion HTTPS" vertex="1">
-          <mxGeometry height="20" width="440" x="553" y="786" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-12" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Client&#xa;(navigateur)" vertex="1">
-          <mxGeometry height="50" width="160" x="573" y="821" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-13" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Serveur web" vertex="1">
-          <mxGeometry height="50" width="160" x="813" y="821" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-14" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-12" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=1;exitY=0.25;entryX=0;entryY=0.25;" target="gYzar1hWAHHiH-qcRbtI-13">
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-63" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-60" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" target="gYzar1hWAHHiH-qcRbtI-59">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-15" parent="1" style="text;html=1;align=center;fontSize=10;" value="③ ClientHello (TLS) + SNI" vertex="1">
-          <mxGeometry height="20" width="155" x="738" y="816" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-64" parent="1" style="text;html=1;align=center;fontSize=10;" value="② Certificat signé" vertex="1">
+          <mxGeometry height="20" width="135" x="294.9994736842106" y="530.0020924136514" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-16" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-13" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=0;exitY=0.75;entryX=1;entryY=0.75;" target="gYzar1hWAHHiH-qcRbtI-12">
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-65" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 2 — Établissement de la connexion HTTPS" vertex="1">
+          <mxGeometry height="20" width="440" x="99.99947368421061" y="565.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-66" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Client&#xa;(navigateur)" vertex="1">
+          <mxGeometry height="50" width="160" x="119.99947368421061" y="600.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-67" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Serveur web" vertex="1">
+          <mxGeometry height="50" width="160" x="359.9994736842106" y="600.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-68" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-66" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=1;exitY=0.25;entryX=0;entryY=0.25;" target="gYzar1hWAHHiH-qcRbtI-67">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-17" parent="1" style="text;html=1;align=center;fontSize=10;" value="④ Certificat + chaîne intermédiaire" vertex="1">
-          <mxGeometry height="20" width="200" x="728" y="856" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-69" parent="1" style="text;html=1;align=center;fontSize=10;" value="③ ClientHello (TLS) + SNI" vertex="1">
+          <mxGeometry height="20" width="155" x="284.9994736842106" y="595.0020924136514" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-18" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 3 — Validation par le navigateur" vertex="1">
-          <mxGeometry height="20" width="440" x="553" y="896" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-19" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;spacingLeft=10;" value="Trust store du navigateur&#xa;&#xa;• CA Let&#39;s Encrypt présente par défaut&#xa;• Chaîne de signature valide&#xa;• Nom de domaine concordant (CN/SAN)&#xa;• Certificat non expiré, non révoqué (OCSP/CRL)" vertex="1">
-          <mxGeometry height="120" width="400" x="573" y="931" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-20" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="✓ Connexion établie sans alerte&#xa;Cas attendu pour tout service exposé en externe" vertex="1">
-          <mxGeometry height="60" width="400" x="573" y="1071" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-21" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;" value="Cas 2 — CA interne (PKI organisation)&lt;br&gt;(p. ex. AD Certificate Services )" vertex="1">
-          <mxGeometry height="60" width="440" x="1013" y="611" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-22" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 1 — Provisionnement du certificat" vertex="1">
-          <mxGeometry height="20" width="440" x="1013" y="681" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-23" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Serveur interne&lt;br&gt;(intranet..local)" vertex="1">
-          <mxGeometry height="50" width="160" x="1033" y="716" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-24" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" value="CA interne AMU&#xa;(PKI organisation)" vertex="1">
-          <mxGeometry height="50" width="160" x="1273" y="716" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-25" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-23" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=1;exitY=0.25;entryX=0;entryY=0.25;" target="gYzar1hWAHHiH-qcRbtI-24">
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-70" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-67" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=0;exitY=0.75;entryX=1;entryY=0.75;" target="gYzar1hWAHHiH-qcRbtI-66">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-26" parent="1" style="text;html=1;align=center;fontSize=10;" value="① CSR (interne)" vertex="1">
-          <mxGeometry height="20" width="155" x="1198" y="711" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-71" parent="1" style="text;html=1;align=center;fontSize=10;" value="④ Certificat + chaîne intermédiaire" vertex="1">
+          <mxGeometry height="20" width="200" x="274.9994736842106" y="635.0020924136514" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-27" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-24" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=0;exitY=0.75;entryX=1;entryY=0.75;" target="gYzar1hWAHHiH-qcRbtI-23">
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-72" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 3 — Validation par le navigateur" vertex="1">
+          <mxGeometry height="20" width="440" x="99.99947368421061" y="675.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-73" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;spacingLeft=10;" value="Trust store du navigateur&#xa;&#xa;• CA Let&#39;s Encrypt présente par défaut&#xa;• Chaîne de signature valide&#xa;• Nom de domaine concordant (CN/SAN)&#xa;• Certificat non expiré, non révoqué (OCSP/CRL)" vertex="1">
+          <mxGeometry height="120" width="400" x="119.99947368421061" y="710.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-74" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="✓ Connexion établie sans alerte&#xa;Cas attendu pour tout service exposé en externe" vertex="1">
+          <mxGeometry height="60" width="400" x="119.99947368421061" y="850.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-75" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;" value="Cas 2 — CA interne (PKI organisation)&#xa;(p. ex. AD Certificate Services, EJBCA, smallstep step-ca)" vertex="1">
+          <mxGeometry height="60" width="440" x="559.9994736842107" y="390.00209241365144" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-76" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 1 — Provisionnement du certificat" vertex="1">
+          <mxGeometry height="20" width="440" x="559.9994736842107" y="460.00209241365144" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-77" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Serveur interne&#xa;(intranet.example.local)" vertex="1">
+          <mxGeometry height="50" width="160" x="579.9994736842107" y="495.00209241365144" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-78" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" value="CA interne&#xa;(PKI organisation)" vertex="1">
+          <mxGeometry height="50" width="160" x="819.9994736842107" y="495.00209241365144" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-79" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-77" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=1;exitY=0.25;entryX=0;entryY=0.25;" target="gYzar1hWAHHiH-qcRbtI-78">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-28" parent="1" style="text;html=1;align=center;fontSize=10;" value="② Certificat signé" vertex="1">
-          <mxGeometry height="20" width="135" x="1208" y="751" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-80" parent="1" style="text;html=1;align=center;fontSize=10;" value="① CSR (interne)" vertex="1">
+          <mxGeometry height="20" width="155" x="744.9994736842107" y="490.00209241365144" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-29" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 2 — Établissement de la connexion HTTPS" vertex="1">
-          <mxGeometry height="20" width="440" x="1013" y="786" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-30" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Poste interne&#xa;(navigateur AMU)" vertex="1">
-          <mxGeometry height="50" width="160" x="1033" y="821" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-31" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Serveur interne" vertex="1">
-          <mxGeometry height="50" width="160" x="1273" y="821" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-32" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-30" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=1;exitY=0.25;entryX=0;entryY=0.25;" target="gYzar1hWAHHiH-qcRbtI-31">
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-81" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-78" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=0;exitY=0.75;entryX=1;entryY=0.75;" target="gYzar1hWAHHiH-qcRbtI-77">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-33" parent="1" style="text;html=1;align=center;fontSize=10;" value="③ ClientHello (TLS) + SNI" vertex="1">
-          <mxGeometry height="20" width="155" x="1198" y="816" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-82" parent="1" style="text;html=1;align=center;fontSize=10;" value="② Certificat signé" vertex="1">
+          <mxGeometry height="20" width="135" x="754.9994736842107" y="530.0020924136514" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-34" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-31" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=0;exitY=0.75;entryX=1;entryY=0.75;" target="gYzar1hWAHHiH-qcRbtI-30">
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-83" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 2 — Établissement de la connexion HTTPS" vertex="1">
+          <mxGeometry height="20" width="440" x="559.9994736842107" y="565.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-84" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Poste géré&#xa;(parc interne)" vertex="1">
+          <mxGeometry height="50" width="160" x="579.9994736842107" y="600.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-85" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Serveur interne" vertex="1">
+          <mxGeometry height="50" width="160" x="819.9994736842107" y="600.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-86" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-84" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=1;exitY=0.25;entryX=0;entryY=0.25;" target="gYzar1hWAHHiH-qcRbtI-85">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-35" parent="1" style="text;html=1;align=center;fontSize=10;" value="④ Certificat (signé par CA interne)" vertex="1">
-          <mxGeometry height="20" width="220" x="1173" y="856" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-87" parent="1" style="text;html=1;align=center;fontSize=10;" value="③ ClientHello (TLS) + SNI" vertex="1">
+          <mxGeometry height="20" width="155" x="744.9994736842107" y="595.0020924136514" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-36" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 3 — Validation par le navigateur" vertex="1">
-          <mxGeometry height="20" width="440" x="1013" y="896" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-37" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;spacingLeft=10;" value="Trust store du navigateur&#xa;&#xa;• Si racine CA AMU pré-déployée (GPO, MDM) :&#xa;   → reconnue, validation OK&#xa;• Si poste hors-domaine, externe, BYOD non géré :&#xa;   → CA inconnue, échec de validation" vertex="1">
-          <mxGeometry height="120" width="400" x="1033" y="931" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-38" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" value="✓/✗ Selon poste : adapté aux services internes&#xa;Inadapté à toute exposition externe" vertex="1">
-          <mxGeometry height="60" width="400" x="1033" y="1071" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-39" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=12;" value="Cas 3 — Certificat auto-signé&#xa;(Issuer = Subject : le serveur se signe lui-même)" vertex="1">
-          <mxGeometry height="60" width="440" x="1473" y="611" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-40" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 1 — Provisionnement du certificat" vertex="1">
-          <mxGeometry height="20" width="440" x="1473" y="681" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-41" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="Serveur&#xa;(génère sa clé et signe lui-même)" vertex="1">
-          <mxGeometry height="50" width="180" x="1633" y="716" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-42" parent="1" style="text;html=1;align=center;fontSize=10;fontStyle=2;verticalAlign=middle;" value="① Aucune autorité tierce&#xa;Issuer = Subject" vertex="1">
-          <mxGeometry height="40" width="140" x="1493" y="721" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-43" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 2 — Établissement de la connexion HTTPS" vertex="1">
-          <mxGeometry height="20" width="440" x="1473" y="786" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-44" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Client&#xa;(navigateur quelconque)" vertex="1">
-          <mxGeometry height="50" width="160" x="1493" y="821" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-45" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="Serveur" vertex="1">
-          <mxGeometry height="50" width="160" x="1733" y="821" as="geometry" />
-        </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-46" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-44" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=1;exitY=0.25;entryX=0;entryY=0.25;" target="gYzar1hWAHHiH-qcRbtI-45">
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-88" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-85" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=0;exitY=0.75;entryX=1;entryY=0.75;" target="gYzar1hWAHHiH-qcRbtI-84">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-47" parent="1" style="text;html=1;align=center;fontSize=10;" value="③ ClientHello (TLS) + SNI" vertex="1">
-          <mxGeometry height="20" width="155" x="1658" y="816" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-89" parent="1" style="text;html=1;align=center;fontSize=10;" value="④ Certificat (signé par CA interne)" vertex="1">
+          <mxGeometry height="20" width="220" x="719.9994736842107" y="635.0020924136514" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-48" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-45" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=0;exitY=0.75;entryX=1;entryY=0.75;" target="gYzar1hWAHHiH-qcRbtI-44">
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-90" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 3 — Validation par le navigateur" vertex="1">
+          <mxGeometry height="20" width="440" x="559.9994736842107" y="675.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-91" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;spacingLeft=10;" value="Trust store du navigateur&#xa;&#xa;• Si racine CA interne pré-déployée (GPO, MDM) :&#xa;   → reconnue, validation OK&#xa;• Si poste hors-domaine, externe, BYOD non géré :&#xa;   → CA inconnue, échec de validation" vertex="1">
+          <mxGeometry height="120" width="400" x="579.9994736842107" y="710.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-92" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" value="✓/✗ Selon poste : adapté aux services internes&#xa;Inadapté à toute exposition externe" vertex="1">
+          <mxGeometry height="60" width="400" x="579.9994736842107" y="850.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-93" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=12;" value="Cas 3 — Certificat auto-signé&#xa;(Issuer = Subject : le serveur se signe lui-même)" vertex="1">
+          <mxGeometry height="60" width="440" x="1019.9994736842107" y="390.00209241365144" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-94" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 1 — Provisionnement du certificat" vertex="1">
+          <mxGeometry height="20" width="440" x="1019.9994736842107" y="460.00209241365144" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-95" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="Serveur&#xa;(génère sa clé et signe lui-même)" vertex="1">
+          <mxGeometry height="50" width="180" x="1179.9994736842107" y="495.00209241365144" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-96" parent="1" style="text;html=1;align=center;fontSize=10;fontStyle=2;verticalAlign=middle;" value="① Aucune autorité tierce&#xa;Issuer = Subject" vertex="1">
+          <mxGeometry height="40" width="140" x="1039.9994736842107" y="500.00209241365144" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-97" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 2 — Établissement de la connexion HTTPS" vertex="1">
+          <mxGeometry height="20" width="440" x="1019.9994736842107" y="565.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-98" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Client&#xa;(navigateur quelconque)" vertex="1">
+          <mxGeometry height="50" width="160" x="1039.9994736842107" y="600.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-99" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="Serveur" vertex="1">
+          <mxGeometry height="50" width="160" x="1279.9994736842107" y="600.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-100" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-98" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=1;exitY=0.25;entryX=0;entryY=0.25;" target="gYzar1hWAHHiH-qcRbtI-99">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-49" parent="1" style="text;html=1;align=center;fontSize=10;" value="④ Certificat (auto-signé)" vertex="1">
-          <mxGeometry height="20" width="150" x="1663" y="856" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-101" parent="1" style="text;html=1;align=center;fontSize=10;" value="③ ClientHello (TLS) + SNI" vertex="1">
+          <mxGeometry height="20" width="155" x="1204.9994736842107" y="595.0020924136514" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-50" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 3 — Validation par le navigateur" vertex="1">
-          <mxGeometry height="20" width="440" x="1473" y="896" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-102" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-99" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=0;exitY=0.75;entryX=1;entryY=0.75;" target="gYzar1hWAHHiH-qcRbtI-98">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-51" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;spacingLeft=10;" value="Trust store du navigateur&#xa;&#xa;• Issuer = Subject : aucune autorité tierce&#xa;• Aucune CA correspondante dans le trust store&#xa;• Échec systématique de la validation&#xa;• Alerte de sécurité affichée à l&#39;utilisateur" vertex="1">
-          <mxGeometry height="120" width="400" x="1493" y="931" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-103" parent="1" style="text;html=1;align=center;fontSize=10;" value="④ Certificat (auto-signé)" vertex="1">
+          <mxGeometry height="20" width="150" x="1209.9994736842107" y="635.0020924136514" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-52" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" value="✗ Alerte de sécurité affichée&#xa;Acceptable uniquement en labo isolé / défaut de configuration en production" vertex="1">
-          <mxGeometry height="60" width="400" x="1493" y="1071" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-104" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=11;" value="Phase 3 — Validation par le navigateur" vertex="1">
+          <mxGeometry height="20" width="440" x="1019.9994736842107" y="675.0020924136514" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-53" parent="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;" value="Note 1 — La phase 2 (handshake TLS) suit le même mécanisme dans les trois cas. Ce qui diffère, c&#39;est la phase 1 (qui signe le certificat) et la phase 3 (ce que le navigateur reconnaît dans son trust store)." vertex="1">
-          <mxGeometry height="30" width="1360" x="553" y="1161" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-105" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;spacingLeft=10;" value="Trust store du navigateur&#xa;&#xa;• Issuer = Subject : aucune autorité tierce&#xa;• Aucune CA correspondante dans le trust store&#xa;• Échec systématique de la validation&#xa;• Alerte de sécurité affichée à l&#39;utilisateur" vertex="1">
+          <mxGeometry height="120" width="400" x="1039.9994736842107" y="710.0020924136514" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-54" parent="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;" value="Note 2 — Une fois le certificat validé, une clé de session symétrique est négociée à partir de la clé publique du serveur. C&#39;est cette clé de session qui chiffre l&#39;ensemble des échanges applicatifs (HTTP) qui suivent." vertex="1">
-          <mxGeometry height="30" width="1360" x="553" y="1191" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-106" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" value="✗ Alerte de sécurité affichée&#xa;Acceptable uniquement en labo isolé / défaut de configuration en production" vertex="1">
+          <mxGeometry height="60" width="400" x="1039.9994736842107" y="850.0020924136514" as="geometry" />
         </mxCell>
-        <mxCell id="gYzar1hWAHHiH-qcRbtI-55" parent="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;" value="Note 3 — Sur un même serveur web hébergeant plusieurs virtual hosts, l&#39;extension SNI (Server Name Indication) permet au client d&#39;annoncer dès le début du handshake quel hostname il cherche à atteindre. Le serveur peut alors présenter le certificat associé à ce virtual host. Un certificat peut couvrir plusieurs noms via SAN ou un wildcard." vertex="1">
-          <mxGeometry height="40" width="1360" x="553" y="1221" as="geometry" />
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-107" parent="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;" value="Note 1 — La phase 2 (handshake TLS) suit le même mécanisme dans les trois cas. Ce qui diffère, c&#39;est la phase 1 (qui signe le certificat) et la phase 3 (ce que le navigateur reconnaît dans son trust store)." vertex="1">
+          <mxGeometry height="30" width="1360" x="99.99947368421061" y="940.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-108" parent="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;" value="Note 2 — Une fois le certificat validé, une clé de session symétrique est négociée à partir de la clé publique du serveur. C&#39;est cette clé de session qui chiffre l&#39;ensemble des échanges applicatifs (HTTP) qui suivent." vertex="1">
+          <mxGeometry height="30" width="1360" x="99.99947368421061" y="970.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-109" parent="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;" value="Note 3 — Sur un même serveur web hébergeant plusieurs virtual hosts, l&#39;extension SNI (Server Name Indication) permet au client d&#39;annoncer dès le début du handshake quel hostname il cherche à atteindre. Le serveur peut alors présenter le certificat associé à ce virtual host. Un certificat peut couvrir plusieurs noms via SAN ou un wildcard." vertex="1">
+          <mxGeometry height="40" width="1360" x="99.99947368421061" y="1000.0020924136514" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-110" parent="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="Cycle de vie automatisé du certificat — Deux approches" vertex="1">
+          <mxGeometry height="40" width="1360" x="99.99947368421061" y="1070.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-111" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=12;" value="Approche A — Agent ACME local (décentralisé)" vertex="1">
+          <mxGeometry height="40" width="670" x="99.99947368421061" y="1130.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-112" parent="1" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=none;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fontStyle=2;fontSize=10;" value="Hôte du serveur (machine de production)" vertex="1">
+          <mxGeometry height="500" width="400" x="119.99947368421061" y="1190.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-113" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Cron / systemd timer&#xa;(exécution quotidienne)" vertex="1">
+          <mxGeometry height="60" width="340" x="149.9994736842106" y="1230.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-114" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Agent ACME&#xa;Certbot, mod_md (Apache), ou intégration native :&#xa;Caddy, Traefik, nginx récent" vertex="1">
+          <mxGeometry height="80" width="340" x="149.9994736842106" y="1320.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-115" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Reverse proxy / serveur web&#xa;Nginx, Apache, HAProxy, Caddy, Traefik" vertex="1">
+          <mxGeometry height="70" width="340" x="149.9994736842106" y="1510.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-116" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="✓ Service avec certificat à jour&#xa;Reload sans coupure de service" vertex="1">
+          <mxGeometry height="60" width="340" x="149.9994736842106" y="1610.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-117" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="CA publique&#xa;(Let&#39;s Encrypt)" vertex="1">
+          <mxGeometry height="60" width="180" x="579.9994736842107" y="1340.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-118" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-113" style="endArrow=classic;html=1;rounded=0;fontSize=10;" target="gYzar1hWAHHiH-qcRbtI-114">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-119" parent="1" style="text;html=1;align=center;fontSize=10;" value="① Déclenchement&#xa;quotidien" vertex="1">
+          <mxGeometry height="34" width="140" x="279.9994736842106" y="1288.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-120" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-114" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=1;exitY=0.25;entryX=0;entryY=0.25;" target="gYzar1hWAHHiH-qcRbtI-117">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-121" parent="1" style="text;html=1;align=center;fontSize=10;" value="② Si expiration &lt; 30j :&#xa;CSR + challenge ACME&#xa;(HTTP-01 ou DNS-01)" vertex="1">
+          <mxGeometry height="40" width="200" x="489.99947368421067" y="1320.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-122" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-117" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=0;exitY=0.75;entryX=1;entryY=0.75;" target="gYzar1hWAHHiH-qcRbtI-114">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-123" parent="1" style="text;html=1;align=center;fontSize=10;" value="③ Certificat signé" vertex="1">
+          <mxGeometry height="20" width="180" x="499.99947368421067" y="1382.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-124" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-114" style="endArrow=classic;html=1;rounded=0;fontSize=10;" target="gYzar1hWAHHiH-qcRbtI-115">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-125" parent="1" style="text;html=1;align=center;fontSize=10;" value="④ Installation + reload" vertex="1">
+          <mxGeometry height="20" width="210" x="214.9994736842106" y="1460.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-126" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-115" style="endArrow=classic;html=1;rounded=0;fontSize=10;" target="gYzar1hWAHHiH-qcRbtI-116">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-127" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=12;" value="Approche B — Plateforme PKI centralisée (open source)" vertex="1">
+          <mxGeometry height="40" width="670" x="789.9994736842107" y="1130.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-128" parent="1" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=none;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fontStyle=2;fontSize=10;" value="Plateforme centrale de gestion" vertex="1">
+          <mxGeometry height="500" width="400" x="809.9994736842107" y="1190.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-129" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Inventaire centralisé&#xa;(découverte continue + suivi des expirations)" vertex="1">
+          <mxGeometry height="60" width="340" x="839.9994736842107" y="1230.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-130" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Cert Manager / PKI&#xa;HashiCorp Vault, smallstep step-ca, EJBCA" vertex="1">
+          <mxGeometry height="80" width="340" x="839.9994736842107" y="1320.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-131" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Distribution multi-cibles&#xa;API push, pull-agent, consul-template, sidecar Vault" vertex="1">
+          <mxGeometry height="70" width="340" x="839.9994736842107" y="1510.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-132" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="✓ Tableau de bord centralisé&#xa;Alertes anticipées + audit + rotation automatisée" vertex="1">
+          <mxGeometry height="60" width="340" x="839.9994736842107" y="1610.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-133" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="CA source&#xa;(externe via ACME&#xa;ou CA interne propre)" vertex="1">
+          <mxGeometry height="70" width="180" x="1259.9994736842107" y="1330.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-134" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Parc de serveurs cibles&#xa;(reverse proxies, applis, équipements réseau)" vertex="1">
+          <mxGeometry height="70" width="180" x="1259.9994736842107" y="1510.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-135" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-129" style="endArrow=classic;html=1;rounded=0;fontSize=10;" target="gYzar1hWAHHiH-qcRbtI-130">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-136" parent="1" style="text;html=1;align=center;fontSize=10;" value="① Alerte expiration imminente" vertex="1">
+          <mxGeometry height="34" width="260" x="879.9994736842107" y="1288.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-137" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-130" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=1;exitY=0.25;entryX=0;entryY=0.25;" target="gYzar1hWAHHiH-qcRbtI-133">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-138" parent="1" style="text;html=1;align=center;fontSize=10;" value="② Demande&#xa;de signature" vertex="1">
+          <mxGeometry height="34" width="100" x="1179.9994736842107" y="1320.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-139" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-133" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=0;exitY=0.75;entryX=1;entryY=0.75;" target="gYzar1hWAHHiH-qcRbtI-130">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-140" parent="1" style="text;html=1;align=center;fontSize=10;" value="③ Cert signé" vertex="1">
+          <mxGeometry height="20" width="100" x="1179.9994736842107" y="1378.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-141" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-130" style="endArrow=classic;html=1;rounded=0;fontSize=10;" target="gYzar1hWAHHiH-qcRbtI-131">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-142" parent="1" style="text;html=1;align=center;fontSize=10;" value="④ Push vers cibles" vertex="1">
+          <mxGeometry height="20" width="200" x="909.9994736842107" y="1460.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-143" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-131" style="endArrow=classic;html=1;rounded=0;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="gYzar1hWAHHiH-qcRbtI-134">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-144" parent="1" style="text;html=1;align=center;fontSize=10;" value="⑤ Distribution&#xa;+ reload" vertex="1">
+          <mxGeometry height="34" width="90" x="1174.9994736842107" y="1520.0020924136516" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-145" edge="1" parent="1" source="gYzar1hWAHHiH-qcRbtI-131" style="endArrow=classic;html=1;rounded=0;fontSize=10;" target="gYzar1hWAHHiH-qcRbtI-132">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gYzar1hWAHHiH-qcRbtI-146" parent="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;" value="Note — L&#39;approche A est adaptée à un parc de petite taille ou à des services autonomes (chaque serveur est responsable de son propre certificat). L&#39;approche B est requise dès que l&#39;on parle d&#39;un parc significatif et hétérogène (mix CA publiques + CA interne, équipements réseau ne supportant pas ACME nativement, exigence d&#39;audit centralisé). Les deux approches peuvent coexister." vertex="1">
+          <mxGeometry height="50" width="1360" x="99.99947368421061" y="1710.0020924136516" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
