@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" pages="6">
+<mxfile host="app.diagrams.net" pages="8">
   <diagram name="Architecture générale" id="afl-n46_FWIlyFFu-ON1">
     <mxGraphModel dx="2429" dy="2056" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -1493,6 +1493,22 @@
         <mxCell id="gYzar1hWAHHiH-qcRbtI-146" parent="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;" value="Note — L&#39;approche A est adaptée à un parc de petite taille ou à des services autonomes (chaque serveur est responsable de son propre certificat). L&#39;approche B est requise dès que l&#39;on parle d&#39;un parc significatif et hétérogène (mix CA publiques + CA interne, équipements réseau ne supportant pas ACME nativement, exigence d&#39;audit centralisé). Les deux approches peuvent coexister." vertex="1">
           <mxGeometry height="50" width="1360" x="99.99947368421061" y="1710.0020924136516" as="geometry" />
         </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="oEIhw2BIVZM3b5-Iv63b" name="DAT - Mail">
+    <mxGraphModel dx="1645" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="zORkA7gpxYQfrB4fw2-o" name="DAT - Messagerie">
+    <mxGraphModel dx="1645" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
       </root>
     </mxGraphModel>
   </diagram>
