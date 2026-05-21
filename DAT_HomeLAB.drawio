@@ -1216,7 +1216,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="VdZjnD2Sc4GzEgQafjte" name="DAT-PKI">
-    <mxGraphModel dx="2241" dy="1923" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2491" dy="2056" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1498,7 +1498,7 @@
         </mxCell>
         <mxCell id="az_JHkdRHmszSFz4APCi-18" connectable="0" parent="9Rzxn7x76GQNvkX_nVef-50" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="2. Server Hello : Présentation certificat serveur&amp;nbsp;" vertex="1">
           <mxGeometry relative="1" x="-0.1494" y="-1" as="geometry">
-            <mxPoint x="-31" y="-3" as="offset" />
+            <mxPoint x="10" y="-3" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Navigateur client" vertex="1">
@@ -1594,22 +1594,22 @@
           <mxGeometry height="110" width="200" x="600" y="320" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-19" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.key_permissions;fillColor=#DA4026;" value="" vertex="1">
-          <mxGeometry height="53" width="25" x="198.75" y="-30" as="geometry" />
+          <mxGeometry height="53" width="25" x="261.87" y="-226" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-20" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.key_permissions;fillColor=#7FBA42;" value="" vertex="1">
-          <mxGeometry height="20" width="10" x="624.48" y="-13.5" as="geometry" />
+          <mxGeometry height="20" width="10" x="750" y="-67" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-21" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Clef publique" vertex="1">
-          <mxGeometry height="30" width="75" x="240" y="-88.5" as="geometry" />
+          <mxGeometry height="30" width="75" x="303.12" y="-278.5" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-22" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Clef privée" vertex="1">
-          <mxGeometry height="30" width="75" x="223.75" y="-18.5" as="geometry" />
+          <mxGeometry height="30" width="75" x="286.87" y="-214.5" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-23" parent="1" style="points=[[0.015,0.015,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[0.985,0.015,0],[1,0.22,0],[1,0.44,0],[1,0.67,0],[0.985,0.89,0],[0,0.22,0],[0,0.44,0],[0,0.67,0],[0.015,0.89,0],[0.25,0.91,0],[0.5,0.91,0],[0.785,0.955,0]];verticalLabelPosition=bottom;sketch=0;html=1;verticalAlign=top;aspect=fixed;align=center;pointerEvents=1;shape=mxgraph.cisco19.x509_certificate2;fillColor=#FAFAFA;strokeColor=#005073;" value="" vertex="1">
-          <mxGeometry height="59.38" width="62.5" x="180" y="-230" as="geometry" />
+          <mxGeometry height="59.38" width="62.5" x="-120" y="-273" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-24" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;u&gt;Certificat x.509 :&lt;/u&gt;&lt;/b&gt;&lt;br&gt;- Subject : Domaine (CN+SAN)&lt;br&gt;- Issuer : CA Emeteur&lt;br&gt;- Validity : Période de validité (début/fin)&lt;br&gt;- Subject Public Key : Clé publique du serveur&lt;br&gt;- Extensions : Usages autorisés de la clé&lt;br&gt;- Signature : Signature du CA calculé de sa clé privée&lt;/div&gt;" vertex="1">
-          <mxGeometry height="100" width="287.5" x="252.5" y="-230" as="geometry" />
+          <mxGeometry height="100" width="287.5" x="-47.5" y="-273" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-25" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Trust Store" vertex="1">
           <mxGeometry height="22.5" width="180" x="-100" y="200" as="geometry" />
@@ -1621,13 +1621,13 @@
           <mxGeometry height="22.5" width="90" x="-10" y="228.75" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-28" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.key_permissions;fillColor=#DA4026;" value="" vertex="1">
-          <mxGeometry height="20" width="10" x="614.48" y="-13.5" as="geometry" />
+          <mxGeometry height="20" width="10" x="735" y="-67" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-29" parent="1" style="points=[[0.015,0.015,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[0.985,0.015,0],[1,0.22,0],[1,0.44,0],[1,0.67,0],[0.985,0.89,0],[0,0.22,0],[0,0.44,0],[0,0.67,0],[0.015,0.89,0],[0.25,0.91,0],[0.5,0.91,0],[0.785,0.955,0]];verticalLabelPosition=bottom;sketch=0;html=1;verticalAlign=top;aspect=fixed;align=center;pointerEvents=1;shape=mxgraph.cisco19.x509_certificate2;fillColor=#FAFAFA;strokeColor=#005073;" value="" vertex="1">
-          <mxGeometry height="20" width="21.05" x="608.95" y="25" as="geometry" />
+          <mxGeometry height="20" width="21.05" x="608.95" y="1" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-30" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.key_permissions;fillColor=#7FBA42;" value="" vertex="1">
-          <mxGeometry height="53" width="25" x="198.75" y="-100" as="geometry" />
+          <mxGeometry height="53" width="25" x="261.87" y="-290" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-31" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.key_permissions;fillColor=#DA4026;" value="" vertex="1">
           <mxGeometry height="20" width="10" x="1362.5" y="-13.5" as="geometry" />
@@ -1662,13 +1662,13 @@
         <mxCell id="9Rzxn7x76GQNvkX_nVef-44" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
           <mxGeometry height="450" width="15" x="525" y="-20" as="geometry" />
         </mxCell>
-        <mxCell id="9Rzxn7x76GQNvkX_nVef-49" edge="1" parent="1" source="9Rzxn7x76GQNvkX_nVef-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.046;entryY=0.377;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.75;exitY=0;exitDx=0;exitDy=0;" target="9Rzxn7x76GQNvkX_nVef-44">
+        <mxCell id="9Rzxn7x76GQNvkX_nVef-49" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="190" y="150" />
-              <mxPoint x="190" y="150" />
+              <mxPoint x="91" y="170" />
             </Array>
-            <mxPoint x="220" y="150" as="sourcePoint" />
+            <mxPoint x="90" y="170" as="sourcePoint" />
+            <mxPoint x="520" y="170" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="az_JHkdRHmszSFz4APCi-17" connectable="0" parent="9Rzxn7x76GQNvkX_nVef-49" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="1. Client Hello : Versions TLS, SNI (Nom de domaine)" vertex="1">
@@ -1676,17 +1676,19 @@
             <mxPoint x="178" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="9Rzxn7x76GQNvkX_nVef-51" edge="1" parent="1" source="9Rzxn7x76GQNvkX_nVef-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.001;exitY=0.43;exitDx=0;exitDy=0;entryX=0.991;entryY=0.588;entryDx=0;entryDy=0;entryPerimeter=0;exitPerimeter=0;" target="9Rzxn7x76GQNvkX_nVef-2">
+        <mxCell id="9Rzxn7x76GQNvkX_nVef-51" edge="1" parent="1" source="9Rzxn7x76GQNvkX_nVef-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.001;exitY=0.43;exitDx=0;exitDy=0;exitPerimeter=0;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="190" y="232" />
-              <mxPoint x="190" y="262" />
+              <mxPoint x="190" y="290" />
+              <mxPoint x="90" y="290" />
             </Array>
+            <mxPoint x="90" y="290" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="az_JHkdRHmszSFz4APCi-19" connectable="0" parent="9Rzxn7x76GQNvkX_nVef-51" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="3. Vérification de validité et confiance du certificat" vertex="1">
           <mxGeometry relative="1" x="-0.079" y="-1" as="geometry">
-            <mxPoint x="86" y="6" as="offset" />
+            <mxPoint x="85" y="9" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="az_JHkdRHmszSFz4APCi-2" parent="1" style="points=[[0.015,0.015,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[0.985,0.015,0],[1,0.22,0],[1,0.44,0],[1,0.67,0],[0.985,0.89,0],[0,0.22,0],[0,0.44,0],[0,0.67,0],[0.015,0.89,0],[0.25,0.91,0],[0.5,0.91,0],[0.785,0.955,0]];verticalLabelPosition=bottom;sketch=0;html=1;verticalAlign=top;aspect=fixed;align=center;pointerEvents=1;shape=mxgraph.cisco19.x509_certificate2;fillColor=#fa6800;strokeColor=#C73500;fontColor=#000000;" value="" vertex="1">
@@ -1716,8 +1718,11 @@
             <mxPoint x="131" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="az_JHkdRHmszSFz4APCi-20" edge="1" parent="1" source="9Rzxn7x76GQNvkX_nVef-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0.046;entryY=0.694;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=classic;startFill=1;" target="9Rzxn7x76GQNvkX_nVef-44">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="az_JHkdRHmszSFz4APCi-20" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0.046;entryY=0.694;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=classic;startFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="309.5" as="sourcePoint" />
+            <mxPoint x="525.69" y="309.29999999999995" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="az_JHkdRHmszSFz4APCi-21" connectable="0" parent="az_JHkdRHmszSFz4APCi-20" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="4.&amp;nbsp;Échange de clés + Finished → secret de session établi → canal HTTPS chiffré" vertex="1">
           <mxGeometry relative="1" x="-0.1376" y="-1" as="geometry">
