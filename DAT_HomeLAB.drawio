@@ -1591,6 +1591,9 @@
         <mxCell id="9Rzxn7x76GQNvkX_nVef-31" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.key_permissions;fillColor=#DA4026;" value="" vertex="1">
           <mxGeometry height="20" width="10" x="1300" y="-13.5" as="geometry" />
         </mxCell>
+        <mxCell id="9Rzxn7x76GQNvkX_nVef-32" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Racines pub" vertex="1">
+          <mxGeometry height="22.5" width="90" x="1175" y="60" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
