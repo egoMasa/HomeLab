@@ -1234,7 +1234,7 @@
         <mxCell id="9Rzxn7x76GQNvkX_nVef-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Navigateur client" vertex="1">
           <mxGeometry height="190" width="200" x="-210" y="150" as="geometry" />
         </mxCell>
-        <mxCell id="9Rzxn7x76GQNvkX_nVef-46" edge="1" parent="1" source="9Rzxn7x76GQNvkX_nVef-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" target="9Rzxn7x76GQNvkX_nVef-44">
+        <mxCell id="9Rzxn7x76GQNvkX_nVef-46" edge="1" parent="1" source="9Rzxn7x76GQNvkX_nVef-3" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" target="9Rzxn7x76GQNvkX_nVef-44">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Serveur externalisé" vertex="1">
@@ -1284,7 +1284,7 @@
             <mxPoint x="194" y="19" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="9Rzxn7x76GQNvkX_nVef-47" edge="1" parent="1" source="9Rzxn7x76GQNvkX_nVef-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" target="9Rzxn7x76GQNvkX_nVef-44">
+        <mxCell id="9Rzxn7x76GQNvkX_nVef-47" edge="1" parent="1" source="9Rzxn7x76GQNvkX_nVef-6" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" target="9Rzxn7x76GQNvkX_nVef-44">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="gD_8_bC3JxfCvOmckNbw-1" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;startArrow=classic;startFill=1;endArrow=none;endFill=0;">
@@ -1324,13 +1324,8 @@
         <mxCell id="9Rzxn7x76GQNvkX_nVef-6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Serveur&amp;nbsp; interne" vertex="1">
           <mxGeometry height="160" width="200" x="608.95" y="125" as="geometry" />
         </mxCell>
-        <mxCell id="9Rzxn7x76GQNvkX_nVef-48" edge="1" parent="1" source="9Rzxn7x76GQNvkX_nVef-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" target="9Rzxn7x76GQNvkX_nVef-44">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="570" y="375" />
-              <mxPoint x="570" y="205" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="9Rzxn7x76GQNvkX_nVef-48" edge="1" parent="1" source="9Rzxn7x76GQNvkX_nVef-7" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" target="9Rzxn7x76GQNvkX_nVef-44">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Serveur&amp;nbsp; test/lab" vertex="1">
           <mxGeometry height="110" width="200" x="608.95" y="320" as="geometry" />
