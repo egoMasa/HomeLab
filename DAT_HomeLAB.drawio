@@ -1216,7 +1216,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="VdZjnD2Sc4GzEgQafjte" name="DAT-PKI">
-    <mxGraphModel dx="1178" dy="1797" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="975" dy="1689" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1513,19 +1513,27 @@
             <mxPoint x="102" as="offset" />
           </mxGeometry>
         </mxCell>
+        <mxCell id="9Rzxn7x76GQNvkX_nVef-33" edge="1" parent="1" source="9Rzxn7x76GQNvkX_nVef-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" target="9Rzxn7x76GQNvkX_nVef-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="9Rzxn7x76GQNvkX_nVef-34" connectable="0" parent="9Rzxn7x76GQNvkX_nVef-33" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="2. Challenge HTTP-01/DNS-01 avec preuve de contrôle du domaine" vertex="1">
+          <mxGeometry relative="1" x="-0.8417" as="geometry">
+            <mxPoint x="165" as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Serveur externalisé" vertex="1">
           <mxGeometry height="110" width="200" x="600" y="-20" as="geometry" />
         </mxCell>
-        <mxCell id="9Rzxn7x76GQNvkX_nVef-13" edge="1" parent="1" source="9Rzxn7x76GQNvkX_nVef-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="9Rzxn7x76GQNvkX_nVef-3">
+        <mxCell id="9Rzxn7x76GQNvkX_nVef-13" edge="1" parent="1" source="9Rzxn7x76GQNvkX_nVef-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" target="9Rzxn7x76GQNvkX_nVef-3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="9Rzxn7x76GQNvkX_nVef-15" connectable="0" parent="9Rzxn7x76GQNvkX_nVef-13" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="2. Valide challenge et renvoi du certificat signé" vertex="1">
+        <mxCell id="9Rzxn7x76GQNvkX_nVef-15" connectable="0" parent="9Rzxn7x76GQNvkX_nVef-13" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="3. Valide challenge et renvoi du certificat signé" vertex="1">
           <mxGeometry relative="1" x="0.71" as="geometry">
-            <mxPoint x="113" as="offset" />
+            <mxPoint x="93" y="-2" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Autorité de certification&amp;nbsp;CA Externe (Let&#39;s Encrypt)" vertex="1">
-          <mxGeometry height="110" width="200" x="1120" y="-20" as="geometry" />
+          <mxGeometry height="110" width="200" x="1182.5" y="-20" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-16" edge="1" parent="1" source="9Rzxn7x76GQNvkX_nVef-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="9Rzxn7x76GQNvkX_nVef-6">
           <mxGeometry relative="1" as="geometry" />
@@ -1589,10 +1597,13 @@
           <mxGeometry height="53" width="25" x="212.5" y="-100" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-31" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.key_permissions;fillColor=#DA4026;" value="" vertex="1">
-          <mxGeometry height="20" width="10" x="1300" y="-13.5" as="geometry" />
+          <mxGeometry height="20" width="10" x="1362.5" y="-13.5" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-32" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Racines pub" vertex="1">
-          <mxGeometry height="22.5" width="90" x="1175" y="60" as="geometry" />
+          <mxGeometry height="22.5" width="90" x="1237.5" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="9Rzxn7x76GQNvkX_nVef-35" parent="1" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://icons.diagrams.net/icon-cache1/Web_browsers-2003/Firefox-1122.png" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="250" y="155" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
