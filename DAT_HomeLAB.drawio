@@ -1216,7 +1216,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="VdZjnD2Sc4GzEgQafjte" name="DAT-CLM PKI">
-    <mxGraphModel dx="1837" dy="1708" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2595" dy="2112" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1443,7 +1443,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="gD_8_bC3JxfCvOmckNbw-7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;rotation=-90;" value="Agent ACME/SCEP" vertex="1">
-          <mxGeometry height="19.5" width="125" x="726.45" y="200" as="geometry" />
+          <mxGeometry height="19.5" width="125" x="735" y="200" as="geometry" />
         </mxCell>
         <mxCell id="8yG3xt-nR3Xajo19q3yg-2" edge="1" parent="1" source="9Rzxn7x76GQNvkX_nVef-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=0.102;entryY=0.003;entryDx=0;entryDy=0;entryPerimeter=0;" target="9Rzxn7x76GQNvkX_nVef-3">
           <mxGeometry relative="1" as="geometry">
