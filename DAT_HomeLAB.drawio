@@ -1515,10 +1515,16 @@
     </mxGraphModel>
   </diagram>
   <diagram id="oEIhw2BIVZM3b5-Iv63b" name="DAT - Mail">
-    <mxGraphModel dx="1645" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="975" dy="520" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="-LjVQP2VIi7r8hNZ9vdP-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="60" width="120" x="180" y="295" as="geometry" />
+        </mxCell>
+        <mxCell id="-LjVQP2VIi7r8hNZ9vdP-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Webmail (SOGo, RoundCube)" vertex="1">
+          <mxGeometry height="30" width="80" x="200" y="310" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
