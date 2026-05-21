@@ -1338,7 +1338,7 @@
           <mxGeometry height="22.5" width="182.5" x="358.75" y="-469" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-35" parent="1" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://icons.diagrams.net/icon-cache1/Web_browsers-2003/Firefox-1122.png" value="" vertex="1">
-          <mxGeometry height="40" width="40" x="-190" y="15" as="geometry" />
+          <mxGeometry height="42.5" width="42.5" x="-190" y="40.38" as="geometry" />
         </mxCell>
         <mxCell id="9Rzxn7x76GQNvkX_nVef-37" parent="1" style="points=[[0.015,0.015,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[0.985,0.015,0],[1,0.22,0],[1,0.44,0],[1,0.67,0],[0.985,0.89,0],[0,0.22,0],[0,0.44,0],[0,0.67,0],[0.015,0.89,0],[0.25,0.91,0],[0.5,0.91,0],[0.785,0.955,0]];verticalLabelPosition=bottom;sketch=0;html=1;verticalAlign=top;aspect=fixed;align=center;pointerEvents=1;shape=mxgraph.cisco19.x509_certificate2;fillColor=#FAFAFA;strokeColor=#005073;" value="" vertex="1">
           <mxGeometry height="25" width="26.31" x="760" y="247.5" as="geometry" />
