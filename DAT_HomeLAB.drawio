@@ -1570,9 +1570,9 @@
         <mxCell id="194NRu9eSe9a3Q8T4K1--3" edge="1" parent="1" source="PSMeaXtZNpMQazdMd_bz-5" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="WwMfl8d0JLMQ5Y1j_UNE-4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="194NRu9eSe9a3Q8T4K1--4" connectable="0" parent="194NRu9eSe9a3Q8T4K1--3" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="JWT Token" vertex="1">
+        <mxCell id="194NRu9eSe9a3Q8T4K1--4" connectable="0" parent="194NRu9eSe9a3Q8T4K1--3" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];rotation=10;" value="Oauth2(JWT Token)" vertex="1">
           <mxGeometry relative="1" x="-0.1664" as="geometry">
-            <mxPoint as="offset" />
+            <mxPoint x="14" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="PSMeaXtZNpMQazdMd_bz-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
