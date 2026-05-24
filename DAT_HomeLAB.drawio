@@ -1515,7 +1515,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="oEIhw2BIVZM3b5-Iv63b" name="DAT - Mail">
-    <mxGraphModel dx="1885" dy="1039" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1134" dy="537" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1559,12 +1559,20 @@
         <mxCell id="PSMeaXtZNpMQazdMd_bz-3" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Transport" vertex="1">
           <mxGeometry height="24.37" width="58" x="933.01" y="687.13" as="geometry" />
         </mxCell>
-        <mxCell id="aQOTEl0_ftT9S720N3fk-41" edge="1" parent="1" source="PSMeaXtZNpMQazdMd_bz-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="PSMeaXtZNpMQazdMd_bz-16">
+        <mxCell id="aQOTEl0_ftT9S720N3fk-41" edge="1" parent="1" source="PSMeaXtZNpMQazdMd_bz-5" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="PSMeaXtZNpMQazdMd_bz-16">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="aQOTEl0_ftT9S720N3fk-48" connectable="0" parent="aQOTEl0_ftT9S720N3fk-41" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="LDAP Bind" vertex="1">
           <mxGeometry relative="1" x="-0.4159" y="1" as="geometry">
-            <mxPoint x="13" as="offset" />
+            <mxPoint x="32" y="-31" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="194NRu9eSe9a3Q8T4K1--3" edge="1" parent="1" source="PSMeaXtZNpMQazdMd_bz-5" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="WwMfl8d0JLMQ5Y1j_UNE-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="194NRu9eSe9a3Q8T4K1--4" connectable="0" parent="194NRu9eSe9a3Q8T4K1--3" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="JWT Token" vertex="1">
+          <mxGeometry relative="1" x="-0.1664" as="geometry">
+            <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="PSMeaXtZNpMQazdMd_bz-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
@@ -1582,7 +1590,7 @@
         <mxCell id="PSMeaXtZNpMQazdMd_bz-16" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
           <mxGeometry height="123.25" width="115" x="1240" y="286.75" as="geometry" />
         </mxCell>
-        <mxCell id="PSMeaXtZNpMQazdMd_bz-17" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Identité" vertex="1">
+        <mxCell id="PSMeaXtZNpMQazdMd_bz-17" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Annuaire" vertex="1">
           <mxGeometry height="40" width="80" x="1258.13" y="297.25" as="geometry" />
         </mxCell>
         <mxCell id="PSMeaXtZNpMQazdMd_bz-11" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Analyser ce qui entre/sort" vertex="1">
@@ -1826,16 +1834,14 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="WwMfl8d0JLMQ5Y1j_UNE-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="123.25" width="115" x="1243.4" y="430" as="geometry" />
+          <mxGeometry height="123.25" width="115" x="1240" y="476.75" as="geometry" />
         </mxCell>
         <mxCell id="WwMfl8d0JLMQ5Y1j_UNE-5" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="CAS (SSO)" vertex="1">
-          <mxGeometry height="40" width="80" x="1261.5300000000002" y="440.5" as="geometry" />
+          <mxGeometry height="40" width="80" x="1258.13" y="487.25" as="geometry" />
         </mxCell>
-        <UserObject label="&lt;img src=&quot;https://miro.medium.com/v2/resize:fit:1400/0*bKfOagkmq0M2KR3-.png&quot; class=&quot;sFlh5c FyHeAf iPVvYb&quot; style=&quot;max-width: 1400px; width: 456px; height: 456px; margin: 0px;&quot; alt=&quot;Integrating an App with Keycloak. Keycloak is an open-source identity and…  | by Rob Mengert | Medium&quot;&gt;" link="&lt;img src=&quot;https://miro.medium.com/v2/resize:fit:1400/0*bKfOagkmq0M2KR3-.png&quot; class=&quot;sFlh5c FyHeAf iPVvYb&quot; style=&quot;max-width: 1400px; width: 456px; height: 456px; margin: 0px;&quot; alt=&quot;Integrating an App with Keycloak. Keycloak is an open-source identity and…  | by Rob Mengert | Medium&quot;&gt;" id="WwMfl8d0JLMQ5Y1j_UNE-7">
-          <mxCell parent="1" style="text;whiteSpace=wrap;html=1;" vertex="1">
-            <mxGeometry height="300" width="260" x="1430" y="285" as="geometry" />
-          </mxCell>
-        </UserObject>
+        <mxCell id="194NRu9eSe9a3Q8T4K1--2" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://miro.medium.com/v2/resize:fit:1400/0*bKfOagkmq0M2KR3-.png;" value="" vertex="1">
+          <mxGeometry height="85" width="85" x="1258.1299999999999" y="510.5" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
