@@ -1515,7 +1515,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="oEIhw2BIVZM3b5-Iv63b" name="DAT - Mail">
-    <mxGraphModel dx="1178" dy="649" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1414" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1557,7 +1557,7 @@
           <mxGeometry height="175" width="270" x="830" y="643.5" as="geometry" />
         </mxCell>
         <mxCell id="PSMeaXtZNpMQazdMd_bz-3" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Transport" vertex="1">
-          <mxGeometry height="31.5" width="160" x="882.5" y="678.5" as="geometry" />
+          <mxGeometry height="31.5" width="160" x="882" y="670.69" as="geometry" />
         </mxCell>
         <mxCell id="aQOTEl0_ftT9S720N3fk-41" edge="1" parent="1" source="PSMeaXtZNpMQazdMd_bz-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="PSMeaXtZNpMQazdMd_bz-16">
           <mxGeometry relative="1" as="geometry" />
@@ -1570,7 +1570,7 @@
         <mxCell id="PSMeaXtZNpMQazdMd_bz-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
           <mxGeometry height="182.5" width="270" x="827" y="417.5" as="geometry" />
         </mxCell>
-        <mxCell id="PSMeaXtZNpMQazdMd_bz-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Stockage + accès" vertex="1">
+        <mxCell id="PSMeaXtZNpMQazdMd_bz-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Stockage &amp;amp; accès" vertex="1">
           <mxGeometry height="40" width="185" x="867" y="417.5" as="geometry" />
         </mxCell>
         <mxCell id="PSMeaXtZNpMQazdMd_bz-8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
