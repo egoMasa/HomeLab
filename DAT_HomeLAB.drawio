@@ -1548,7 +1548,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="aQOTEl0_ftT9S720N3fk-61" connectable="0" parent="aQOTEl0_ftT9S720N3fk-59" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="SASL/OAUTH(SSO)" vertex="1">
+        <mxCell id="aQOTEl0_ftT9S720N3fk-61" connectable="0" parent="aQOTEl0_ftT9S720N3fk-59" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="SASL" vertex="1">
           <mxGeometry relative="1" x="-0.0429" y="2" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
