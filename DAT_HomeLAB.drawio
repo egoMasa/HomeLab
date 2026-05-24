@@ -1515,7 +1515,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="oEIhw2BIVZM3b5-Iv63b" name="DAT - Mail">
-    <mxGraphModel dx="1414" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="808" dy="445" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1550,7 +1550,10 @@
             <mxPoint x="44" y="-1" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="aQOTEl0_ftT9S720N3fk-51" edge="1" parent="1" source="PSMeaXtZNpMQazdMd_bz-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="PSMeaXtZNpMQazdMd_bz-5">
+        <mxCell id="aQOTEl0_ftT9S720N3fk-51" edge="1" parent="1" source="PSMeaXtZNpMQazdMd_bz-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" target="PSMeaXtZNpMQazdMd_bz-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="aQOTEl0_ftT9S720N3fk-56" edge="1" parent="1" source="PSMeaXtZNpMQazdMd_bz-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="PSMeaXtZNpMQazdMd_bz-5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="PSMeaXtZNpMQazdMd_bz-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
@@ -1669,7 +1672,7 @@
             <mxPoint x="680.0000000000005" y="615.1111111111111" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="aQOTEl0_ftT9S720N3fk-9" connectable="0" parent="aQOTEl0_ftT9S720N3fk-7" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="IMAP (993) : imap.exemple.com" vertex="1">
+        <mxCell id="aQOTEl0_ftT9S720N3fk-9" connectable="0" parent="aQOTEl0_ftT9S720N3fk-7" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="IMAP (993) : imap.entreprise.com" vertex="1">
           <mxGeometry relative="1" x="-0.7204" y="-2" as="geometry">
             <mxPoint x="51" y="-2" as="offset" />
           </mxGeometry>
@@ -1691,7 +1694,7 @@
         <mxCell id="aQOTEl0_ftT9S720N3fk-3" edge="1" parent="1" source="aQOTEl0_ftT9S720N3fk-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.68;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="-LjVQP2VIi7r8hNZ9vdP-1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="aQOTEl0_ftT9S720N3fk-5" connectable="0" parent="aQOTEl0_ftT9S720N3fk-3" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="HTTPS : mail.exemple.com" vertex="1">
+        <mxCell id="aQOTEl0_ftT9S720N3fk-5" connectable="0" parent="aQOTEl0_ftT9S720N3fk-3" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="HTTPS : mail.entreprise.com" vertex="1">
           <mxGeometry relative="1" x="-0.2414" as="geometry">
             <mxPoint x="12" y="-1" as="offset" />
           </mxGeometry>
