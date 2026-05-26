@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" pages="10">
+<mxfile host="app.diagrams.net" pages="12">
   <diagram name="Architecture générale" id="afl-n46_FWIlyFFu-ON1">
     <mxGraphModel dx="2429" dy="2056" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -1550,7 +1550,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="oEIhw2BIVZM3b5-Iv63b" name="DAT - Mail">
-    <mxGraphModel dx="1219" dy="577" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1768" dy="974" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1953,6 +1953,52 @@
         </mxCell>
         <mxCell id="Nnnox3YMS4QXVqJ9wPD_-10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;" value="&lt;p class=&quot;font-claude-response-body break-words whitespace-normal leading-[1.7]&quot; align=&quot;center&quot;&gt;&lt;strong&gt;OIDC (OpenID Connect) :&lt;/strong&gt;&lt;/p&gt;&lt;div align=&quot;left&quot;&gt;&lt;ul class=&quot;[li_&amp;amp;]:mb-0 [li_&amp;amp;]:mt-1 [li_&amp;amp;]:gap-1 [&amp;amp;:not(:last-child)_ul]:pb-1 [&amp;amp;:not(:last-child)_ol]:pb-1 list-disc flex flex-col gap-1 pl-8 mb-3&quot;&gt;&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Type : protocole d&#39;&lt;strong&gt;authentification&lt;/strong&gt; SSO &lt;strong&gt;moderne&lt;/strong&gt;, bâti sur OAuth2&lt;/li&gt;&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Idée : OAuth2 &lt;strong&gt;+ une couche identité&lt;/strong&gt; par-dessus (l&#39;ID Token)&lt;/li&gt;&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Question : « &lt;strong&gt;qui est&lt;/strong&gt; cette personne ? »&lt;/li&gt;&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Format : &lt;strong&gt;ID Token = JWT&lt;/strong&gt; (JSON signé)&lt;/li&gt;&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Contenu : &lt;strong&gt;identité&lt;/strong&gt; (email, nom, heure d&#39;auth, expiration) + signature&lt;/li&gt;&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Vérification : &lt;strong&gt;locale&lt;/strong&gt;, signature via clé publique (JWKS) — pas de rappel à l&#39;IdP&lt;/li&gt;&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Transport : web + API + mobile + &lt;strong&gt;mail&lt;/strong&gt; (via XOAUTH2)&lt;/li&gt;&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Analogie : une &lt;strong&gt;carte d&#39;identité plastifiée&lt;/strong&gt;, lisible directement&lt;/li&gt;&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Place : &lt;strong&gt;standard moderne&lt;/strong&gt;, seul à descendre jusqu&#39;au mail&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" vertex="1">
           <mxGeometry height="220" width="420" x="-190" y="780" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="_ObJCSEan136rqR8_cG-" name="DAT - Supervision sécurité">
+    <mxGraphModel dx="975" dy="537" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="5otPNRy30fJfOCJTjFLw-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Serveur XDR" vertex="1">
+          <mxGeometry height="150" width="140" x="480" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="5otPNRy30fJfOCJTjFLw-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="VMs" vertex="1">
+          <mxGeometry height="150" width="140" x="90" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="5otPNRy30fJfOCJTjFLw-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Postes" vertex="1">
+          <mxGeometry height="150" width="140" x="90" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="5otPNRy30fJfOCJTjFLw-6" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://wazuh.com/uploads/2024/02/agent-groups-circle.png;" value="" vertex="1">
+          <mxGeometry height="40" width="42.28" x="180" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="5otPNRy30fJfOCJTjFLw-7" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://wazuh.com/uploads/2024/02/agent-groups-circle.png;" value="" vertex="1">
+          <mxGeometry height="40" width="42.28" x="180" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="5otPNRy30fJfOCJTjFLw-9" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://wazuh.com/uploads/2022/05/Logo-blogpost.png;" value="" vertex="1">
+          <mxGeometry height="30" width="89.68" x="505.16" y="325" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="dUNjqBWgfEB0xaO_H9pg" name="DAT - Supervision de performances">
+    <mxGraphModel dx="1414" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="9rRQYsEGRdoNeyoHkxUb-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Wazuh" vertex="1">
+          <mxGeometry height="150" width="140" x="560" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="9rRQYsEGRdoNeyoHkxUb-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="VMs" vertex="1">
+          <mxGeometry height="150" width="140" x="170" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="9rRQYsEGRdoNeyoHkxUb-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Postes" vertex="1">
+          <mxGeometry height="150" width="140" x="170" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="9rRQYsEGRdoNeyoHkxUb-6" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://wazuh.com/uploads/2022/05/Logo-blogpost.png;" value="" vertex="1">
+          <mxGeometry height="30" width="89.68" x="585.1600000000001" y="440" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
