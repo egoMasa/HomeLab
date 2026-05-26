@@ -1550,12 +1550,12 @@
     </mxGraphModel>
   </diagram>
   <diagram id="oEIhw2BIVZM3b5-Iv63b" name="DAT - Mail">
-    <mxGraphModel dx="1134" dy="537" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="3656" dy="1731" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="m3VWoAEOBQlLwM6pI63t-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#bac8d3;strokeColor=#23445d;" value="" vertex="1">
-          <mxGeometry height="860" width="1200" x="2470" y="146.63" as="geometry" />
+          <mxGeometry height="860" width="1200" x="390" y="240" as="geometry" />
         </mxCell>
         <mxCell id="-LjVQP2VIi7r8hNZ9vdP-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
           <mxGeometry height="230" width="260" x="430" y="263" as="geometry" />
