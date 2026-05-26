@@ -1550,7 +1550,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="oEIhw2BIVZM3b5-Iv63b" name="DAT - Mail">
-    <mxGraphModel dx="3656" dy="1731" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1219" dy="577" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1816,6 +1816,11 @@
         <mxCell id="m3VWoAEOBQlLwM6pI63t-12" edge="1" parent="1" source="aQOTEl0_ftT9S720N3fk-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="m3VWoAEOBQlLwM6pI63t-11">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="rR0Vprpukvzxp_K4l8iJ-1" connectable="0" parent="m3VWoAEOBQlLwM6pI63t-12" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="gmail-smtp.google.com" vertex="1">
+          <mxGeometry relative="1" x="0.4657" y="-4" as="geometry">
+            <mxPoint x="11" y="-4" as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="aQOTEl0_ftT9S720N3fk-35" parent="1" style="image;aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image=img/lib/active_directory/internet_cloud.svg;" value="" vertex="1">
           <mxGeometry height="80.5" width="127.78" x="1296.11" y="687.13" as="geometry" />
         </mxCell>
@@ -1853,7 +1858,7 @@
           <mxGeometry height="26.5" width="100" x="970" y="792" as="geometry" />
         </mxCell>
         <mxCell id="m3VWoAEOBQlLwM6pI63t-11" parent="1" style="verticalLabelPosition=bottom;sketch=0;aspect=fixed;html=1;verticalAlign=top;strokeColor=none;align=center;outlineConnect=0;shape=mxgraph.citrix.smtp_server;" value="" vertex="1">
-          <mxGeometry height="92" width="76" x="1660" y="681.38" as="geometry" />
+          <mxGeometry height="92" width="76" x="1800" y="681.38" as="geometry" />
         </mxCell>
         <mxCell id="m3VWoAEOBQlLwM6pI63t-16" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Résulat : accept/reject/soft-rejected/add-header" vertex="1">
           <mxGeometry height="30" width="140" x="1110" y="1042.63" as="geometry" />
