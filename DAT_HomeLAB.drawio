@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" pages="11">
+<mxfile host="app.diagrams.net" pages="10">
   <diagram name="Architecture générale" id="afl-n46_FWIlyFFu-ON1">
     <mxGraphModel dx="2429" dy="2056" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -516,19 +516,54 @@
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram name="DAT - SI1" id="83beUlA-EIJBdhp3F6mD">
-    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+  <diagram name="DAT - SI" id="83beUlA-EIJBdhp3F6mD">
+    <mxGraphModel dx="1134" dy="1706" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-      </root>
-    </mxGraphModel>
-  </diagram>
-  <diagram name="DAT-SI2" id="UWwkeS0z2sWHRbzJ8OXY">
-    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
-      <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
+        <mxCell id="YwPCD4DgX8NNkBqVmJPq-7" edge="1" parent="1" source="YwPCD4DgX8NNkBqVmJPq-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="414" y="530" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="YwPCD4DgX8NNkBqVmJPq-1" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="290" width="571" x="179" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="YwPCD4DgX8NNkBqVmJPq-2" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Service numérique" vertex="1">
+          <mxGeometry height="140" width="230" x="230" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="YwPCD4DgX8NNkBqVmJPq-4" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Service numérique" vertex="1">
+          <mxGeometry height="140" width="230" x="480" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="YwPCD4DgX8NNkBqVmJPq-5" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Système d&#39;information" vertex="1">
+          <mxGeometry height="30" width="160" x="384.5" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="YwPCD4DgX8NNkBqVmJPq-8" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;Perimètre d&#39;homologation :&amp;nbsp;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- 1&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- 2&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- 3&amp;nbsp;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- 4&amp;nbsp;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="210" width="336" x="250" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="_DZ5HsIyb5x21lRTX7pg-3" edge="1" parent="1" source="_DZ5HsIyb5x21lRTX7pg-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="YwPCD4DgX8NNkBqVmJPq-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="520.5" y="120.00000000000011" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_DZ5HsIyb5x21lRTX7pg-1" parent="1" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.user;fillColor=#D2D3D3;gradientColor=none;" value="" vertex="1">
+          <mxGeometry height="63" width="45" x="442" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="_DZ5HsIyb5x21lRTX7pg-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Autorité d&#39;homologation" vertex="1">
+          <mxGeometry height="30" width="180" x="374.5" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="_DZ5HsIyb5x21lRTX7pg-4" parent="1" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" value="Valeurs métiers" vertex="1">
+          <mxGeometry height="30" width="80" x="260" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="_DZ5HsIyb5x21lRTX7pg-5" parent="1" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" value="Biens supports" vertex="1">
+          <mxGeometry height="30" width="80" x="340" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="_DZ5HsIyb5x21lRTX7pg-6" parent="1" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" value="Valeurs métiers" vertex="1">
+          <mxGeometry height="30" width="80" x="515" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="_DZ5HsIyb5x21lRTX7pg-7" parent="1" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" value="Biens supports" vertex="1">
+          <mxGeometry height="30" width="80" x="595" y="290" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
