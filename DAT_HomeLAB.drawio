@@ -2027,7 +2027,7 @@
           <mxGeometry height="80" width="140" x="-70" y="716.5" as="geometry" />
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-2" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Prometheus_software_logo.svg/1280px-Prometheus_software_logo.svg.png;" value="" vertex="1">
-          <mxGeometry height="60" width="60.65" x="661.3000000000001" y="130" as="geometry" />
+          <mxGeometry height="60" width="60.65" x="700.32" y="130" as="geometry" />
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="VMs" vertex="1">
           <mxGeometry height="80" width="140" x="-70" y="531.5" as="geometry" />
@@ -2085,17 +2085,11 @@
         <mxCell id="extY4oxlTILYpVNcnLc4-44" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
           <mxGeometry height="240" width="140" x="660.65" y="463" as="geometry" />
         </mxCell>
-        <mxCell id="extY4oxlTILYpVNcnLc4-46" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Erreurs applicatives" vertex="1">
-          <mxGeometry height="30" width="120" x="670.65" y="543" as="geometry" />
-        </mxCell>
-        <mxCell id="extY4oxlTILYpVNcnLc4-47" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Evenements d&#39;authentification" vertex="1">
-          <mxGeometry height="30" width="120" x="670.65" y="573" as="geometry" />
-        </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-48" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Journaux système (journald)" vertex="1">
-          <mxGeometry height="30" width="120" x="671.3" y="603" as="geometry" />
+          <mxGeometry height="30" width="120" x="672.28" y="556.5" as="geometry" />
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-49" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Logs applicatifs des services" vertex="1">
-          <mxGeometry height="30" width="120" x="671.3" y="633" as="geometry" />
+          <mxGeometry height="30" width="120" x="671.3" y="590" as="geometry" />
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-50" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Logs : Pourquoi" vertex="1">
           <mxGeometry height="30" width="110" x="675.65" y="668" as="geometry" />
@@ -2116,12 +2110,6 @@
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-54" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Endpoint latencies" vertex="1">
           <mxGeometry height="30" width="120" x="671.3" y="823" as="geometry" />
-        </mxCell>
-        <mxCell id="extY4oxlTILYpVNcnLc4-55" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="x" vertex="1">
-          <mxGeometry height="30" width="120" x="671.95" y="853" as="geometry" />
-        </mxCell>
-        <mxCell id="extY4oxlTILYpVNcnLc4-56" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="x" vertex="1">
-          <mxGeometry height="30" width="120" x="671.95" y="883" as="geometry" />
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-57" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Traces : Comment" vertex="1">
           <mxGeometry height="30" width="110" x="676.3" y="918" as="geometry" />
@@ -2183,9 +2171,6 @@
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-90" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://velog.velcdn.com/images/yechan-kim/post/fb59b166-5233-444b-8808-07c741cfddbd/image.png;clipPath=inset(15% 15% 15% 15%);" value="" vertex="1">
           <mxGeometry height="57" width="108.92" x="280" y="459.5" as="geometry" />
-        </mxCell>
-        <mxCell id="extY4oxlTILYpVNcnLc4-91" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://grafana.com/media/docs/mimir/GrafanaLogo_Mimir_icon.png;" value="" vertex="1">
-          <mxGeometry height="41.5" width="58.07" x="728.23" y="139.25" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
