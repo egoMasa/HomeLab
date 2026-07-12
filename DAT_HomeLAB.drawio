@@ -1997,7 +1997,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="dUNjqBWgfEB0xaO_H9pg" name="DAT - Supervision de performances">
-    <mxGraphModel dx="2398" dy="866" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2712" dy="1039" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -2009,15 +2009,27 @@
             <mxPoint x="33" as="offset" />
           </mxGeometry>
         </mxCell>
+        <mxCell id="extY4oxlTILYpVNcnLc4-93" edge="1" parent="1" source="extY4oxlTILYpVNcnLc4-71" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="9rRQYsEGRdoNeyoHkxUb-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="370" y="410" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="extY4oxlTILYpVNcnLc4-94" connectable="0" parent="extY4oxlTILYpVNcnLc4-93" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="SNMP" vertex="1">
+          <mxGeometry relative="1" x="-0.2384" as="geometry">
+            <mxPoint x="-124" y="77" as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-71" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
           <mxGeometry height="535" width="200" x="-100" y="315.5" as="geometry" />
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-34" edge="1" parent="1" source="9rRQYsEGRdoNeyoHkxUb-1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="extY4oxlTILYpVNcnLc4-13">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="extY4oxlTILYpVNcnLc4-88" connectable="0" parent="extY4oxlTILYpVNcnLc4-34" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="PromQL" vertex="1">
+        <mxCell id="extY4oxlTILYpVNcnLc4-88" connectable="0" parent="extY4oxlTILYpVNcnLc4-34" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];rotation=50;" value="PromQL" vertex="1">
           <mxGeometry relative="1" x="-0.2108" y="-3" as="geometry">
-            <mxPoint as="offset" />
+            <mxPoint x="4" y="-5" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="9rRQYsEGRdoNeyoHkxUb-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
@@ -2097,7 +2109,7 @@
         <mxCell id="extY4oxlTILYpVNcnLc4-61" edge="1" parent="1" source="extY4oxlTILYpVNcnLc4-51" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="extY4oxlTILYpVNcnLc4-13">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="extY4oxlTILYpVNcnLc4-86" connectable="0" parent="extY4oxlTILYpVNcnLc4-61" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="TraceQL" vertex="1">
+        <mxCell id="extY4oxlTILYpVNcnLc4-86" connectable="0" parent="extY4oxlTILYpVNcnLc4-61" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];rotation=-45;" value="TraceQL" vertex="1">
           <mxGeometry relative="1" x="-0.2479" y="2" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
@@ -2141,10 +2153,15 @@
         <mxCell id="extY4oxlTILYpVNcnLc4-77" edge="1" parent="1" source="extY4oxlTILYpVNcnLc4-73" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="9rRQYsEGRdoNeyoHkxUb-1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="extY4oxlTILYpVNcnLc4-92" connectable="0" parent="extY4oxlTILYpVNcnLc4-77" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];rotation=-60;" value="HTTP/Protobuf(remote_write)" vertex="1">
+          <mxGeometry relative="1" x="-0.1914" y="2" as="geometry">
+            <mxPoint x="17" y="-24" as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-78" edge="1" parent="1" source="extY4oxlTILYpVNcnLc4-73" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="extY4oxlTILYpVNcnLc4-44">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="extY4oxlTILYpVNcnLc4-84" connectable="0" parent="extY4oxlTILYpVNcnLc4-78" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="API" vertex="1">
+        <mxCell id="extY4oxlTILYpVNcnLc4-84" connectable="0" parent="extY4oxlTILYpVNcnLc4-78" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="LokiPush API" vertex="1">
           <mxGeometry relative="1" x="-0.123" y="-2" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
@@ -2152,7 +2169,7 @@
         <mxCell id="extY4oxlTILYpVNcnLc4-79" edge="1" parent="1" source="extY4oxlTILYpVNcnLc4-73" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="extY4oxlTILYpVNcnLc4-51">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="extY4oxlTILYpVNcnLc4-83" connectable="0" parent="extY4oxlTILYpVNcnLc4-79" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="OTLP" vertex="1">
+        <mxCell id="extY4oxlTILYpVNcnLc4-83" connectable="0" parent="extY4oxlTILYpVNcnLc4-79" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="OTLP (gRPC/HTTP)" vertex="1">
           <mxGeometry relative="1" x="-0.0287" y="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
@@ -2166,11 +2183,8 @@
         <mxCell id="extY4oxlTILYpVNcnLc4-82" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Prometheus exporter" vertex="1">
           <mxGeometry height="15" width="120" x="-60" y="522" as="geometry" />
         </mxCell>
-        <mxCell id="extY4oxlTILYpVNcnLc4-89" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://opentelemetry.io/img/social/logo-wordmark-001.png;" value="" vertex="1">
-          <mxGeometry height="52.33" width="100" x="380" y="484.67" as="geometry" />
-        </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-90" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://velog.velcdn.com/images/yechan-kim/post/fb59b166-5233-444b-8808-07c741cfddbd/image.png;clipPath=inset(15% 15% 15% 15%);" value="" vertex="1">
-          <mxGeometry height="57" width="108.92" x="280" y="488.5" as="geometry" />
+          <mxGeometry height="57" width="108.92" x="320" y="486" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
