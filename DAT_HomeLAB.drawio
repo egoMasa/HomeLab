@@ -1997,7 +1997,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="dUNjqBWgfEB0xaO_H9pg" name="DAT - Supervision de performances">
-    <mxGraphModel dx="1571" dy="410" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2398" dy="866" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -2016,7 +2016,7 @@
           <mxGeometry height="270" width="140" x="661.3" y="164" as="geometry" />
         </mxCell>
         <mxCell id="9rRQYsEGRdoNeyoHkxUb-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="91.75" width="260" x="-210" y="663" as="geometry" />
+          <mxGeometry height="91.75" width="240" x="-190" y="663" as="geometry" />
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-2" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Prometheus_software_logo.svg/1280px-Prometheus_software_logo.svg.png;" value="" vertex="1">
           <mxGeometry height="60" width="60.65" x="701.62" y="174" as="geometry" />
@@ -2192,10 +2192,10 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-95" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="SNMP" vertex="1">
-          <mxGeometry height="41.75" width="120" x="-65" y="663" as="geometry" />
+          <mxGeometry height="41.75" width="120" x="-70" y="663" as="geometry" />
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-96" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Equipement réseau" vertex="1">
-          <mxGeometry height="30" width="140" x="-210" y="693.88" as="geometry" />
+          <mxGeometry height="30" width="110" x="-180" y="693.23" as="geometry" />
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-98" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="OS : VMs &amp;amp; Hyperviseur" vertex="1">
           <mxGeometry height="30" width="140" x="-85" y="513" as="geometry" />
