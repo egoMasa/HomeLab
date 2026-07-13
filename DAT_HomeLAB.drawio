@@ -1997,7 +1997,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="dUNjqBWgfEB0xaO_H9pg" name="DAT - Supervision de performances">
-    <mxGraphModel dx="2712" dy="1039" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2112" dy="708" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -2013,13 +2013,13 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="9rRQYsEGRdoNeyoHkxUb-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fad7ac;strokeColor=#b46504;" value="" vertex="1">
-          <mxGeometry height="270" width="140" x="661.3" y="164" as="geometry" />
+          <mxGeometry height="334" width="140" x="661.3" y="100" as="geometry" />
         </mxCell>
         <mxCell id="9rRQYsEGRdoNeyoHkxUb-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
           <mxGeometry height="91.75" width="240" x="-190" y="663" as="geometry" />
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-2" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Prometheus_software_logo.svg/1280px-Prometheus_software_logo.svg.png;" value="" vertex="1">
-          <mxGeometry height="60" width="60.65" x="701.62" y="174" as="geometry" />
+          <mxGeometry height="60" width="60.65" x="667.45" y="105" as="geometry" />
         </mxCell>
         <mxCell id="8HA7T8tTLkIIkyh8sy8W-3" edge="1" parent="1" source="extY4oxlTILYpVNcnLc4-8" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="extY4oxlTILYpVNcnLc4-73">
           <mxGeometry relative="1" as="geometry" />
@@ -2070,7 +2070,7 @@
         <mxCell id="extY4oxlTILYpVNcnLc4-41" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Heatmap" vertex="1">
           <mxGeometry height="30" width="145" x="1065" y="633" as="geometry" />
         </mxCell>
-        <mxCell id="extY4oxlTILYpVNcnLc4-42" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Alertes" vertex="1">
+        <mxCell id="extY4oxlTILYpVNcnLc4-42" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Alerting" vertex="1">
           <mxGeometry height="30" width="145" x="1065" y="663" as="geometry" />
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-43" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Metrics : Quoi" vertex="1">
@@ -2337,11 +2337,14 @@
         <mxCell id="8HA7T8tTLkIIkyh8sy8W-61" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;strong&gt;Générer des métriques RED&lt;/strong&gt;" vertex="1">
           <mxGeometry height="30" width="120" x="671.63" y="900" as="geometry" />
         </mxCell>
-        <mxCell id="8HA7T8tTLkIIkyh8sy8W-62" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="200" width="140" x="970" y="34.00000000000001" as="geometry" />
-        </mxCell>
         <mxCell id="8HA7T8tTLkIIkyh8sy8W-63" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://grafana.com/media/docs/mimir/GrafanaLogo_Mimir_icon.png;" value="" vertex="1">
-          <mxGeometry height="39.37" width="55.09" x="1012.45" y="44.63" as="geometry" />
+          <mxGeometry height="39.37" width="55.09" x="736.21" y="114.32" as="geometry" />
+        </mxCell>
+        <mxCell id="8HA7T8tTLkIIkyh8sy8W-64" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Scraper les exporters" vertex="1">
+          <mxGeometry height="30" width="120" x="673.58" y="181.87" as="geometry" />
+        </mxCell>
+        <mxCell id="8HA7T8tTLkIIkyh8sy8W-65" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Stockage des métriques" vertex="1">
+          <mxGeometry height="30" width="120" x="673.58" y="212" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
