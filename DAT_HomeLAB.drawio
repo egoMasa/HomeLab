@@ -2013,13 +2013,13 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="9rRQYsEGRdoNeyoHkxUb-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fad7ac;strokeColor=#b46504;" value="" vertex="1">
-          <mxGeometry height="334" width="140" x="661.3" y="100" as="geometry" />
+          <mxGeometry height="304" width="140" x="661.3" y="130" as="geometry" />
         </mxCell>
         <mxCell id="9rRQYsEGRdoNeyoHkxUb-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
           <mxGeometry height="91.75" width="240" x="-190" y="663" as="geometry" />
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-2" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Prometheus_software_logo.svg/1280px-Prometheus_software_logo.svg.png;" value="" vertex="1">
-          <mxGeometry height="60" width="60.65" x="667.45" y="105" as="geometry" />
+          <mxGeometry height="60" width="60.65" x="667.45" y="143.87" as="geometry" />
         </mxCell>
         <mxCell id="8HA7T8tTLkIIkyh8sy8W-3" edge="1" parent="1" source="extY4oxlTILYpVNcnLc4-8" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="extY4oxlTILYpVNcnLc4-73">
           <mxGeometry relative="1" as="geometry" />
@@ -2232,7 +2232,7 @@
         <mxCell id="extY4oxlTILYpVNcnLc4-113" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;gradientColor=#97d077;strokeColor=#82b366;" value="OTel SDK" vertex="1">
           <mxGeometry height="20" width="80" x="-30" y="163.87" as="geometry" />
         </mxCell>
-        <mxCell id="extY4oxlTILYpVNcnLc4-115" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;strong&gt;Réception&lt;/strong&gt; (multi-source, multi-format)" vertex="1">
+        <mxCell id="extY4oxlTILYpVNcnLc4-115" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;strong&gt;Scrapping passif des exporters&lt;/strong&gt;" vertex="1">
           <mxGeometry height="35.5" width="176" x="294" y="524.5" as="geometry" />
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-116" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;strong&gt;Traitement / transformation&lt;/strong&gt; (labels, filtrage, échantillonnage, routage)" vertex="1">
@@ -2338,10 +2338,7 @@
           <mxGeometry height="30" width="120" x="671.63" y="900" as="geometry" />
         </mxCell>
         <mxCell id="8HA7T8tTLkIIkyh8sy8W-63" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://grafana.com/media/docs/mimir/GrafanaLogo_Mimir_icon.png;" value="" vertex="1">
-          <mxGeometry height="39.37" width="55.09" x="736.21" y="114.32" as="geometry" />
-        </mxCell>
-        <mxCell id="8HA7T8tTLkIIkyh8sy8W-64" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Scraper les exporters" vertex="1">
-          <mxGeometry height="30" width="120" x="673.58" y="181.87" as="geometry" />
+          <mxGeometry height="39.37" width="55.09" x="736.21" y="153.19" as="geometry" />
         </mxCell>
         <mxCell id="8HA7T8tTLkIIkyh8sy8W-65" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Stockage des métriques" vertex="1">
           <mxGeometry height="30" width="120" x="673.58" y="212" as="geometry" />
