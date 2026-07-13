@@ -1997,7 +1997,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="dUNjqBWgfEB0xaO_H9pg" name="DAT - Supervision de performances">
-    <mxGraphModel dx="2112" dy="708" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2398" dy="866" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -2036,7 +2036,7 @@
           <mxGeometry height="320" width="170" x="1050" y="423" as="geometry" />
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-4" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://images.icon-icons.com/2699/PNG/512/grafana_logo_icon_171048.png;" value="" vertex="1">
-          <mxGeometry height="84" width="84" x="1095.5" y="434" as="geometry" />
+          <mxGeometry height="84" width="84" x="1093" y="435.51" as="geometry" />
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-19" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="CPU (%)" vertex="1">
           <mxGeometry height="30" width="120" x="672.4499999999999" y="244" as="geometry" />
