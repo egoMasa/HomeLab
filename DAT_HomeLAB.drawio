@@ -1997,7 +1997,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="dUNjqBWgfEB0xaO_H9pg" name="DAT - Supervision de performances">
-    <mxGraphModel dx="1915" dy="599" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2112" dy="708" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -2087,7 +2087,7 @@
         <mxCell id="extY4oxlTILYpVNcnLc4-44" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;gradientColor=#ea6b66;strokeColor=#b85450;" value="" vertex="1">
           <mxGeometry height="197" width="140" x="661.63" y="483.5" as="geometry" />
         </mxCell>
-        <mxCell id="extY4oxlTILYpVNcnLc4-48" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Journaux système (journald)" vertex="1">
+        <mxCell id="extY4oxlTILYpVNcnLc4-48" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Logs système (journald)" vertex="1">
           <mxGeometry height="30" width="120" x="673.26" y="577" as="geometry" />
         </mxCell>
         <mxCell id="extY4oxlTILYpVNcnLc4-49" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Logs applicatifs des services" vertex="1">
@@ -2178,7 +2178,7 @@
         <mxCell id="extY4oxlTILYpVNcnLc4-90" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://velog.velcdn.com/images/yechan-kim/post/fb59b166-5233-444b-8808-07c741cfddbd/image.png;clipPath=inset(15% 15% 15% 15%);" value="" vertex="1">
           <mxGeometry height="57" width="108.92" x="325.54" y="467.5" as="geometry" />
         </mxCell>
-        <mxCell id="8HA7T8tTLkIIkyh8sy8W-14" edge="1" parent="1" source="extY4oxlTILYpVNcnLc4-95" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="extY4oxlTILYpVNcnLc4-73">
+        <mxCell id="8HA7T8tTLkIIkyh8sy8W-14" edge="1" parent="1" source="extY4oxlTILYpVNcnLc4-95" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;endArrow=none;endFill=0;" target="extY4oxlTILYpVNcnLc4-73">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="8HA7T8tTLkIIkyh8sy8W-16" connectable="0" parent="8HA7T8tTLkIIkyh8sy8W-14" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];rotation=-30;" value="SNMPv3 Pull" vertex="1">
