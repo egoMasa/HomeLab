@@ -1997,7 +1997,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="dUNjqBWgfEB0xaO_H9pg" name="DAT - Supervision de performances">
-    <mxGraphModel dx="1915" dy="599" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2712" dy="1039" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -2336,6 +2336,12 @@
         </mxCell>
         <mxCell id="8HA7T8tTLkIIkyh8sy8W-61" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;strong&gt;Générer des métriques RED&lt;/strong&gt;" vertex="1">
           <mxGeometry height="30" width="120" x="671.63" y="900" as="geometry" />
+        </mxCell>
+        <mxCell id="8HA7T8tTLkIIkyh8sy8W-62" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="200" width="140" x="970" y="34.00000000000001" as="geometry" />
+        </mxCell>
+        <mxCell id="8HA7T8tTLkIIkyh8sy8W-63" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://grafana.com/media/docs/mimir/GrafanaLogo_Mimir_icon.png;" value="" vertex="1">
+          <mxGeometry height="39.37" width="55.09" x="1012.45" y="44.63" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
