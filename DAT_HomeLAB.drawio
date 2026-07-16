@@ -1956,12 +1956,12 @@
     </mxGraphModel>
   </diagram>
   <diagram id="_ObJCSEan136rqR8_cG-" name="DAT - Plateforme de supervision de sécurité">
-    <mxGraphModel dx="1414" dy="1948" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2571" dy="2585" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="4WY_PtEyYwP9hglqb_oZ-20" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="183" width="212.5" x="1447.5" y="537" as="geometry" />
+          <mxGeometry height="183" width="212.5" x="1450.16" y="522" as="geometry" />
         </mxCell>
         <mxCell id="zfowBRRy6kORj4a7OO3L-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
           <mxGeometry height="286.5" width="370" x="1450" y="220" as="geometry" />
@@ -2169,10 +2169,10 @@
           <mxGeometry height="30" width="165" x="1467.5" y="1017" as="geometry" />
         </mxCell>
         <mxCell id="4WY_PtEyYwP9hglqb_oZ-19" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://docs.dfir-iris.org/latest/_static/logo_blue.png;" value="" vertex="1">
-          <mxGeometry height="64.5" width="192.04" x="1462" y="544.88" as="geometry" />
+          <mxGeometry height="64.5" width="192.04" x="1464.66" y="529.88" as="geometry" />
         </mxCell>
         <mxCell id="4WY_PtEyYwP9hglqb_oZ-21" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Plateforme collaborative de reponse à incidents (CIRP)" vertex="1">
-          <mxGeometry height="30" width="241.25" x="1433.1200000000001" y="690" as="geometry" />
+          <mxGeometry height="30" width="241.25" x="1435.7800000000002" y="675" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
