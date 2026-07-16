@@ -1956,15 +1956,15 @@
     </mxGraphModel>
   </diagram>
   <diagram id="_ObJCSEan136rqR8_cG-" name="DAT - Plateforme de supervision de sécurité">
-    <mxGraphModel dx="808" dy="1614" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1414" dy="1948" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="4WY_PtEyYwP9hglqb_oZ-20" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="110" width="382.5" x="1447.5" y="537" as="geometry" />
+          <mxGeometry height="183" width="212.5" x="1447.5" y="537" as="geometry" />
         </mxCell>
         <mxCell id="zfowBRRy6kORj4a7OO3L-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="110" width="370" x="1450" y="396.5" as="geometry" />
+          <mxGeometry height="286.5" width="370" x="1450" y="220" as="geometry" />
         </mxCell>
         <mxCell id="ALLloim-snWpk_oj51vQ-8" edge="1" parent="1" source="CB7IcI1OIEBjCWp1S7Ap-1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="whaO3PFi9qzSNkF09AQh-1">
           <mxGeometry relative="1" as="geometry" />
@@ -2084,23 +2084,8 @@
         <mxCell id="jMWOh4Z4YRb72c_CCCyN-7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Alerting" vertex="1">
           <mxGeometry height="30" width="145" x="1477.5" y="970" as="geometry" />
         </mxCell>
-        <mxCell id="ALLloim-snWpk_oj51vQ-10" edge="1" parent="1" source="whaO3PFi9qzSNkF09AQh-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="ALLloim-snWpk_oj51vQ-2">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="1535.06" y="-29.94" />
-              <mxPoint x="550.12" y="-29.94" />
-              <mxPoint x="550.12" y="630.06" />
-              <mxPoint x="595.06" y="630.06" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="954LJkEFabuACr8_ZEYo-1" connectable="0" parent="ALLloim-snWpk_oj51vQ-10" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Actions" vertex="1">
-          <mxGeometry relative="1" x="-0.8785" y="1" as="geometry">
-            <mxPoint as="offset" />
-          </mxGeometry>
-        </mxCell>
         <mxCell id="whaO3PFi9qzSNkF09AQh-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="295" width="170" x="1450" y="55" as="geometry" />
+          <mxGeometry height="295" width="170" x="1435.78" y="-96" as="geometry" />
         </mxCell>
         <mxCell id="zfowBRRy6kORj4a7OO3L-6" edge="1" parent="1" source="dD9-kDX0qZ6RCIjFFdjU-1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="CB7IcI1OIEBjCWp1S7Ap-1">
           <mxGeometry relative="1" as="geometry" />
@@ -2115,43 +2100,43 @@
           <mxGeometry height="35" width="48.07" x="726" y="380.5" as="geometry" />
         </mxCell>
         <mxCell id="HjRHFR9DeVeFMYZJxB1X-1" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://shuffler.io/images/Shuffle_logo.png;" value="" vertex="1">
-          <mxGeometry height="60" width="60" x="1507.5" y="71" as="geometry" />
+          <mxGeometry height="60" width="60" x="1493.28" y="-80" as="geometry" />
         </mxCell>
         <mxCell id="HjRHFR9DeVeFMYZJxB1X-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="SOAR" vertex="1">
-          <mxGeometry height="30" width="175" x="1447.5" y="313" as="geometry" />
+          <mxGeometry height="30" width="175" x="1433.28" y="162" as="geometry" />
         </mxCell>
         <mxCell id="Yn0hlZ9Wo1u8eVe2AsYz-5" edge="1" parent="1" source="ALLloim-snWpk_oj51vQ-2" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="I4FFBBPgaZnZuZDJ8EWZ-2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="ALLloim-snWpk_oj51vQ-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="60" width="200" x="595" y="603" as="geometry" />
+          <mxGeometry height="60" width="200" x="580" y="537" as="geometry" />
         </mxCell>
         <mxCell id="ALLloim-snWpk_oj51vQ-3" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Trafic réseau(SPAN/TAP)" vertex="1">
-          <mxGeometry height="30" width="138" x="605" y="618" as="geometry" />
+          <mxGeometry height="30" width="138" x="590" y="552" as="geometry" />
         </mxCell>
         <mxCell id="ALLloim-snWpk_oj51vQ-5" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.data_stream;" value="" vertex="1">
-          <mxGeometry height="47.25" width="47.25" x="745" y="609.38" as="geometry" />
+          <mxGeometry height="47.25" width="47.25" x="730" y="543.38" as="geometry" />
         </mxCell>
         <mxCell id="zfowBRRy6kORj4a7OO3L-1" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://upload.wikimedia.org/wikipedia/commons/9/91/Misp-logo.png;" value="" vertex="1">
-          <mxGeometry height="68.5" width="93.44" x="1474.06" y="408" as="geometry" />
+          <mxGeometry height="68.5" width="93.44" x="1480" y="250" as="geometry" />
         </mxCell>
         <mxCell id="zfowBRRy6kORj4a7OO3L-3" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://flashpoint.io/wp-content/uploads/OpenCTI-logo.png;" value="" vertex="1">
-          <mxGeometry height="60" width="200" x="1600" y="412.25" as="geometry" />
+          <mxGeometry height="60" width="200" x="1600" y="250" as="geometry" />
         </mxCell>
         <mxCell id="zfowBRRy6kORj4a7OO3L-4" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="ThreatIntelligence Plateforme (TPI)" vertex="1">
           <mxGeometry height="30" width="241.25" x="1514.38" y="476.5" as="geometry" />
         </mxCell>
         <mxCell id="Yn0hlZ9Wo1u8eVe2AsYz-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Réception d&#39;alertes" vertex="1">
-          <mxGeometry height="20" width="145" x="1462.5" y="148.5" as="geometry" />
+          <mxGeometry height="20" width="145" x="1448.28" y="-2.5" as="geometry" />
         </mxCell>
         <mxCell id="Yn0hlZ9Wo1u8eVe2AsYz-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Execution de workflows de réponse" vertex="1">
-          <mxGeometry height="40" width="145" x="1462.5" y="180" as="geometry" />
+          <mxGeometry height="40" width="145" x="1448.28" y="29" as="geometry" />
         </mxCell>
         <mxCell id="Yn0hlZ9Wo1u8eVe2AsYz-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Automatisation de réponses via API" vertex="1">
-          <mxGeometry height="40" width="145" x="1462.5" y="225.5" as="geometry" />
+          <mxGeometry height="40" width="145" x="1448.28" y="74.5" as="geometry" />
         </mxCell>
         <mxCell id="Yn0hlZ9Wo1u8eVe2AsYz-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Interconnexion services tiers (ticketing,mail)" vertex="1">
-          <mxGeometry height="40" width="145" x="1462.5" y="273" as="geometry" />
+          <mxGeometry height="40" width="145" x="1448.28" y="122" as="geometry" />
         </mxCell>
         <mxCell id="TztuwE0MbjMm2DNrTRFj-1" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://malcolm.fyi/docs/images/logo/Malcolm_outline_banner_dark.png;" value="" vertex="1">
           <mxGeometry height="25" width="146.73" x="996.64" y="445" as="geometry" />
@@ -2184,10 +2169,10 @@
           <mxGeometry height="30" width="165" x="1467.5" y="1017" as="geometry" />
         </mxCell>
         <mxCell id="4WY_PtEyYwP9hglqb_oZ-19" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://docs.dfir-iris.org/latest/_static/logo_blue.png;" value="" vertex="1">
-          <mxGeometry height="64.5" width="192.04" x="1462" y="560.5" as="geometry" />
+          <mxGeometry height="64.5" width="192.04" x="1462" y="544.88" as="geometry" />
         </mxCell>
         <mxCell id="4WY_PtEyYwP9hglqb_oZ-21" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Plateforme collaborative de reponse à incidents (CIRP)" vertex="1">
-          <mxGeometry height="30" width="241.25" x="1518.13" y="617" as="geometry" />
+          <mxGeometry height="30" width="241.25" x="1433.1200000000001" y="690" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
