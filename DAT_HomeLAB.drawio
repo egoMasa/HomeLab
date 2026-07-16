@@ -1956,7 +1956,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="_ObJCSEan136rqR8_cG-" name="DAT - Plateforme de supervision de sécurité">
-    <mxGraphModel dx="1664" dy="2085" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1414" dy="1948" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -2075,9 +2075,9 @@
         <mxCell id="ALLloim-snWpk_oj51vQ-10" edge="1" parent="1" source="whaO3PFi9qzSNkF09AQh-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="ALLloim-snWpk_oj51vQ-2">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="1785.05" y="-89.95" />
-              <mxPoint x="550.11" y="-89.95" />
-              <mxPoint x="550.11" y="718.05" />
+              <mxPoint x="1460" y="-89.94" />
+              <mxPoint x="550.12" y="-89.94" />
+              <mxPoint x="550.12" y="717.94" />
             </Array>
           </mxGeometry>
         </mxCell>
