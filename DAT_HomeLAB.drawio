@@ -1956,12 +1956,12 @@
     </mxGraphModel>
   </diagram>
   <diagram id="_ObJCSEan136rqR8_cG-" name="DAT - Supervision sécurité">
-    <mxGraphModel dx="1571" dy="2035" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2175" dy="2367" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="zfowBRRy6kORj4a7OO3L-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="110" width="450" x="1000" y="-140" as="geometry" />
+          <mxGeometry height="110" width="370" x="1035" y="-140" as="geometry" />
         </mxCell>
         <mxCell id="jMWOh4Z4YRb72c_CCCyN-8" edge="1" parent="1" source="CB7IcI1OIEBjCWp1S7Ap-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="jMWOh4Z4YRb72c_CCCyN-1">
           <mxGeometry relative="1" as="geometry" />
@@ -2112,10 +2112,15 @@
         <mxCell id="ALLloim-snWpk_oj51vQ-10" edge="1" parent="1" source="whaO3PFi9qzSNkF09AQh-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="ALLloim-snWpk_oj51vQ-2">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="1785" y="60" />
-              <mxPoint x="550" y="60" />
-              <mxPoint x="550" y="718" />
+              <mxPoint x="1785" y="-210" />
+              <mxPoint x="550.07" y="-210" />
+              <mxPoint x="550.07" y="718" />
             </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="954LJkEFabuACr8_ZEYo-1" connectable="0" parent="ALLloim-snWpk_oj51vQ-10" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Actions" vertex="1">
+          <mxGeometry relative="1" x="-0.8785" y="1" as="geometry">
+            <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="whaO3PFi9qzSNkF09AQh-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
@@ -2141,6 +2146,9 @@
         </mxCell>
         <mxCell id="HjRHFR9DeVeFMYZJxB1X-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="SOAR" vertex="1">
           <mxGeometry height="30" width="175" x="1700" y="432.5" as="geometry" />
+        </mxCell>
+        <mxCell id="Yn0hlZ9Wo1u8eVe2AsYz-5" edge="1" parent="1" source="ALLloim-snWpk_oj51vQ-2" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="I4FFBBPgaZnZuZDJ8EWZ-2">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="ALLloim-snWpk_oj51vQ-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
           <mxGeometry height="60" width="200" x="600" y="688" as="geometry" />
@@ -2187,13 +2195,25 @@
           <mxGeometry height="17.21" width="110" x="1080" y="687.9" as="geometry" />
         </mxCell>
         <mxCell id="zfowBRRy6kORj4a7OO3L-1" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://upload.wikimedia.org/wikipedia/commons/9/91/Misp-logo.png;" value="" vertex="1">
-          <mxGeometry height="80" width="109.13" x="1010.37" y="-130" as="geometry" />
+          <mxGeometry height="80" width="109.13" x="1045.37" y="-130" as="geometry" />
         </mxCell>
         <mxCell id="zfowBRRy6kORj4a7OO3L-3" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://flashpoint.io/wp-content/uploads/OpenCTI-logo.png;" value="" vertex="1">
-          <mxGeometry height="60" width="200" x="1140" y="-115" as="geometry" />
+          <mxGeometry height="60" width="200" x="1175" y="-115" as="geometry" />
         </mxCell>
         <mxCell id="zfowBRRy6kORj4a7OO3L-4" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="ThreatIntelligence" vertex="1">
           <mxGeometry height="30" width="175" x="1133.75" y="-60" as="geometry" />
+        </mxCell>
+        <mxCell id="Yn0hlZ9Wo1u8eVe2AsYz-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Réception d&#39;alertes" vertex="1">
+          <mxGeometry height="20" width="145" x="1712.5" y="236" as="geometry" />
+        </mxCell>
+        <mxCell id="Yn0hlZ9Wo1u8eVe2AsYz-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Execution de workflows de réponse" vertex="1">
+          <mxGeometry height="40" width="145" x="1712.5" y="267.5" as="geometry" />
+        </mxCell>
+        <mxCell id="Yn0hlZ9Wo1u8eVe2AsYz-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Automatisation de réponses via API" vertex="1">
+          <mxGeometry height="40" width="145" x="1712.5" y="313" as="geometry" />
+        </mxCell>
+        <mxCell id="Yn0hlZ9Wo1u8eVe2AsYz-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Interconnexion services tiers (ticketing,mail)" vertex="1">
+          <mxGeometry height="40" width="145" x="1712.5" y="360.5" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
