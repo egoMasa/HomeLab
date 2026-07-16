@@ -1956,7 +1956,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="_ObJCSEan136rqR8_cG-" name="DAT - Plateforme de supervision de sécurité">
-    <mxGraphModel dx="1488" dy="1989" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1768" dy="2143" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -2139,7 +2139,7 @@
           <mxGeometry height="35" width="48.07" x="746" y="627" as="geometry" />
         </mxCell>
         <mxCell id="dD9-kDX0qZ6RCIjFFdjU-4" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://securityonionsolutions.com/logo/logo-so-light.png;clipPath=inset(38.48% 7.42% 38.87% 7.03%);" value="" vertex="1">
-          <mxGeometry height="53.24" width="201" x="1119.5" y="540" as="geometry" />
+          <mxGeometry height="40" width="151.01" x="997.74" y="545" as="geometry" />
         </mxCell>
         <mxCell id="HjRHFR9DeVeFMYZJxB1X-1" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://shuffler.io/images/Shuffle_logo.png;" value="" vertex="1">
           <mxGeometry height="60" width="60" x="1757.5" y="158.5" as="geometry" />
@@ -2214,6 +2214,9 @@
         </mxCell>
         <mxCell id="Yn0hlZ9Wo1u8eVe2AsYz-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Interconnexion services tiers (ticketing,mail)" vertex="1">
           <mxGeometry height="40" width="145" x="1712.5" y="360.5" as="geometry" />
+        </mxCell>
+        <mxCell id="TztuwE0MbjMm2DNrTRFj-1" parent="1" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://malcolm.fyi/docs/images/logo/Malcolm_outline_banner_dark.png;" value="" vertex="1">
+          <mxGeometry height="25" width="146.73" x="1148.75" y="552.5" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
