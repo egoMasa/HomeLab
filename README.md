@@ -1668,6 +1668,7 @@ Les fichiers de configuration bruts (output de `show running-config`) sont archi
 
 L'ordre de déploiement retenu et sa justification sont détaillés dans le fichier `ROADMAP.md`. En résumé : LAN (Access → Distribution → Core) en premier, puis DC (underlay OSPF → overlay BGP EVPN) en second, puis Proxmox, et enfin pfSense HA qui connecte les deux îlots OSPF en dernier étape.
 
+# 4.1) Configuration et déploiement
 ## 4.1) Méthodologie et ordre de déploiement
 
 *À rédiger — voir `ROADMAP.md` pour le détail complet.*
