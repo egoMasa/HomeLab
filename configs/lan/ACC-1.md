@@ -1,0 +1,5 @@
+```
+enable
+conf t
+hostname
+```
