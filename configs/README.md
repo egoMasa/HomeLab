@@ -36,16 +36,3 @@ Ce dossier contient les configurations CLI de chaque équipement de la maquette 
 **Légende colonnes :** Base = hostname/SSH/AAA | L2/L3 = VLAN/interfaces/routage | Proto = OSPF/EVPN/VRRP/CARP | Sécurité = port-security/802.1X/règles FW
 
 **Légende état :** ⬜ À faire | 🔄 En cours | ✅ Validé en lab
-
----
-
-## Organisation du dossier
-
-```
-configs/
-├── README.md       ← ce fichier (index + état)
-├── lan/            ← Cisco IOSvL2 (Access, Distribution, Core)
-├── dc/             ← Arista vEOS-lab (Spine, Leaf)
-├── fw/             ← pfSense (export XML ou notes CLI FRR)
-└── hv/             ← Proxmox (markdown : bridges, cluster, PBS, PDM)
-```
