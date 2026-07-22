@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "configs/README.md",
+                "file": "README.md",
                 "mode": "source",
                 "source": false
               },
@@ -196,7 +196,12 @@
   },
   "active": "9164425279e590a0",
   "lastOpenFiles": [
+    "plan_adressage.xlsx",
+    "cartographie.xlsx",
+    "ROADMAP.md",
     "README.md",
+    "configs/lan/SW ACCESS.md",
+    "configs/README.md",
     "configs/README.md.tmp.5825.1777231698995",
     "configs/lan/CORE-2.txt",
     "configs/lan/CORE-2.txt.tmp.5825.1777231686582",
@@ -206,9 +211,6 @@
     "configs/lan/DIST-4.txt.tmp.5825.1777231621902",
     "configs/lan/DIST-3.txt",
     "configs/lan/DIST-3.txt.tmp.5825.1777231585827",
-    "configs/lan/DIST-2.txt",
-    "configs/README.md",
-    "ROADMAP.md",
     "README(1).md",
     "📁 Fichiers/🏠 Perso/HomeLAB/Rapport homelab.md",
     "📁 Fichiers/🏠 Perso/HomeLAB/Pasted image 20260330214908.png",
@@ -231,7 +233,6 @@
     "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/8 - Plan de résilience (PDR) [OK]/SI_08_PDR.md",
     "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/8 - Plan de résilience (PDR) [OK]/DC_08_PDR.md",
     "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/7 - Plan de maintien en condition de sécurité (MCS) [OK]/SI_07_MCS.md",
-    "📁 Fichiers/👔 Alternance/Homologation/HOMO-FINAL- Copie/7 - Plan de maintien en condition de sécurité (MCS) [OK]/DC_07_MCS.md",
     "🗺️ MindMap/Exemple.canvas",
     "📁 Fichiers/🎒Etudes/🛜M2 ARC/UE Datacenter/Schéma datacenter.png",
     "🗺️ MindMap/LLM.canvas",

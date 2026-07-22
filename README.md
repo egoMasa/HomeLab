@@ -145,6 +145,7 @@ Les services applicatifs sont la matière de la Phase 2. On les liste ici à tit
 | PKI interne                   | DC (VRF-ADMIN) | HashiCorp Vault, Smallstep                  | Émission de certificats internes                     |
 | Gestion de secrets            | DC (VRF-ADMIN) | HashiCorp Vault                             | Coffre-fort de secrets applicatifs                   |
 
+A discuter ou rajouter : PXE Boot,
 Chaque solution retenue fera l'objet d'un arbitrage détaillé en début de Phase 2, selon le canevas annoncé dans le prompt système : notion, état du marché, sélection argumentée, dimensionnement, installation, sécurisation, administration, intégration avec le reste du SI.
 
 ## 2.3) Synthèse des protocoles et fonctionnalités par catégorie d'équipement
@@ -1007,141 +1008,300 @@ Les IP physiques des FW sont placées en fourchette haute (.201, .202) pour rest
 
 **Conflit potentiel avec DHCP libvirt.** Les IP fixes choisies (`.10`-`.14`, `.200`-`.202`) sont dans la plage DHCP libvirt par défaut. libvirt attribue ses IP DHCP séquentiellement depuis `.2`, donc en pratique il n'y aura pas de collision tant qu'on a moins de 8 clients DHCP simultanés. Pour garantir zéro chevauchement, on peut réduire la plage DHCP libvirt à `.2-.9` via `virsh net-edit default` (modifier la balise `<range>`). À faire si des collisions apparaissent en exploitation.
 
-### 3.8.7) Traçabilité et maintenance
-
-Le fichier `plan_adressage.xlsx` est la source de vérité. Il contient 13 feuilles :
-
-1. Synthèse
-2. Loopbacks
-3. Liens-L3-Infra (underlay, handoff VRF, Core-FW, Core-Distribution, pfsync)
-4. WAN-et-VIP-publiques (fusion WAN libvirt + VIP CARP de services)
-5. VLAN-LAN
-6. VLAN-DC-PROD
-7. VLAN-DC-DMZ
-8. VLAN-DC-ADMIN
-9. MGMT
-10. VRF (RD, RT, VNI L3)
-11. Routage (OSPF, iBGP EVPN, VRRP, CARP)
-12. Scalabilité
-13. Légende
-
-Toute modification du plan d'adressage doit passer par ce fichier avant d'être reportée sur un équipement. En cas d'incohérence, **ce fichier prévaut** sur toute configuration d'équipement.
-
 ## 3.9) Plan VLAN, VNI et VRF
 
-Cette section décrit la segmentation logique complète : VLAN utilisateurs et VM, VRF de tenancy, mapping VLAN → VNI dans la fabric VXLAN, Route Distinguishers et Route Targets. Elle complète le plan d'adressage de la section 3.8 en expliquant les choix de segmentation et leurs justifications.
+Cette section décrit la segmentation logique complète de l'infrastructure : les VLAN utilisateurs et VM, les VRF de tenancy, le mapping VLAN → VNI dans la fabric VXLAN, les Route Distinguishers et Route Targets, ainsi que le plan d'administration des équipements. Elle complète le plan d'adressage de la section 3.8 en expliquant non pas _quelles adresses_ sont utilisées, mais _pourquoi_ le découpage est construit ainsi et quelles propriétés de sécurité il garantit.
 
 ### 3.9.1) Approche de segmentation
 
-La segmentation retenue suit le niveau de rigueur d'une **ETI ou d'un grand compte moderne** : on privilégie la segmentation fine par rôle fonctionnel plutôt que des blocs fourre-tout. Cela se traduit par 29 VLAN au total, répartis sur 4 VRF de tenancy plus la VRF underlay. Ce niveau de détail est défendable dans un SI de 300 à 1500 postes.
+La segmentation retenue suit le niveau de rigueur d'une **ETI ou d'un grand compte moderne** : on privilégie le découpage fin par rôle fonctionnel plutôt que des blocs fourre-tout. Cela se traduit par **31 VLAN de segmentation** répartis sur 4 VRF de tenancy, auxquels s'ajoutent 3 VLAN système et 4 VLAN de transit, soit 38 identifiants au total. Ce niveau de détail est défendable dans un SI de 300 à 1500 postes.
 
-Un niveau de segmentation plus grossier (10-15 VLAN) aurait été suffisant pour un site de PME. À l'inverse, une très grande entreprise monterait à 50-100 VLAN avec des subdivisions par métier, par environnement ou par client hébergé. Le choix ici est un **compromis pédagogique** qui reflète un ETI sérieuse sans tomber dans la complexité d'un opérateur.
+Un découpage plus grossier (10 à 15 VLAN) aurait suffi pour un site de PME. À l'inverse, une très grande entreprise monterait à 50 ou 100 VLAN avec des subdivisions par métier, par environnement ou par client hébergé. Le choix retenu est un **compromis assumé** qui reflète une ETI sérieuse sans tomber dans la complexité opérationnelle d'un opérateur.
+
+**L'axe de segmentation est la zone de confiance, pas le service.** C'est la règle qui structure tout le reste, et elle mérite d'être énoncée sans ambiguïté parce qu'elle est la source d'erreur la plus fréquente dans ce type de conception. Une VRF ne découpe pas selon le service applicatif (« une VRF pour la messagerie, une pour la GED »), ni selon le client (sauf en contexte multi-tenant), mais selon le **niveau de confiance et le domaine de politique**. Segmenter par service démultiplierait les tables de routage, les couples RD/RT et les jeux de règles firewall pour un gain de sécurité nul : deux services qui appartiennent au même niveau de confiance n'ont aucune raison d'être séparés par un point de contrôle.
+
+**Le tiering applicatif appartient au niveau VLAN, à l'intérieur d'une VRF.** Corollaire direct du point précédent : la séparation front / applicatif / données n'est pas une frontière de confiance, c'est une frontière de rôle. Les VLAN 100 (WEB), 101 (APP) et 102 (DB) vivent donc dans une même VRF-PROD, où ils se routent librement. Cette fluidité est **voulue** — une chaîne applicative qui doit traverser un firewall à chaque appel inter-composants est une aberration de performance — mais elle a une contrepartie qu'il faut nommer : à l'intérieur d'une VRF, la segmentation VLAN seule **n'isole pas**. Le durcissement intra-VRF relève d'un autre niveau (ACL sur les SVI des Leaf, host-based firewall), traité en section 3.10.4.
+
+**Conventions de nommage.** Le nom d'une VRF est le nom de la zone (`VRF-PROD`, `VRF-DMZ`, `VRF-ADMIN`, `VRF-MGMT`). Le nom d'un VLAN suit le format `ZONE-RÔLE`, où le rôle désigne le tier applicatif en production (`PROD-WEB-INT`, `PROD-DB`), la fonction exposée en DMZ (`DMZ-MAIL`, `DMZ-DNS`), le type de terminal côté utilisateurs (`USERS`, `VOICE`, `PRINTERS`) et la sensibilité de l'outil en administration (`ADMIN-VAULT`, `ADMIN-SOC`). Cette régularité permet de déduire la zone d'appartenance d'un segment à la seule lecture de son nom, sans consulter de table.
 
 ### 3.9.2) Matrice VRF de tenancy
 
-| VRF | Rôle | Nb VLAN | VNI L3 | RD convention | RT import/export |
-|---|---|---:|---:|---|---|
-| `default` | Underlay, loopbacks, OSPF fabric, iBGP EVPN | — | — | — | — |
-| `VRF-PROD` | Production interne (web, app, DB, infra, files, messaging, ToIP, intégration) | 8 | 50001 | `65000:100` | `65000:100` |
-| `VRF-DMZ` | Services exposés (front, web, mail, DNS public, API) | 5 | 50002 | `65000:200` | `65000:200` |
-| `VRF-ADMIN` | Outillage admin (CICD, monitoring, AAA, automate, Vault, SOC) | 7 | 50003 | `65000:300` | `65000:300` |
-| `VRF-MGMT` | Management in-band équipements (switches, FW, HV) | 1 | 50004 | `65000:999` | `65000:999` |
+|VRF / Zone|Rôle|Nb VLAN|VNI L3|RD|RT import/export|
+|---|---|--:|--:|---|---|
+|`default`|Underlay fabric : loopbacks, liens /31, OSPF, iBGP EVPN|—|—|—|—|
+|Zone `USERS`|LAN utilisateurs — **table globale Cisco**, pas une VRF EVPN|8 (× 2 blocs)|—|—|—|
+|`VRF-PROD`|Production interne (web, app, DB, infra, files, messagerie, ToIP, intégration)|8|50001|`65000:100`|`65000:100`|
+|`VRF-DMZ`|Services exposés (front, web, mail, DNS public, API)|5|50002|`65000:200`|`65000:200`|
+|`VRF-ADMIN`|Outillage d'administration (CI/CD, observabilité, AAA, automation, Vault, SOC)|7|50003|`65000:300`|`65000:300`|
+|`VRF-MGMT`|Management in-band des hyperviseurs|1|50004|`65000:999`|`65000:999`|
 
-La convention RT `65000:XXX` où `XXX` est le centaine du numéro de VRF laisse une marge très large pour ajouter d'autres VRF (jusqu'à `65000:999`). Les conventions VNI L2 (10000 + numéro VLAN) et VNI L3 (50000 + offset VRF) sont propres, traçables et laissent des millions de valeurs possibles.
+**Aucun import croisé de Route Target.** C'est le point de sécurité central du tableau. Chaque VRF importe exclusivement son propre RT, ce qui signifie qu'aucun préfixe d'une VRF n'entre jamais dans la table d'une autre. L'étanchéité inter-VRF n'est donc pas une règle _déclarée_ que l'on pourrait oublier d'appliquer : elle est acquise **dès le plan de contrôle EVPN**, avant même que le firewall n'intervienne. Une VRF ne dispose que d'une route par défaut pointant vers le firewall, et c'est sa seule porte de sortie.
 
-**Justification du nombre de VRF retenues.** Trois VRF de tenancy (PROD, DMZ, ADMIN) sont les zones de confiance classiques d'une DSI mono-tenant. La VRF-MGMT séparée est une bonne pratique de plus en plus répandue pour isoler les interfaces d'administration des équipements. On aurait pu fusionner MGMT et ADMIN (souvent fait en PME), mais les sensibilités sont différentes : la MGMT est **orientée équipements**, l'ADMIN est **orientée outillage d'administration**. La séparation simplifie les règles firewall et le périmètre d'audit.
+**Justification du nombre de VRF retenues.** Trois VRF de tenancy (PROD, DMZ, ADMIN) constituent les zones de confiance classiques d'une DSI mono-tenant. La séparation d'une `VRF-MGMT` est une pratique de plus en plus répandue, et elle se justifie ici par une différence de nature : la MGMT est **orientée équipements** (les interfaces d'administration de l'infrastructure elle-même), tandis que l'ADMIN est **orientée outillage** (les serveurs qui administrent le SI). Le test discriminant est simple : si l'on débranche la MGMT, le SI continue de fonctionner mais on ne peut plus configurer les équipements ; si l'on débranche l'ADMIN, les équipements commutent toujours mais on perd les outils. La séparation simplifie les règles firewall et clarifie le périmètre d'audit.
 
-**Contexte multi-tenant non retenu.** Dans une entreprise hébergeant des clients tiers (MSP, cloud privé loué, hébergeur), on aurait une VRF par client plutôt qu'une VRF par zone de confiance. Ce n'est pas le cas ici : le projet simule une entreprise mono-tenant qui héberge **son propre SI**, donc les VRF représentent des zones de confiance internes.
+**Pourquoi la zone USERS n'est pas une VRF.** Le LAN utilisateurs est un domaine Cisco Tier 3 en OSPF classique, structurellement **séparé de la fabric EVPN** et raccordé au reste du SI par les Core en L3 routé vers les firewalls. Les postes utilisateurs sont donc **déjà** isolés du datacenter par le point de contrôle : instancier une VRF-lite sur les Core et les Distribution n'ajouterait aucune isolation réelle, alourdirait la configuration, et se heurterait de surcroît à un support incertain sur l'image IOSvL2. La zone USERS reste donc dans la **table de routage globale** du LAN.
 
-### 3.9.3) VLAN LAN utilisateurs (8 VLAN par bloc)
+Un choix de vocabulaire mérite ici d'être explicité, car il a été une source de confusion dans les versions antérieures du plan. Le terme `default` est **strictement réservé à l'underlay de la fabric** (loopbacks, liens point-à-point, adjacences OSPF et iBGP). Les segments utilisateurs, bien qu'ils vivent eux aussi dans une table globale, sont désignés par la zone `USERS` — parce qu'ils constituent une zone de confiance à part entière, avec sa propre politique firewall, et qu'il serait trompeur de les étiqueter du même nom que la table de routage de l'infrastructure.
 
-Les 8 VLAN LAN reflètent la segmentation classique d'une ETI avec quelques ajouts modernes :
+**Arbitrage : pourquoi pas de VRF-SOC dédiée.** La question s'est posée de promouvoir la cellule SOC (VLAN 306) en VRF autonome. Deux arguments plaidaient pour : la polarité des flux y est inversée par rapport au reste de l'administration (« tout le SI → SOC » pour la collecte, contre « admin → cibles » ailleurs), et le SOC héberge les données d'investigation, qui sont précisément les preuves d'une compromission. L'arbitrage retenu est néanmoins de **conserver le SOC comme VLAN au sein de VRF-ADMIN**, pour trois raisons.
 
-| VLAN | Nom | Rôle | Justification |
+D'abord, la cohérence avec la règle de segmentation : le SOC et l'outillage d'administration sont opérés par la même population, avec le même régime de privilèges et le même cycle de patching. Ils constituent la **même zone de confiance** ; les séparer relèverait du découpage par service, que l'on s'est explicitement interdit. Ensuite, le coût réel : une VRF supplémentaire pour un unique VLAN de cinq machines impose un L3VNI, un couple RD/RT, quatre sous-interfaces de handoff sur chaque firewall et chaque Spine, un bloc de transit, un jeu de règles — et transforme en flux firewall tous les échanges légitimes entre le SOC et l'outillage voisin (Vault pour les secrets, AAA pour l'authentification des analystes, Ansible pour le déploiement des agents). Enfin, et c'est décisif, **l'asymétrie de réversibilité** : promouvoir le SOC plus tard représente une renumérotation ponctuelle et bornée, tandis que sur-segmenter dès maintenant introduit une friction sur chaque étape de configuration du projet.
+
+La contrepartie est explicitement assumée : les flux entre l'outillage d'administration et le SOC sont **routés par la fabric, sans inspection firewall**. La compensation retenue est une **ACL appliquée sur le SVI `Vlan306` des Leaf**, n'autorisant vers le SOC que les ports de collecte depuis le reste de VRF-ADMIN, et réservant l'accès analyste au bastion. Ce contrôle est non-stateful et échappe à l'inspection Suricata — c'est sa limite, et elle est documentée. Les identifiants d'une future `VRF-SOC` sont réservés en section 3.9.11.
+
+**Contexte multi-tenant non retenu.** Dans une organisation hébergeant des clients tiers (MSP, cloud privé loué, hébergeur), le découpage pertinent serait une VRF par client plutôt qu'une VRF par zone de confiance. Ce n'est pas le cas ici : le projet simule une entreprise mono-tenant hébergeant **son propre SI**. Le modèle multi-tenant ajouterait une couche de tenancy _au-dessus_ des zones, avec une discipline RD/RT stricte comme invariant, la tolérance au recouvrement d'adressage et un provisioning automatisé. Il est documenté comme extension possible, non déployé.
+
+### 3.9.3) Conventions de numérotation
+
+La lisibilité d'un plan de segmentation tient moins à sa finesse qu'à la régularité de ses conventions. Celles retenues ici permettent de déduire la zone, le sous-réseau et le VNI d'un segment à partir de son seul numéro de VLAN.
+
+| Convention          | Règle                                | Exemple                                                                                         |
+| ------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| Plage VLAN par zone | Le chiffre de tête identifie la zone | `1xx` PROD <br>`2xx` DMZ · <br>`3xx` ADMIN · <br>`99x` infrastructure DC · <br>`999` management |
+| VNI L2              | `10000 + numéro de VLAN`             | VLAN 102 → VNI `10102`                                                                          |
+| VNI L3              | `50000 + offset de VRF`              | PROD `50001` · <br>DMZ `50002` · <br>ADMIN `50003` · <br>MGMT `50004`                           |
+| RD et RT            | `65000:<numéro de VRF>`              | `VRF-DMZ` → `65000:200`                                                                         |
+| Bloc IP             | Un `/16` par zone                    | PROD `10.2.0.0/16` · <br>DMZ `10.3.0.0/16` · <br>ADMIN `10.4.0.0/16`                            |
+| 3ᵉ octet            | Reprend le numéro de VLAN            | VLAN 203 → `10.3.203.0/24`                                                                      |
+| VLAN de transit     | Plage dédiée `40xx`, jamais de VM    | `4001` à `4004`                                                                                 |
+
+**Exception documentée sur la plage ADMIN.** La règle du 3ᵉ octet ne peut pas s'appliquer littéralement aux VLAN 300 à 306, un octet étant borné à 255. La correspondance retenue est `3ᵉ octet = 30 + (VLAN − 300)`, soit `10.4.30.0/24` pour le VLAN 300 jusqu'à `10.4.36.0/24` pour le VLAN 306. Cette exception doit être connue de quiconque rédige une configuration : sa méconnaissance produit des adresses syntaxiquement invalides du type `10.4.302.10`, qui sont rejetées par l'IOS et dont l'origine est peu évidente à diagnostiquer. La même règle s'appliquera à toute future plage `4xx`.
+
+**Séparation stricte des VLAN de transit.** Les VLAN portant les sous-interfaces de handoff entre les firewalls et les Spine sont isolés dans une **plage 4000 réservée**, sans aucun recouvrement possible avec les VLAN de machines. Cette décision corrige une ambiguïté des versions antérieures du plan, où les numéros 201 à 204 désignaient simultanément des VLAN de VM en DMZ (sur les Leaf et les hyperviseurs) et des VLAN de transit (sur le trunk Spine ↔ firewall). Les deux usages étaient techniquement licites — un identifiant VLAN n'a de portée que locale à un lien, et dans la fabric ce sont les VNI qui identifient réellement les segments — mais la lecture croisée des configurations en devenait piégeuse. Le transit occupe désormais `4001` (PROD), `4002` (DMZ), `4003` (ADMIN) et `4004` (MGMT), et les VLAN 201 à 204 ne désignent plus que les segments de VM en DMZ.
+
+### 3.9.4) VLAN LAN utilisateurs — zone USERS (8 VLAN par bloc)
+
+Les huit VLAN utilisateurs reflètent la segmentation classique d'une ETI, avec quelques ajouts devenus standards :
+
+|VLAN|Nom|Rôle|Justification|
 |---|---|---|---|
-| 10 | USERS | Postes bureautiques | Cœur LAN, DHCP dynamique |
-| 20 | VOICE | Téléphonie IP | VLAN voice tagué sur les ports access, QoS dédiée |
-| 30 | IOT | Caméras, capteurs, IoT | Isolation stricte, pas d'accès ressources internes sans filtrage |
-| 40 | WIFI-CORP | Wi-Fi salariés WPA3-Enterprise + RADIUS | Accès ressources internes autorisé |
-| 41 | WIFI-GUEST | Wi-Fi invités captif | Internet uniquement, zéro accès interne |
-| 42 | WIFI-BYOD | Téléphones/tablettes persos salariés | Accès limité, pas de ressources sensibles |
-| 50 | PRINTERS | Imprimantes et MFP | Pool d'imprimantes partagées, isolation forte |
-| 90 | LAB-DEV | Tests, postes dev, bancs | Séparé de la prod pour éviter pollutions |
+|10|`USERS`|Postes bureautiques|Cœur du LAN, adressage DHCP dynamique|
+|20|`VOICE`|Téléphonie IP|VLAN voice tagué sur les ports access, QoS dédiée|
+|30|`IOT`|Caméras, capteurs, objets connectés|Isolation stricte, aucun accès aux ressources internes sans filtrage|
+|40|`WIFI-CORP`|Wi-Fi salariés WPA3-Enterprise + RADIUS|Accès aux ressources internes autorisé|
+|41|`WIFI-GUEST`|Wi-Fi invités avec portail captif|Internet uniquement, aucun accès interne|
+|42|`WIFI-BYOD`|Terminaux personnels des salariés|Accès limité, aucune ressource sensible|
+|50|`PRINTERS`|Imprimantes et multifonctions|Pool partagé, isolation forte|
+|90|`LAB-DEV`|Bancs de test, postes de développement|Séparé de la production pour éviter les pollutions croisées|
 
-Le VLAN **WIFI-BYOD** reflète une pratique devenue standard : les salariés apportent leurs téléphones/tablettes persos sur le Wi-Fi pro, mais ne doivent pas accéder aux ressources internes. Isolation entre WIFI-CORP et WIFI-BYOD.
+Le VLAN **WIFI-BYOD** traduit une pratique devenue courante : les salariés connectent leurs terminaux personnels au Wi-Fi de l'entreprise, sans pour autant devoir accéder aux ressources internes. L'isolation entre `WIFI-CORP` et `WIFI-BYOD` est la traduction réseau de cette distinction d'usage. Le VLAN **LAB-DEV** est présent dans la plupart des ETI à composante technique : postes de développement, bancs de qualification et machines de test manipulent parfois des données non productives, mais ne doivent en aucun cas atteindre les serveurs de production.
 
-Le VLAN **LAB-DEV** est présent dans la plupart des ETI à composante technique : postes de développement, bancs de test, machines de qualification, qui manipulent parfois des données non-productives mais qui ne doivent pas pouvoir accéder aux serveurs de prod.
+Ces huit VLAN sont **dupliqués entre les deux blocs de Distribution**, soit 16 sous-réseaux `/24` au total, avec un offset `+100` sur le 3ᵉ octet pour éviter tout recouvrement. Le VLAN 10 du bloc 1 porte ainsi `10.1.10.0/24` et celui du bloc 2 `10.1.110.0/24`. Le numéro de VLAN reste identique dans les deux blocs — il désigne un **rôle fonctionnel**, pas un segment — tandis que le sous-réseau diffère, puisqu'il s'agit bien de deux domaines de diffusion distincts. Chaque SVI est instanciée sur les deux Distribution du bloc avec VRRP, la VIP en `.1` servant de passerelle aux postes, et les priorités alternées par parité de VLAN pour répartir la charge entre les deux équipements.
 
-Ces 8 VLAN sont dupliqués entre les deux blocs de Distribution (16 subnets /24 au total), avec un offset `+100` sur le 3e octet pour éviter les chevauchements.
+### 3.9.5) VLAN DC — VRF-PROD (8 VLAN segmentés par tier applicatif)
 
-### 3.9.4) VLAN DC — VRF-PROD (8 VLAN segmentés par tier applicatif)
+La VRF-PROD applique une segmentation **par rôle applicatif** plutôt qu'un bloc unique, selon le tiering classique présentation → application → données → infrastructure :
 
-La VRF-PROD applique une segmentation **par rôle applicatif** plutôt qu'un bloc unique. Le principe est le tiering classique "présentation → application → données → infra" :
+|VLAN|Nom|Subnet|VNI L2|Rôle|
+|---|---|---|--:|---|
+|100|`PROD-WEB-INT`|`10.2.100.0/24`|10100|Frontaux web internes (intranet, portails applicatifs)|
+|101|`PROD-APP`|`10.2.101.0/24`|10101|Serveurs applicatifs métier (backends, ERP)|
+|102|`PROD-DB`|`10.2.102.0/24`|10102|Bases de données|
+|103|`PROD-INFRA`|`10.2.103.0/24`|10103|DNS interne, DHCP, LDAP/AD, Kerberos, NTP|
+|104|`PROD-FILES`|`10.2.104.0/24`|10104|Partages de fichiers (NextCloud, SMB, NFS)|
+|105|`PROD-MESSAGING`|`10.2.105.0/24`|10105|Boîtes aux lettres Dovecot (IMAP/LMTP/Sieve) et webmail|
+|106|`PROD-TOIP`|`10.2.106.0/24`|10106|Backend ToIP (Asterisk, SIP)|
+|107|`PROD-INTEGRATION`|`10.2.107.0/24`|10107|Middlewares et brokers de messages (Kafka, RabbitMQ)|
 
-| VLAN | Nom | VNI L2 | Rôle |
-|---|---|---:|---|
-| 100 | PROD-WEB-INT | 10100 | Frontaux web internes (intranet, portails applicatifs) |
-| 101 | PROD-APP | 10101 | Serveurs applicatifs métier (backends, ERP) |
-| 102 | PROD-DB | 10102 | Bases de données |
-| 103 | PROD-INFRA | 10103 | DNS interne, DHCP, LDAP/AD, Kerberos, NTP, PKI |
-| 104 | PROD-FILES | 10104 | Partages de fichiers (NextCloud, SMB, NFS) |
-| 105 | PROD-MESSAGING | 10105 | Mail interne et messagerie |
-| 106 | PROD-TOIP | 10106 | Backend ToIP (Asterisk, SIP) |
-| 107 | PROD-INTEGRATION | 10107 | Middlewares, brokers (Kafka, RabbitMQ) |
+**Précision sur le VLAN PROD-INFRA.** Ce segment porte les services socles dont dépend l'ensemble du SI : résolution de noms, distribution d'adresses, annuaire, authentification Kerberos et synchronisation horaire. La PKI en est en revanche **absente**, et c'est délibéré : bien qu'elle relève conceptuellement des services socles, une autorité de certification interne manipule des clés privées dont la compromission invaliderait toute la chaîne de confiance du SI. Elle est donc consolidée dans le VLAN `ADMIN-VAULT`, aux côtés du coffre-fort de secrets, dont elle partage le niveau de sensibilité.
 
-**Justification du tiering par VLAN.** Un front compromis ne peut pas joindre la DB directement au niveau L3 : il faut que les règles firewall (si on met du filtrage intra-VRF via host-firewall ou ACL Leaf) autorisent explicitement le flux. En cas de compromis, les mouvements latéraux sont freinés. C'est le principe de **défense en profondeur** au niveau réseau.
+**Précision sur le VLAN PROD-MESSAGING.** Ce segment porte la partie _interne_ de la chaîne de messagerie — les boîtes aux lettres Dovecot et l'interface webmail — tandis que les composants exposés à Internet (MTA Postfix, filtrage antispam et antivirus) résident en DMZ. Cette répartition suit la logique générale d'exposition : ce qui reçoit des connexions depuis Internet est en zone exposée, ce qui héberge les données des utilisateurs est en zone interne.
 
-### 3.9.5) VLAN DC — VRF-DMZ (5 VLAN)
+**Justification du tiering par VLAN.** La séparation front / applicatif / données freine les mouvements latéraux en cas de compromission, à condition d'être accompagnée d'un filtrage explicite. Comme rappelé en 3.9.1 et détaillé en 3.10.4, ces trois VLAN partagent la même VRF et se routent donc librement par la fabric : le tiering fournit la **structure** sur laquelle un filtrage peut s'appuyer (ACL sur les SVI des Leaf, host-based firewall sur les machines les plus sensibles), il ne constitue pas à lui seul un contrôle d'accès.
 
-La DMZ est elle aussi segmentée par fonction, pour qu'un compromis sur une fonction n'impacte pas les autres :
+### 3.9.6) VLAN DC — VRF-DMZ (5 VLAN)
 
-| VLAN | Nom | VNI L2 | Rôle |
-|---|---|---:|---|
-| 200 | DMZ-FRONT | 10200 | Reverse proxy HAProxy, WAF BunkerWeb |
-| 201 | DMZ-WEB | 10201 | Serveurs web exposés (vitrine, apps publiques) |
-| 202 | DMZ-MAIL | 10202 | SMTP inbound MX + outbound + antispam |
-| 203 | DMZ-DNS | 10203 | DNS autoritaire public |
-| 204 | DMZ-API | 10204 | API Gateway (exposition APIs publiques) |
+La DMZ est segmentée par fonction exposée, afin que la compromission d'un service publié n'emporte pas les autres :
 
-**Point d'attention terminologique.** Les numéros VLAN 201-204 sont utilisés à deux endroits différents du projet : **VLAN de VM dans VRF-DMZ** (sur les Leaf et HV) et **VLAN de handoff VRF côté FW** (sur le trunk Spine-FW). Ce sont bien **deux contextes séparés**, mais pour la lisibilité on aurait pu choisir une plage différente pour l'un ou l'autre. Le choix retenu de conserver ces numéros vient du fait que dans la fabric EVPN, ces VLAN sont locaux à chaque équipement et identifiés par leurs VNI. Un VLAN 201 côté Leaf (VM DMZ-WEB, VNI 10201) n'a rien à voir avec un VLAN 201 sur une sous-interface FW (handoff VRF-PROD). C'est en pratique sans impact fonctionnel, mais à signaler pour éviter la confusion à la lecture des configurations.
+|VLAN|Nom|Subnet|VNI L2|Rôle|
+|---|---|---|--:|---|
+|200|`DMZ-FRONT`|`10.3.200.0/24`|10200|Reverse proxy HAProxy, WAF BunkerWeb|
+|201|`DMZ-WEB`|`10.3.201.0/24`|10201|Serveurs web exposés (vitrine, applications publiques)|
+|202|`DMZ-MAIL`|`10.3.202.0/24`|10202|MTA Postfix (MX entrant et sortant), Rspamd, ClamAV|
+|203|`DMZ-DNS`|`10.3.203.0/24`|10203|DNS autoritaire public|
+|204|`DMZ-API`|`10.3.204.0/24`|10204|Passerelle d'exposition d'API publiques|
 
-### 3.9.6) VLAN DC — VRF-ADMIN (7 VLAN)
+**Aucune base de données en DMZ.** C'est une règle absolue du design, et elle mérite d'être énoncée explicitement parce qu'elle est régulièrement enfreinte en pratique. Un service exposé qui a besoin de persistance interroge une base située en `PROD-DB`, à travers le firewall, sur un flux explicitement autorisé et journalisé. Placer une base en DMZ reviendrait à offrir les données à quiconque compromettrait le frontal qui les sert, en supprimant précisément le point de contrôle que la DMZ existe pour imposer.
 
-La VRF-ADMIN regroupe tout l'outillage d'administration du SI, segmenté selon la sensibilité et le rôle :
+### 3.9.7) VLAN DC — VRF-ADMIN (7 VLAN)
 
-| VLAN | Nom | VNI L2 | Rôle |
-|---|---|---:|---|
-| 300 | ADMIN-CORE | 10300 | Bastion Guacamole, PBS, PDM, ITSM GLPI |
-| 301 | ADMIN-CICD | 10301 | GitLab, Jenkins, runners CI/CD |
-| 302 | ADMIN-MONITOR-PERF | 10302 | Zabbix, Prometheus, Grafana, Telegraf |
-| 303 | ADMIN-AAA | 10303 | FreeRADIUS, Keycloak, SSO |
-| 304 | ADMIN-AUTOMATE | 10304 | Ansible, AWX |
-| 305 | ADMIN-VAULT | 10305 | HashiCorp Vault, gestion des secrets, PKI centrale |
-| 306 | ADMIN-SOC | 10306 | Wazuh, Graylog, TheHive, SIEM (sensibilité maximale) |
+La VRF-ADMIN regroupe l'outillage d'administration du SI, segmenté selon la sensibilité et le rôle de chaque famille d'outils :
 
-**Segmentation MONITOR-PERF vs SOC.** C'est une segmentation importante en ETI et grand compte. Le VLAN ADMIN-MONITOR-PERF porte les outils de supervision perf (Zabbix, Prometheus), avec des agents déployés partout et des flux relativement ouverts. Le VLAN ADMIN-SOC porte les outils de SIEM/investigation, qui manipulent des données extrêmement sensibles (logs d'investigation, IOC, rapports d'incidents). Un compromis sur le monitoring perf ne doit pas donner accès aux données SOC. Dans une très grande organisation, on irait jusqu'à mettre le SOC dans une **VRF-SOC dédiée** ; ici on se limite à un VLAN isolé avec politique de filtrage spécifique.
+|VLAN|Nom|Subnet|VNI L2|Rôle|
+|---|---|---|--:|---|
+|300|`ADMIN-CORE`|`10.4.30.0/24`|10300|Bastion Guacamole, PBS, PDM, ITSM GLPI|
+|301|`ADMIN-CICD`|`10.4.31.0/24`|10301|GitLab, Jenkins, runners de CI/CD|
+|302|`ADMIN-OBSERV`|`10.4.32.0/24`|10302|Grafana Alloy, Prometheus, Loki, Tempo, Grafana|
+|303|`ADMIN-AAA`|`10.4.33.0/24`|10303|FreeRADIUS, Keycloak, SSO|
+|304|`ADMIN-AUTOMATE`|`10.4.34.0/24`|10304|Ansible, AWX|
+|305|`ADMIN-VAULT`|`10.4.35.0/24`|10305|HashiCorp Vault (secrets) et step-ca (PKI interne)|
+|306|`ADMIN-SOC`|`10.4.36.0/24`|10306|Wazuh, MISP, DFIR-IRIS, Shuffle, Malcolm|
 
-**VLAN Vault séparé.** Le coffre-fort de secrets (tokens API, mots de passe, clés privées, certs) est l'un des outils les plus sensibles du SI. Il mérite un VLAN isolé avec des règles d'accès strictes, pour minimiser la surface d'attaque.
+**Séparation observabilité / SOC.** C'est une distinction structurante en ETI et en grand compte, et elle repose sur une différence de nature des flux autant que de sensibilité des données. Le VLAN `ADMIN-OBSERV` porte le plan de supervision technique — métriques, journaux applicatifs et traces — avec des agents déployés partout et des flux relativement ouverts, dont la finalité est la disponibilité et la performance. Le VLAN `ADMIN-SOC` porte le plan de supervision de sécurité, dont les outils manipulent des données d'investigation : indicateurs de compromission, artefacts forensiques, rapports d'incidents. Une compromission du plan d'observabilité ne doit pas ouvrir l'accès aux données du SOC, d'où la séparation et l'ACL décrite en 3.9.2.
 
-### 3.9.7) VLAN MGMT (1 VLAN)
+Ces deux plans partagent malgré tout une interface : Grafana consomme en **lecture seule** un index de synthèse issu du SOC, ce qui permet de présenter une vue consolidée disponibilité + sécurité sans donner au plan d'observabilité un accès aux données brutes d'investigation.
 
-Un seul VLAN suffit pour toutes les interfaces d'administration des équipements :
+**Le VLAN Vault, consolidé avec la PKI.** Le coffre-fort de secrets concentre les jetons d'API, mots de passe de service et clés privées du SI ; l'autorité de certification interne émet et signe les certificats de l'ensemble des services. Les deux manipulent le même type d'actif — du matériel cryptographique dont la compromission est irrémédiable — et justifient le même niveau d'isolement. Les regrouper dans un unique VLAN, plutôt que d'éparpiller des mentions de PKI entre `PROD-INFRA`, `ADMIN-AAA` et `ADMIN-VAULT` comme le faisaient les versions antérieures du plan, clarifie le périmètre à protéger et le jeu de règles associé.
 
-| VLAN | Nom | Subnet | VNI L2 | Rôle |
-|---|---|---|---:|---|
-| 999 | MGMT-INFRA | `10.254.0.0/24` | 10999 | Management in-band équipements |
+### 3.9.8) VLAN de management et plan d'administration des équipements
 
-Ce VLAN est étendu dans la fabric via VXLAN (VNI 10999) pour que toutes les interfaces MGMT (Spine, Leaf, Core, Distribution, Access, FW, HV) soient joignables. L'accès à ce VLAN est **strictement filtré** par le FW depuis la VRF-ADMIN via bastion. Aucun utilisateur final n'y a accès direct.
+Le plan d'administration mérite un traitement distinct, car il obéit à une logique différente de celle des VLAN de machines : il ne s'agit pas de segmenter des serveurs, mais de rendre les équipements d'infrastructure joignables de façon fiable, y compris en situation dégradée.
 
-### 3.9.8) Trafic BUM et anycast gateway
+**Deux méthodes coexistent, selon la nature de l'équipement.** La ligne de partage est celle des manuels et elle est nette :
 
-Grâce à BGP EVPN, le trafic **BUM** (Broadcast, Unknown Unicast, Multicast) est fortement réduit :
+|Type d'équipement|Adresse d'administration|Justification|
+|---|---|---|
+|Équipements L3 (Core, Distribution, Spine, Leaf, firewalls)|**`Loopback0`**|Interface virtuelle qui ne tombe jamais, joignable par le routage|
+|Équipements L2 purs (ACC-1 à ACC-4)|**SVI `Vlan999` + `ip default-gateway`**|Absence de routage : aucune alternative|
+|Hyperviseurs Proxmox|**`vmbr0` dans le VLAN 999 du DC**|Interfaces d'administration en VRF-MGMT|
 
-- Les Leaf apprennent les MAC/IP via les annonces EVPN type 2 (MAC/IP advertisement), pas via du flood-and-learn classique.
-- L'**ARP suppression** permet aux Leaf de répondre localement aux requêtes ARP des VM, sans flood à travers la fabric.
-- Le **BUM résiduel** (par exemple DHCP discover initial, multicast) est transporté via BGP EVPN type 3 (Inclusive Multicast Ethernet Tag) sans flooding brut.
+Le recours à la loopback pour tout équipement capable de router est la pratique standard, pour trois raisons. D'abord, **une loopback ne tombe jamais** : elle reste active tant que l'équipement fonctionne, indépendamment de l'état des interfaces physiques. Une session SSH ou un flux syslog sourcé sur une interface physique perd son identité dès que le lien correspondant tombe, ce qui est exactement le moment où l'on a besoin de l'équipement. Ensuite, elle est **joignable par le routage** et non par un domaine de diffusion, ce qui dispense d'étendre un VLAN de management à travers toute l'infrastructure. Enfin, ces loopbacks **existent déjà** dans le plan comme router-ID OSPF et BGP et comme source des tunnels VXLAN : les réutiliser donne à chaque équipement une identité unique et cohérente, au lieu de lui en attribuer une seconde.
 
-Côté routage, la **passerelle anycast** permet à chaque VLAN d'avoir **la même IP de passerelle sur tous les Leaf qui hébergent ce VLAN**. Par exemple, la passerelle du VLAN 101 (PROD-APP, `10.2.101.0/24`) est `10.2.101.1` configurée identiquement sur LEAF-1 et LEAF-2. Une VM qui migre de HV-1 vers HV-2 conserve sa passerelle sans changement, son trafic continue à fonctionner sans interruption. C'est le pattern clé pour la mobilité de VM dans une fabric EVPN.
+La configuration est complétée par un sourcing systématique de tous les flux d'administration sur cette interface, de sorte que les outils de supervision voient toujours l'équipement sous la même adresse : `ip ssh source-interface Loopback0`, `logging source-interface Loopback0`, `snmp-server trap-source Loopback0`, `ntp source Loopback0`.
+
+**Découpage du bloc de management.** Le bloc `10.254.0.0/16` est subdivisé selon les **domaines de diffusion réels**, et non selon un unique sous-réseau qu'il serait de toute façon impossible d'étendre :
+
+|Segment|Préfixe|Occupants|Passerelle|
+|---|---|---|---|
+|MGMT-DC — VLAN 999, VNI 10999|`10.254.0.0/24`|Hyperviseurs HV-1 à HV-3 (`.61` à `.63`)|Anycast `10.254.0.1` sur les Leaf|
+|MGMT-LAN bloc 1 — VLAN 999 local|`10.254.1.0/24`|ACC-1 (`.41`), ACC-2 (`.42`)|VIP VRRP `10.254.1.1` sur DIST-1/2|
+|MGMT-LAN bloc 2 — VLAN 999 local|`10.254.2.0/24`|ACC-3 (`.43`), ACC-4 (`.44`)|VIP VRRP `10.254.2.1` sur DIST-3/4|
+|Loopbacks des équipements L3|`10.0.0.0/24`|Spine `.1-.2` · Leaf `.11-.13` · Core `.21-.22` · Dist `.31-.34` · FW `.41-.42`|Routé (OSPF)|
+
+L'identifiant 999 est ainsi **réutilisé dans trois domaines de diffusion distincts** : celui de la fabric et un par bloc de Distribution. C'est parfaitement régulier — un numéro de VLAN n'a de portée que locale au domaine qui le porte — mais le préciser évite une lecture erronée du plan d'adressage, où trois sous-réseaux différents portent le même numéro de VLAN.
+
+**Portée effective de la VRF-MGMT.** Le corollaire du choix de la loopback est que la VRF-MGMT ne dessert plus que les **interfaces d'administration des hyperviseurs**. Ce périmètre restreint reste pleinement justifié : l'interface d'administration d'un hyperviseur donne accès à toutes les machines virtuelles qu'il héberge, ce qui en fait une cible de premier ordre, et son isolement dans une VRF force tout accès à traverser le firewall. Les équipements réseau, eux, sont joignables via leurs loopbacks dans le domaine de routage.
+
+**Absence de réseau hors-bande, assumée et documentée.** La maquette ne comporte **aucun réseau d'administration hors-bande**. Les interfaces `Management1` des équipements Arista existent mais ne sont raccordées à rien dans la topologie : l'administration des Spine et des Leaf se fait entièrement en in-band, via leurs loopbacks. Dans une infrastructure réelle, on disposerait d'un réseau OOB physiquement distinct — switch dédié, interfaces IPMI/BMC des serveurs, serveur de console série — précisément pour conserver l'accès aux équipements lorsque le plan de données est en panne ou lorsqu'une erreur de configuration coupe le chemin in-band. Cette simplification est acceptable dans un environnement virtualisé où l'accès console reste disponible depuis l'hyperviseur GNS3, mais elle constitue une limite qu'il faut avoir en tête : en production, une infrastructure sans OOB expose au risque de perdre définitivement la main sur un équipement distant.
+
+### 3.9.9) VLAN d'infrastructure du datacenter (sans routage)
+
+Deux segments sont dédiés aux communications entre hyperviseurs, et présentent une particularité : ils **ne sont ni routés, ni rattachés à une VRF**.
+
+|VLAN|Nom|VNI L2|SVI|VRF|Usage|
+|---|---|--:|---|---|---|
+|990|`DC-CLUSTER`|10990|**aucune**|**aucune**|Corosync du cluster Proxmox, QDevice|
+|991|`DC-MIGRATION`|10991|**aucune**|**aucune**|Migration de VM, trafic de sauvegarde vers PBS|
+
+**Pourquoi un segment dédié au cluster.** La documentation Proxmox recommande explicitement un réseau distinct pour corosync, et la raison tient à un scénario de panne bien identifié. Corosync est sensible à la latence et à la gigue : si une sauvegarde volumineuse ou une migration de machine virtuelle sature le lien qu'il partage, les jetons de cluster expirent, le nœud est considéré comme défaillant, il est isolé et ses machines virtuelles — pourtant saines — basculent. La panne est alors provoquée par le mécanisme censé l'éviter. La séparation des flux de contrôle du cluster et des flux de données volumineux est un principe qui se retrouve sur toutes les plateformes de virtualisation, sous des noms différents (`migration_network` chez Proxmox, séparation vMotion / management / storage chez VMware).
+
+**Pourquoi aucune SVI ni VRF.** Ces deux segments assurent des communications strictement d'hyperviseur à hyperviseur, et tous les hyperviseurs sont raccordés à la même fabric. Ils n'ont donc **aucun besoin de routage**. Ne pas leur attribuer de SVI produit une propriété de sécurité forte et obtenue gratuitement : faute de passerelle, ces segments sont **structurellement inatteignables depuis n'importe quel autre point du SI**. C'est une isolation plus robuste qu'une VRF assortie de règles firewall, puisqu'elle ne repose sur aucune règle susceptible d'être mal écrite ou contournée. Ils sont simplement étendus entre les hyperviseurs par VXLAN, comme segments L2 purs.
+
+Le serveur de sauvegarde PBS sera raccordé aux deux mondes : une interface sur le VLAN 991 pour le trafic de sauvegarde, une autre en VRF-ADMIN pour son interface d'administration. C'est le schéma habituel d'un serveur de sauvegarde, qui doit être joignable pour être piloté sans que son plan de données ne soit exposé.
+
+La fusion de la migration et de la sauvegarde dans un même VLAN est une simplification volontaire. Un datacenter de plus grande taille les séparerait, la migration étant sensible à la latence tandis que la sauvegarde consomme de la bande passante en rafale. À l'échelle de trois hyperviseurs, les distinguer relèverait de la sur-conception.
+
+### 3.9.10) VLAN système et hygiène L2
+
+Trois identifiants ne portent aucun trafic applicatif et n'existent que pour fermer des vecteurs d'attaque de niveau 2 :
+
+|VLAN|Nom|SVI|Sur les trunks|Rôle|
+|---|---|---|---|---|
+|1|`DEFAULT-UNUSED`|aucune|**non**|VLAN par défaut, aucun port assigné, élagué de toutes les listes|
+|997|`NATIVE-UNUSED`|aucune|natif uniquement|VLAN natif de tous les trunks|
+|998|`PARKING`|aucune|**non**|Ports inutilisés, en `shutdown`|
+
+**Le VLAN natif dédié.** Laisser le VLAN natif à sa valeur par défaut est l'une des non-conformités les plus systématiquement relevées par les référentiels de durcissement, et la raison en est mécanique. L'attaque par **double encapsulation** (double-tagging) suppose que le VLAN d'accès de l'attaquant coïncide avec le VLAN natif du trunk : la première étiquette est retirée par le premier commutateur, la seconde permet à la trame d'atteindre un VLAN auquel l'attaquant n'a pas accès. Attribuer aux trunks un VLAN natif dédié, dépourvu de tout port, rend cette condition impossible à réunir. Il ne s'agit pas d'une réduction de probabilité mais d'une fermeture structurelle du vecteur.
+
+La forme retenue va un cran plus loin que la recommandation minimale : le VLAN 997 est déclaré comme natif **et exclu de la liste des VLAN autorisés** sur les trunks. Toute trame non étiquetée reçue sur un uplink est donc purement et simplement rejetée, au lieu d'être admise dans un segment.
+
+**Le VLAN de parking.** Sa place dans la hiérarchie des contrôles doit être correctement située : le contrôle porteur est le `shutdown` du port, et rien d'autre. Un port administrativement fermé ne transmet aucune trame, quel que soit le VLAN qui lui est assigné. Le VLAN de parking est un **filet de sécurité pour le jour où le port est rouvert** — par un dépannage, un script d'automatisation ou une erreur de manipulation. Sans lui, un port réactivé retombe dans le VLAN 1, qui est présent par défaut sur l'ensemble du parc. Avec lui, il atterrit dans un cul-de-sac dépourvu de passerelle et absent des trunks.
+
+Cette pratique n'est pas universelle — beaucoup d'infrastructures se contentent de fermer les ports — mais elle figure dans les principaux référentiels de durcissement et fait partie des points systématiquement vérifiés en audit, ce qui la rend pertinente au regard de l'objectif de mise en conformité de la Phase 3. Les identifiants 997 et 998 sont volontairement **distincts** : mutualiser le VLAN natif et le VLAN de parking recréerait, pour un port rouvert par erreur, le vecteur de double encapsulation que le premier sert justement à fermer.
+
+### 3.9.11) VLAN de transit du handoff VRF
+
+Quatre VLAN portent les sous-interfaces d'interconnexion entre les firewalls et les Spine, et matérialisent la sortie de chaque VRF vers son point de contrôle :
+
+|VLAN|VRF desservie|Bloc de transit|Sous-interfaces|
+|---|---|---|---|
+|4001|`VRF-PROD`|`10.0.21.0/24`|`em2.4001` / `em3.4001` (FW) ↔ `Et5.4001` / `Et6.4001` (Spine)|
+|4002|`VRF-DMZ`|`10.0.22.0/24`|`em2.4002` / `em3.4002` ↔ `Et5.4002` / `Et6.4002`|
+|4003|`VRF-ADMIN`|`10.0.23.0/24`|`em2.4003` / `em3.4003` ↔ `Et5.4003` / `Et6.4003`|
+|4004|`VRF-MGMT`|`10.0.24.0/24`|`em2.4004` / `em3.4004` ↔ `Et5.4004` / `Et6.4004`|
+
+Chaque VRF dispose d'un bloc `/24` propre, découpé en quatre sous-réseaux `/30`, un par lien physique du maillage complet entre les deux firewalls et les deux Spine. Dans chaque `/30`, le `.1` est porté en anycast par le Spine et les adresses physiques du firewall occupent les positions paires, une VIP CARP servant de next-hop à la route par défaut de la VRF. Ces quatre VLAN n'existent que sur les quatre liens physiques FW ↔ Spine ; ils ne sont présents sur aucun autre trunk et ne portent jamais de machine.
+
+### 3.9.12) Trafic BUM et passerelle anycast
+
+Grâce à BGP EVPN, le trafic **BUM** (Broadcast, Unknown Unicast, Multicast) est fortement réduit par rapport à un fonctionnement classique en flood-and-learn. Les Leaf apprennent les couples MAC/IP par les annonces EVPN de type 2 plutôt que par inondation ; la **suppression ARP** permet à chaque Leaf de répondre localement aux requêtes ARP des machines virtuelles qu'il héberge, sans propagation à travers la fabric ; le BUM résiduel — découverte DHCP initiale, multicast applicatif — est transporté par les listes de diffusion construites à partir des routes de type 3, sans inondation brute.
+
+Côté routage, la **passerelle anycast** confère à chaque VLAN la même adresse _et_ la même adresse MAC de passerelle sur tous les Leaf qui l'hébergent. La passerelle du VLAN 101 (`PROD-APP`, `10.2.101.0/24`) est ainsi `10.2.101.1` sur LEAF-1 comme sur LEAF-2. Une machine virtuelle migrée d'un hyperviseur à l'autre conserve sa passerelle sans le moindre changement, et son trafic n'est pas interrompu : la passerelle est toujours l'équipement auquel elle est directement raccordée. C'est le mécanisme qui rend la mobilité des machines virtuelles transparente dans une fabric EVPN, et il s'applique de la même façon aux VLAN de la VRF-MGMT.
+
+### 3.9.13) Réservations et extensions futures
+
+Le plan est dimensionné pour absorber une croissance importante sans renumérotation. Les éléments suivants sont **réservés et documentés**, mais non déployés :
+
+|Réservation|Identifiants|Déclencheur envisagé|
+|---|---|---|
+|`VRF-SOC`|`10.5.0.0/16` · RD/RT `65000:400` · VNI L3 `50005` · plage VLAN `4xx`|Population d'analystes distincte des administrateurs, SOC dépassant un VLAN, ou exigence d'intégrité de la preuve opposable|
+|`VRF-PREPROD`|`10.6.0.0/16`|Environnement de qualification nécessitant une inspection des flux vers la production|
+|`VRF-INFRA`|à allouer|Scission des services socles (DNS, annuaire) si le SI grossit fortement|
+|Granularité SOC|VLAN `401` à `405`|Séparation SIEM / NSM / TI / SIRP / SOAR|
+|Extensions ADMIN|VLAN `307` à `310`|Outillage forensique ou de test d'intrusion interne|
+|3ᵉ bloc de Distribution|offset `+200` sur `10.1.0.0/16`|Nouveau bâtiment ou nouveau site|
+
+La marge disponible est considérable : chaque bloc `/16` de zone contient 256 sous-réseaux `/24` dont moins de dix sont utilisés, la convention RD/RT laisse la plage `65000:100` à `65000:999` largement ouverte, et l'espace des VNI sur 24 bits est très loin d'être contraint. Le dimensionnement du plan n'est donc pas un facteur limitant pour l'évolution de l'infrastructure.
+
+### 3.9.14) Tableau de synthèse — VRF et zones de confiance
+
+|Zone / VRF|Nature|Bloc IP|VLAN|VNI L3|RD / RT|Passerelle|Sortie de zone|
+|---|---|---|---|--:|---|---|---|
+|`default`|Table globale fabric|`10.0.0.0/16`|—|—|—|—|—|
+|`USERS`|Table globale LAN (Cisco)|`10.1.0.0/16`|8 (× 2 blocs)|—|—|VIP VRRP sur Distribution|Core → FW (L3 OSPF)|
+|`VRF-PROD`|VRF EVPN|`10.2.0.0/16`|8|50001|`65000:100`|Anycast sur Leaf|`0/0` → FW via VLAN 4001|
+|`VRF-DMZ`|VRF EVPN|`10.3.0.0/16`|5|50002|`65000:200`|Anycast sur Leaf|`0/0` → FW via VLAN 4002|
+|`VRF-ADMIN`|VRF EVPN|`10.4.0.0/16`|7|50003|`65000:300`|Anycast sur Leaf|`0/0` → FW via VLAN 4003|
+|`VRF-MGMT`|VRF EVPN|`10.254.0.0/16`|1|50004|`65000:999`|Anycast sur Leaf|`0/0` → FW via VLAN 4004|
+|_(réservé)_ `VRF-SOC`|—|`10.5.0.0/16`|—|50005|`65000:400`|—|—|
+
+**Total déployé : 4 VRF EVPN**, plus la table globale de l'underlay et la zone USERS du LAN. Aucun import croisé de Route Target : tout franchissement de zone passe par le firewall.
+
+### 3.9.15) Tableau de synthèse — plan VLAN complet
+
+|VLAN|Nom|Zone / VRF|Sous-réseau|VNI L2|Passerelle|Portée|
+|--:|---|---|---|--:|---|---|
+|1|`DEFAULT-UNUSED`|—|—|—|aucune|Aucun port, élagué des trunks|
+|10|`USERS`|USERS|`10.1.10.0/24` · `10.1.110.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
+|20|`VOICE`|USERS|`10.1.20.0/24` · `10.1.120.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
+|30|`IOT`|USERS|`10.1.30.0/24` · `10.1.130.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
+|40|`WIFI-CORP`|USERS|`10.1.40.0/24` · `10.1.140.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
+|41|`WIFI-GUEST`|USERS|`10.1.41.0/24` · `10.1.141.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
+|42|`WIFI-BYOD`|USERS|`10.1.42.0/24` · `10.1.142.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
+|50|`PRINTERS`|USERS|`10.1.50.0/24` · `10.1.150.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
+|90|`LAB-DEV`|USERS|`10.1.90.0/24` · `10.1.190.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
+|100|`PROD-WEB-INT`|VRF-PROD|`10.2.100.0/24`|10100|Anycast `.1`|Fabric DC|
+|101|`PROD-APP`|VRF-PROD|`10.2.101.0/24`|10101|Anycast `.1`|Fabric DC|
+|102|`PROD-DB`|VRF-PROD|`10.2.102.0/24`|10102|Anycast `.1`|Fabric DC|
+|103|`PROD-INFRA`|VRF-PROD|`10.2.103.0/24`|10103|Anycast `.1`|Fabric DC|
+|104|`PROD-FILES`|VRF-PROD|`10.2.104.0/24`|10104|Anycast `.1`|Fabric DC|
+|105|`PROD-MESSAGING`|VRF-PROD|`10.2.105.0/24`|10105|Anycast `.1`|Fabric DC|
+|106|`PROD-TOIP`|VRF-PROD|`10.2.106.0/24`|10106|Anycast `.1`|Fabric DC|
+|107|`PROD-INTEGRATION`|VRF-PROD|`10.2.107.0/24`|10107|Anycast `.1`|Fabric DC|
+|200|`DMZ-FRONT`|VRF-DMZ|`10.3.200.0/24`|10200|Anycast `.1`|Fabric DC|
+|201|`DMZ-WEB`|VRF-DMZ|`10.3.201.0/24`|10201|Anycast `.1`|Fabric DC|
+|202|`DMZ-MAIL`|VRF-DMZ|`10.3.202.0/24`|10202|Anycast `.1`|Fabric DC|
+|203|`DMZ-DNS`|VRF-DMZ|`10.3.203.0/24`|10203|Anycast `.1`|Fabric DC|
+|204|`DMZ-API`|VRF-DMZ|`10.3.204.0/24`|10204|Anycast `.1`|Fabric DC|
+|300|`ADMIN-CORE`|VRF-ADMIN|`10.4.30.0/24`|10300|Anycast `.1`|Fabric DC|
+|301|`ADMIN-CICD`|VRF-ADMIN|`10.4.31.0/24`|10301|Anycast `.1`|Fabric DC|
+|302|`ADMIN-OBSERV`|VRF-ADMIN|`10.4.32.0/24`|10302|Anycast `.1`|Fabric DC|
+|303|`ADMIN-AAA`|VRF-ADMIN|`10.4.33.0/24`|10303|Anycast `.1`|Fabric DC|
+|304|`ADMIN-AUTOMATE`|VRF-ADMIN|`10.4.34.0/24`|10304|Anycast `.1`|Fabric DC|
+|305|`ADMIN-VAULT`|VRF-ADMIN|`10.4.35.0/24`|10305|Anycast `.1`|Fabric DC|
+|306|`ADMIN-SOC`|VRF-ADMIN|`10.4.36.0/24`|10306|Anycast `.1` + ACL Leaf|Fabric DC|
+|990|`DC-CLUSTER`|_(aucune)_|—|10990|**aucune**|Trunks Leaf ↔ HV|
+|991|`DC-MIGRATION`|_(aucune)_|—|10991|**aucune**|Trunks Leaf ↔ HV|
+|997|`NATIVE-UNUSED`|—|—|—|aucune|Natif de tous les trunks|
+|998|`PARKING`|—|—|—|aucune|Ports inutilisés, `shutdown`|
+|999|`MGMT-DC`|VRF-MGMT|`10.254.0.0/24`|10999|Anycast `10.254.0.1`|Fabric DC|
+|999|`MGMT-LAN`|_(table globale LAN)_|`10.254.1.0/24` · `10.254.2.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
+|4001|`TRANSIT-PROD`|VRF-PROD|`10.0.21.0/24` (4 × /30)|—|Anycast Spine|Trunks FW ↔ Spine|
+|4002|`TRANSIT-DMZ`|VRF-DMZ|`10.0.22.0/24` (4 × /30)|—|Anycast Spine|Trunks FW ↔ Spine|
+|4003|`TRANSIT-ADMIN`|VRF-ADMIN|`10.0.23.0/24` (4 × /30)|—|Anycast Spine|Trunks FW ↔ Spine|
+|4004|`TRANSIT-MGMT`|VRF-MGMT|`10.0.24.0/24` (4 × /30)|—|Anycast Spine|Trunks FW ↔ Spine|
+
+**Décompte.** 31 VLAN de segmentation (8 USERS + 8 PROD + 5 DMZ + 7 ADMIN + 1 MGMT + 2 infrastructure DC), 3 VLAN système et 4 VLAN de transit, soit **38 identifiants**. Côté sous-réseaux : 39 segments (16 LAN, 8 PROD, 5 DMZ, 7 ADMIN, 1 MGMT-DC, 2 MGMT-LAN) auxquels s'ajoutent 16 `/30` de transit et les loopbacks. Quatre segments — 990, 991, 997 et 998 — ne portent **aucune interface L3** et sont donc structurellement non routables.
 
 ## 3.10) Cas particulier des flux datacenter (intra-VRF vs inter-VRF)
 
@@ -1355,35 +1515,6 @@ Trois règles transverses pilotent tout le design :
 
 **Règle du U-turn forcé pour les flux inter-zone.** Aucun flux inter-zone (LAN↔DC, LAN↔Internet, DMZ↔PROD, inter-VRF, etc.) ne peut contourner le firewall. La topologie garantit structurellement que tout flux change de zone uniquement en passant par le couple FW HA. À l'inverse, les flux intra-VRF (Cas A de la section 3.10) restent dans la fabric et ne sollicitent pas le FW, ce qui préserve les performances Est-Ouest du DC.
 
-### 3.11.5) État d'avancement du projet
-
-La **Phase 1 — Architecture réseau** est en voie de finalisation. Les livrables produits à ce jour :
-
-| Livrable | État | Localisation |
-|---|---|---|
-| Cahier des charges complet | ✅ Finalisé | Section 2 du présent rapport |
-| Choix topologiques justifiés | ✅ Finalisé | Sections 3.1 à 3.7 |
-| Maquette GNS3 fonctionnelle (26 équipements, 47 liens) | ✅ Topologie câblée | `homelab.gns3` |
-| Plan d'adressage IPv4 complet | ✅ Finalisé | `plan_adressage.xlsx` (13 feuilles) |
-| Plan VLAN / VNI / VRF | ✅ Finalisé | Section 3.9 + `plan_adressage.xlsx` |
-| Cartographie détaillée par équipement | ✅ Finalisée | `cartographie.xlsx` (26 feuilles) |
-
-Les étapes restantes pour clore la Phase 1 :
-
-| Étape | État |
-|---|---|
-| Installation et boot de tous les équipements GNS3 | En cours (vEOS validé, pfSense à installer) |
-| Configurations de base (hostnames, loopbacks, MGMT in-band) | À faire |
-| Configuration de l'underlay OSPF (LAN Tier 3 + fabric DC) | À faire |
-| Configuration de l'overlay iBGP EVPN (Spine = RR, Leaf = clients) | À faire |
-| Configuration des VRF, VNI L2/L3, anycast gateway | À faire |
-| Configuration des Access (VLAN, STP, sécurité L2, 802.1X) | À faire |
-| Configuration des Distribution (SVI, VRRP, DHCP relay) | À faire |
-| Configuration des FW (CARP, pfsync, NAT, FRR, VPN, rules) | À faire |
-| Configuration des HV Proxmox (bridges, cluster, QDevice) | À faire |
-| Scénarios de test (convergence OSPF, bascule CARP, apprentissage EVPN, U-turn inter-VRF) | À faire |
-
-Une fois les équipements configurés et la maquette validée (Section 4), on enchaînera sur la **Section 5** (déploiement des services applicatifs selon le canevas : notion → état du marché → sélection → dimensionnement → installation → sécurisation → administration → intégration). La **Section 6** (mise en conformité SI : référentiels, cartographie des risques, PCA/PRA, gouvernance) interviendra en clôture.
 
 ## 3.12) Plan de routage IGP : choix du protocole et architecture OSPF
 
