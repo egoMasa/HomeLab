@@ -1,10 +1,10 @@
 <mxfile host="app.diagrams.net" pages="12">
   <diagram name="Architecture générale" id="afl-n46_FWIlyFFu-ON1">
-    <mxGraphModel dx="1635" dy="1614" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2005" dy="1818" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="H_FZySfODWUR1Leul7hQ-5" parent="1" style="whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;opacity=50;gradientColor=#ea6b66;" value="" vertex="1">
+        <mxCell id="H_FZySfODWUR1Leul7hQ-5" parent="1" style="whiteSpace=wrap;html=1;fillColor=#fad7ac;strokeColor=#b46504;opacity=50;" value="" vertex="1">
           <mxGeometry height="380" width="604.37" x="205.63" y="-120" as="geometry" />
         </mxCell>
         <mxCell id="zolv0oaMZ8VqDHzG4_PE-14" parent="1" style="whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;opacity=50;gradientColor=#ea6b66;" value="" vertex="1">
