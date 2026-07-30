@@ -51,36 +51,37 @@ Quelques précisions complémentaires sur certains choix.
 
 Les services applicatifs sont la matière de la Phase 2. On les liste ici à titre indicatif afin d'avoir la vision de ce qui sera hébergé sur les hyperviseurs, sans rentrer dans l'arbitrage solution par solution qui interviendra plus tard.
 
-| Service                    | Placement | Open-source                              | Propriétaire       | Besoin couvert                                       |
-| -------------------------- | --------- | ---------------------------------------- | ------------------ | ---------------------------------------------------- |
-| DNS Interne                |           | Unbound, BIND9                           |                    | Résolution des noms internes non externalisés        |
-| DNS Externe                |           |                                          |                    |                                                      |
-| DHCP Central               |           | ISC Kea + Stork                          |                    | Attribution dynamique des adresses IP sur tout le SI |
-| Annuaire LDAP              |           | Samba ADDC, OpenLDAP, FreeIPA            |                    | Stockage des comptes, groupes, droits et permissions |
-| RADIUS                     |           | FreeRADIUS                               |                    | Authentification 802.1X,AAA                          |
-| Identity Provider (IdP)    |           | Keycloak                                 |                    | Authentification unique par tokens pour les services |
-| Plateforme d'observabilité |           | Alloy+Prometheus+Loki+Tempo+Grafana      |                    | État et métriques des équipements et services        |
-| Supervision de sécurité    |           | Wazuh+Malcom+MISP+                       |                    | Supervision de sécurité, remédiation active          |
-| Bastion d'administration   |           | Apache Guacamole, JumpServer             | Teleport, CyberARK | Portail d'accès admin aux équipements                |
-| ITSM                       |           | GLPI                                     |                    | Inventaire, tickets, gestion des biens               |
-| IPAM                       |           | Netbox, PhpIPAM                          |                    |                                                      |
-| CMDB                       |           | GLPI                                     | Jira               |                                                      |
-|                            |           |                                          |                    |                                                      |
-| Stockage cloud             |           | NextCloud                                |                    | Dépôt de fichiers utilisateurs                       |
-| NTP interne                |           | chrony                                   |                    | Synchronisation horaire de tout le SI                |
-| CI/CD et dépôt de code     |           | GitLab, Jenkins                          |                    | Environnement de développement et dépôt              |
-| Gestion de projet          |           | Redmine                                  |                    | Suivi de projet, tâches, diagrammes                  |
-| Reverse Proxy              |           | HAProxy                                  |                    | Publication HTTPS, load balancing L7                 |
-| Proxy sortant              |           | Squid, TinyProxy                         |                    | Contrôle des flux sortants des usagers               |
-| WAF                        |           | BunkerWeb                                |                    | Protection des applications web exposées             |
-| SMTP Inbound / Outbound    |           | Postfix, Rspamd                          |                    | Mail entrant et sortant                              |
-| Serveur web exposé         |           | Nginx, Apache                            |                    | Sites vitrines et applicatifs publics                |
-| DNS Public                 |           | BIND9, NSD                               |                    | Résolution autoritaire des zones publiques           |
-| VPN nomade                 |           | WireGuard (retenu), OpenVPN (alternatif) |                    | Accès distant au SI pour télétravailleurs            |
-| Automatisation             |           | Ansible, AWX                             |                    | Exécution de playbooks sur les serveurs              |
-| IPS/IDS                    |           | Suricata                                 |                    | Détection et blocage des menaces réseau              |
-| PKI interne                |           | HashiCorp Vault, Smallstep               |                    | Émission de certificats internes                     |
-| Gestion de secrets         |           | HashiCorp Vault                          |                    | Coffre-fort de secrets applicatifs                   |
+| Service                         | Placement | Open-source                                                                                                                     | Propriétaire       | Besoin couvert                                       |
+| ------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ---------------------------------------------------- |
+| DNS interne                     |           | - BIND9<br>- Unbound                                                                                                            |                    | Résolution des noms internes non externalisés        |
+| DNS public                      |           | - BIND9<br>- NSD                                                                                                                |                    | Résolution autoritaire des zones publiques           |
+| DHCP Central                    |           | ISC Kea + Stork                                                                                                                 |                    | Attribution dynamique des adresses IP sur tout le SI |
+| Annuaire LDAP                   |           | - Samba4 ADDC<br>- FreeIPA                                                                                                      |                    | Stockage des comptes, groupes, droits et permissions |
+| RADIUS                          |           | FreeRADIUS                                                                                                                      |                    | Authentification 802.1X,AAA                          |
+| Identity Provider (IdP)         |           | - Keycloak<br>- Shibboleth                                                                                                      |                    | Authentification unique par tokens pour les services |
+| Plateforme d'observabilité      |           | - Stack : Alloy+Prometheus+Loki+Tempo+Grafana<br>- Zabbix<br>- Nagios/Centreon/CheckMK                                          |                    | État et métriques des équipements et services        |
+| Supervision de sécurité         |           | Wazuh+Malcom+Shuffle+MISP+IRIS                                                                                                  |                    | Supervision de sécurité, remédiation active          |
+| Bastion d'administration        |           | - Apache Guacamole<br>- JumpServer                                                                                              | Teleport, CyberARK | Portail d'accès admin aux équipements                |
+| ITSM                            |           | GLPI                                                                                                                            |                    | Inventaire, tickets, gestion des biens               |
+| IPAM                            |           | - Netbox<br>- PhpIPAM                                                                                                           |                    |                                                      |
+| CMDB                            |           | GLPI                                                                                                                            | Jira               |                                                      |
+| Chat/Messagerie                 |           | - Matrix Element<br>- Mattermost                                                                                                |                    |                                                      |
+| Stockage cloud                  |           | - NextCloud<br>- ownCloud Infinite Scale (oCIS)                                                                                 |                    | Dépôt de fichiers utilisateurs                       |
+| NTP interne                     |           | chrony                                                                                                                          |                    | Synchronisation horaire de tout le SI                |
+| CI/CD et dépôt de code          |           | - Gitlab<br>- Forgejo                                                                                                           |                    | Environnement de développement et dépôt              |
+| Base de Connaissance            |           | - BookStack<br>- Wiki.js<br>- Outline<br>- MkDocs / Docusaurus                                                                  |                    |                                                      |
+| Gestion de projet               |           | - OpenProject<br>- Taiga<br>- Redmine                                                                                           |                    | Suivi de projet, tâches, diagrammes                  |
+| Reverse Proxy                   |           | - HAProxy<br>- Nginx/BunkerWeb,Traefik,Caddy,Enjoy                                                                              |                    | Publication HTTPS, load balancing L7                 |
+| Forward Proxy                   |           | - Mode serveur : Squid (complet) ou TinyProxy (simple)<br>- Mode intégration : Pfsense via pfBlockerNG ou OPNsense via Zenarmor |                    | Contrôle des flux sortants des usagers               |
+| WAF                             |           | - ReverseProxy+Coraza<br>- BunkerWeb                                                                                            |                    | Protection des applications web exposées             |
+| Mail                            |           | - Mailcow : Postfix + Dovecot + Sogo<br>- iRedMail : Postfix + Dovecot + Roundcube                                              |                    | Mail entrant et sortant                              |
+| Serveur web                     |           | - Apache<br>- Nginx                                                                                                             |                    | Sites vitrines et applicatifs publics                |
+| VPN nomade                      |           | - WireGuard (retenu)<br>- OpenVPN (alternatif)                                                                                  |                    | Accès distant au SI pour télétravailleurs            |
+| Automatisation de configuration |           | - Ansible AWX<br>- Semaphore                                                                                                    |                    | Exécution de playbooks sur les serveurs              |
+| IDS                             |           | - Suricata, Snort<br>- Malcom Hedgehog                                                                                          |                    | Détection et blocage des menaces réseau              |
+| IPS                             |           | Suricata inline via intégration Pfsense                                                                                         |                    |                                                      |
+| CLM PKI                         |           | - Smallstep<br>- HashiCorp Vault<br>- EJBCA                                                                                     |                    | Émission de certificats internes                     |
+| Gestion de secrets              |           | - HashiCorp Vault/OpenBAO                                                                                                       |                    | Coffre-fort de secrets applicatifs                   |
 
 Chaque solution retenue fera l'objet d'un arbitrage détaillé en début de Phase 2, selon le canevas annoncé dans le prompt système : notion, état du marché, sélection argumentée, dimensionnement, installation, sécurisation, administration, intégration avec le reste du SI.
 
