@@ -6,16 +6,21 @@ Il est important de noter que j'ai volontairement choisi une approche open-sourc
 
 Nous justifierons chaque choix en expliquant en détails les différentes choix possibles autant en terme de solutions, de configuration mais aussi d'infrastructure réseau, nous verrons que il n'existe aucunes maquettes parfaite mais que l'on peut optimiser et mettre en application des bonnes pratiques nous permettant de nous rapprocher d'une infrastructure complète et redondante. 
 
-Concernant la façon de mettre en place ce projet nous utiliserons le logiciel de virtualisation GNS3 car il nous permettra d'importer l'ensemble des équipement réseau et virtualiser l'ensemble des serveurs. Nous utiliserons un PC central sous Linux (Ubuntu Desktop) afin de n'avoir aucunes limitations sur les applicances qui necessitent KVM et QEMU sans hyperviseur de type 2 entre. Donc pas de GNS3 VM ou de Windows comme host, 100% Linux en bare-metal. 
-
+Concernant la façon de mettre en place ce projet nous utiliserons le logiciel de virtualisation GNS3 car il nous permettra d'importer l'ensemble des équipement réseau et virtualiser l'ensemble des serveurs. Nous utiliserons un PC central sous Linux afin de n'avoir aucunes limitations sur les appliances qui necessitent KVM et QEMU sans hyperviseur de type 2 entre. Donc pas de GNS3 VM ou de Windows comme host, 100% Linux en bare-metal. 
 
 # 2) Cahier des charges
 
-Cette section définit les briques matérielles et logicielles retenues pour le projet. Elle se décompose en quatre volets : l'inventaire des équipements réseau et système, le catalogue des services applicatifs prévus, un tableau de synthèse des protocoles et fonctionnalités par catégorie d'équipement, et les contraintes transversales qui structurent les choix. Les justifications détaillées des topologies et des patterns sont traitées en section 3 (Architecture réseau).
+Cette section définit les briques matérielles et logicielles retenues pour le projet. Elle se décompose en quatre volets : 
+1. L'inventaire des équipements réseau et système
+2. Le catalogue des services applicatifs prévus
+3. Un tableau de synthèse des protocoles et fonctionnalités par catégorie d'équipement
+4. Les contraintes transversales qui structurent les choix. 
+
+Les justifications détaillées des topologies et des patterns sont traitées en section 3 (Architecture réseau).
 
 ## 2.1) Inventaire des équipements
 
-La maquette matérialise 26 équipements GNS3 couvrant l'ensemble des zones fonctionnelles du SI simulé. Les images logicielles retenues sont celles qui offrent le meilleur compromis entre représentativité réelle, empreinte mémoire acceptable sur le host et support des fonctionnalités ciblées par le projet. Le tableau ci-dessous liste chaque équipement avec la configuration retenue.
+La maquette matérialise 26 équipements GNS3 couvrant l'ensemble des zones fonctionnelles du l'infrastructure simulée. Les images logicielles retenues sont celles qui offrent le meilleur compromis entre représentativité réelle, empreinte mémoire acceptable sur le host et support des fonctionnalités ciblées par le projet. Le tableau ci-dessous liste chaque équipement avec la configuration retenue.
 
 | # | Équipement | Qté | Zone | ISO / Image | Version | RAM | vCPU | Disque principal | Disque additionnel | Interfaces | Console |
 |---|---|---:|---|---|---|---:|---:|---|---|---:|---|
@@ -42,40 +47,41 @@ Quelques précisions complémentaires sur certains choix.
 
 **Trois hyperviseurs Proxmox dont deux en cluster.** HV-1 et HV-2 forment un cluster actif-actif et hébergent VM PROD + VM DMZ + VM ADMIN. HV-3 est standalone, dédié à l'administration pure : il héberge Proxmox Backup Server, Proxmox Datacenter Manager, et joue le rôle de QDevice (troisième voix Corosync) pour garantir le quorum du cluster HV-1/HV-2. Ce découpage reflète le pattern "compute productif + compute management séparé" qu'on trouve dans la plupart des DSI structurées.
 
-**Pas de routeur CE dans la maquette initiale.** Le Cisco IOSv est conservé dans les templates GNS3 mais n'est pas déployé. Il serait réintégré uniquement pour simuler le Scénario 2 (single-homing avec eBGP) ou le Scénario 3 (multi-homing), qui ne sont pas pertinents dans la première version de la maquette. Voir section 3.4 pour le détail.
-
 ## 2.2) Catalogue des services applicatifs
 
-Les services applicatifs sont la matière de la Phase 2. On les liste ici à titre indicatif pour que le lecteur ait la vision de ce qui sera hébergé sur les hyperviseurs, sans rentrer dans l'arbitrage solution par solution qui interviendra plus tard.
+Les services applicatifs sont la matière de la Phase 2. On les liste ici à titre indicatif afin d'avoir la vision de ce qui sera hébergé sur les hyperviseurs, sans rentrer dans l'arbitrage solution par solution qui interviendra plus tard.
 
-| Service                       | Placement      | Solutions open-source envisagées            | Besoin couvert                                       |
-| ----------------------------- | -------------- | ------------------------------------------- | ---------------------------------------------------- |
-| DNS Interne                   | DC (VRF-PROD)  | Unbound, BIND9                              | Résolution des noms internes non externalisés        |
-| DHCP Central                  | DC (VRF-PROD)  | ISC Kea + Stork                             | Attribution dynamique des adresses IP sur tout le SI |
-| Annuaire LDAP                 | DC (VRF-PROD)  | Samba ADDC, OpenLDAP, FreeIPA               | Stockage des comptes, groupes, droits et permissions |
-| RADIUS                        | DC (VRF-ADMIN) | FreeRADIUS                                  | Authentification 802.1X, VPN, admin équipements      |
-| SSO / IdP                     | DC (VRF-ADMIN) | Keycloak                                    | Authentification unique par tokens pour les services |
-| Supervision de performance    | DC (VRF-ADMIN) | Zabbix, Prometheus, Grafana                 | État et métriques des équipements et services        |
-| SOC / SIEM / XDR              | DC (VRF-ADMIN) | Wazuh, Graylog + Shuffle, OpenCTI, CrowdSec | Supervision de sécurité, remédiation active          |
-| Bastion d'administration      | DC (VRF-ADMIN) | Apache Guacamole                            | Portail d'accès admin aux équipements                |
-| ITSM / Ticketing / Inventaire | DC (VRF-ADMIN) | GLPI                                        | Inventaire, tickets, gestion des biens               |
-| Stockage cloud                | DC (VRF-PROD)  | NextCloud                                   | Dépôt de fichiers utilisateurs                       |
-| NTP interne                   | DC (VRF-PROD)  | chrony                                      | Synchronisation horaire de tout le SI                |
-| CI/CD et dépôt de code        | DC (VRF-ADMIN) | GitLab, Jenkins                             | Environnement de développement et dépôt              |
-| Gestion de projet             | DC (VRF-ADMIN) | Redmine                                     | Suivi de projet, tâches, diagrammes                  |
-| Reverse Proxy                 | DMZ (VRF-DMZ)  | HAProxy                                     | Publication HTTPS, load balancing L7                 |
-| Proxy sortant                 | DMZ (VRF-DMZ)  | Squid, TinyProxy                            | Contrôle des flux sortants des usagers               |
-| WAF                           | DMZ (VRF-DMZ)  | BunkerWeb                                   | Protection des applications web exposées             |
-| SMTP Inbound / Outbound       | DMZ (VRF-DMZ)  | Postfix, Rspamd                             | Mail entrant et sortant                              |
-| Serveur web exposé            | DMZ (VRF-DMZ)  | Nginx, Apache                               | Sites vitrines et applicatifs publics                |
-| DNS Public                    | DMZ (VRF-DMZ)  | BIND9, NSD                                  | Résolution autoritaire des zones publiques           |
-| VPN nomade                    | FW (Edge)      | WireGuard (retenu), OpenVPN (alternatif)    | Accès distant au SI pour télétravailleurs            |
-| Automatisation                | DC (VRF-ADMIN) | Ansible, AWX                                | Exécution de playbooks sur les serveurs              |
-| IPS/IDS                       | FW (Edge)      | Suricata                                    | Détection et blocage des menaces réseau              |
-| PKI interne                   | DC (VRF-ADMIN) | HashiCorp Vault, Smallstep                  | Émission de certificats internes                     |
-| Gestion de secrets            | DC (VRF-ADMIN) | HashiCorp Vault                             | Coffre-fort de secrets applicatifs                   |
+| Service                    | Placement | Open-source                              | Propriétaire       | Besoin couvert                                       |
+| -------------------------- | --------- | ---------------------------------------- | ------------------ | ---------------------------------------------------- |
+| DNS Interne                |           | Unbound, BIND9                           |                    | Résolution des noms internes non externalisés        |
+| DNS Externe                |           |                                          |                    |                                                      |
+| DHCP Central               |           | ISC Kea + Stork                          |                    | Attribution dynamique des adresses IP sur tout le SI |
+| Annuaire LDAP              |           | Samba ADDC, OpenLDAP, FreeIPA            |                    | Stockage des comptes, groupes, droits et permissions |
+| RADIUS                     |           | FreeRADIUS                               |                    | Authentification 802.1X,AAA                          |
+| Identity Provider (IdP)    |           | Keycloak                                 |                    | Authentification unique par tokens pour les services |
+| Plateforme d'observabilité |           | Alloy+Prometheus+Loki+Tempo+Grafana      |                    | État et métriques des équipements et services        |
+| Supervision de sécurité    |           | Wazuh+Malcom+MISP+                       |                    | Supervision de sécurité, remédiation active          |
+| Bastion d'administration   |           | Apache Guacamole, JumpServer             | Teleport, CyberARK | Portail d'accès admin aux équipements                |
+| ITSM                       |           | GLPI                                     |                    | Inventaire, tickets, gestion des biens               |
+| IPAM                       |           | Netbox, PhpIPAM                          |                    |                                                      |
+| CMDB                       |           | GLPI                                     | Jira               |                                                      |
+|                            |           |                                          |                    |                                                      |
+| Stockage cloud             |           | NextCloud                                |                    | Dépôt de fichiers utilisateurs                       |
+| NTP interne                |           | chrony                                   |                    | Synchronisation horaire de tout le SI                |
+| CI/CD et dépôt de code     |           | GitLab, Jenkins                          |                    | Environnement de développement et dépôt              |
+| Gestion de projet          |           | Redmine                                  |                    | Suivi de projet, tâches, diagrammes                  |
+| Reverse Proxy              |           | HAProxy                                  |                    | Publication HTTPS, load balancing L7                 |
+| Proxy sortant              |           | Squid, TinyProxy                         |                    | Contrôle des flux sortants des usagers               |
+| WAF                        |           | BunkerWeb                                |                    | Protection des applications web exposées             |
+| SMTP Inbound / Outbound    |           | Postfix, Rspamd                          |                    | Mail entrant et sortant                              |
+| Serveur web exposé         |           | Nginx, Apache                            |                    | Sites vitrines et applicatifs publics                |
+| DNS Public                 |           | BIND9, NSD                               |                    | Résolution autoritaire des zones publiques           |
+| VPN nomade                 |           | WireGuard (retenu), OpenVPN (alternatif) |                    | Accès distant au SI pour télétravailleurs            |
+| Automatisation             |           | Ansible, AWX                             |                    | Exécution de playbooks sur les serveurs              |
+| IPS/IDS                    |           | Suricata                                 |                    | Détection et blocage des menaces réseau              |
+| PKI interne                |           | HashiCorp Vault, Smallstep               |                    | Émission de certificats internes                     |
+| Gestion de secrets         |           | HashiCorp Vault                          |                    | Coffre-fort de secrets applicatifs                   |
 
-A discuter ou rajouter : PXE Boot,
 Chaque solution retenue fera l'objet d'un arbitrage détaillé en début de Phase 2, selon le canevas annoncé dans le prompt système : notion, état du marché, sélection argumentée, dimensionnement, installation, sécurisation, administration, intégration avec le reste du SI.
 
 ## 2.3) Synthèse des protocoles et fonctionnalités par catégorie d'équipement
