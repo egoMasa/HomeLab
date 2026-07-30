@@ -1669,9 +1669,574 @@ Les fichiers de configuration bruts (output de `show running-config`) sont archi
 L'ordre de déploiement retenu et sa justification sont détaillés dans le fichier `ROADMAP.md`. En résumé : LAN (Access → Distribution → Core) en premier, puis DC (underlay OSPF → overlay BGP EVPN) en second, puis Proxmox, et enfin pfSense HA qui connecte les deux îlots OSPF en dernier étape.
 
 # 4) Configuration et déploiement
-## 4.1) Méthodologie et ordre de déploiement
+## 4.2) Switches Access LAN (ACC-1 à ACC-4)
 
-*À rédiger — voir `ROADMAP.md` pour le détail complet.*
+Les switches Access constituent la couche d'entrée du réseau utilisateur. Leur rôle est strictement L2 : ils raccordent les endpoints, portent les VLAN, appliquent la politique de sécurité de port et remontent vers les Distribution par des trunks 802.1Q. Ils ne routent pas.
+
+Les quatre équipements sont configurés **à l'identique**, à quelques variables près. Le bloc 1 (ACC-1, ACC-2) est raccordé à DIST-1/DIST-2 ; le bloc 2 (ACC-3, ACC-4) à DIST-3/DIST-4, avec un offset `+100` sur le 3ᵉ octet des subnets utilisateurs et un `+1` sur le 3ᵉ octet du management (`10.254.1.0/24` pour le bloc 1, `10.254.2.0/24` pour le bloc 2). Cette section est donc un **gabarit unique** : configurer un Access, c'est appliquer ce cahier des charges en substituant les variables listées en 4.2.2.
+
+### 4.2.1) Principe de lecture
+
+La configuration se lit comme une superposition de **douze familles fonctionnelles**, chacune répondant à un besoin précis. À l'intérieur d'une famille, chaque sous-point est une notion à configurer. Le nom d'une famille décrit _à quoi elle sert_ ; la technologie employée (MSTP, LLDP, DHCP Snooping…) vit _dans_ le sous-point et fait l'objet d'un arbitrage documenté (section 4.2.4 et suivantes).
+
+Chaque sous-point porte deux attributs de pilotage :
+
+**La phase de déploiement**, qui distingue ce qui doit être fait pour que le réseau fonctionne de ce qui attend un service amont :
+
+|Phase|Signification|Règle|
+|:-:|---|---|
+|**P1**|Fonctionnel — le réseau ne marche pas sans|Déployer en premier, valider, figer par un instantané|
+|**P2**|Sécurisation et optimisation — sans dépendance externe|Déployer après P1, sans risque de coupure si l'ordre est respecté|
+|**P3**|Ajourné — dépend d'un service de la Phase 2 du projet|Préparer la configuration, ne l'activer qu'une fois le service disponible|
+
+
+### 4.2.2) Variables du gabarit
+
+Tout ce qui suit est identique sur les quatre Access, à l'exception des variables ci-dessous. Un technicien qui déploie un nouvel Access ne modifie que ces valeurs.
+
+|Variable|ACC-1|ACC-2|ACC-3|ACC-4|
+|---|---|---|---|---|
+|`{HOSTNAME}`|ACC-1|ACC-2|ACC-3|ACC-4|
+|`{IP_MGMT}`|10.254.1.41|10.254.1.42|10.254.2.43|10.254.2.44|
+|`{GW_MGMT}`|10.254.1.1|10.254.1.1|10.254.2.1|10.254.2.1|
+|`{MASQUE_MGMT}`|/24 (255.255.255.0)|idem|idem|idem|
+|Distribution amont|DIST-1 / DIST-2|DIST-1 / DIST-2|DIST-3 / DIST-4|DIST-3 / DIST-4|
+|Endpoints d'exemple|W-CLIENT, PC1|L-CLIENT, PC4|(selon inventaire)|(selon inventaire)|
+
+Les valeurs communes aux quatre — invariants du gabarit — sont : 
+- `{VLAN_NATIF}` = 997, 
+- `{VLAN_PARKING}` = 998, 
+- `{VLAN_MGMT}` = 999, 
+- `{ALLOWED_UPLINK}` = `10,20,30,40,41,42,50,90,999`, 
+- `{REGION_MST}` = HOMELAB, 
+- `{REVISION_MST}` = 1, 
+- `{DOMAINE}` = homelab.local. Les cibles de service Phase 2 (`{IP_RADIUS}` = 10.4.33.10, 
+- `{IP_SYSLOG}` = 10.4.36.10, 
+- `{IP_SNMP}` = 10.4.32.10, 
+- `{IP_NTP}` = 10.2.103.10) restent des réservations tant que les serveurs ne sont pas déployés.
+
+---
+
+### 4.2.3) Tableau maître de configuration
+
+Le tableau ci-dessous est la check-list complète de la couche Access, quadrillée par famille. Chaque ligne est développée dans les sections de rédaction qui suivront (une sous-section par sous-point, avec solutions, arbitrage et commandes).
+
+#### F1 — Configuration de base et identité
+
+| Sous-point                         | Phase | Portée / variable         | Rôle                                                                 |
+| ---------------------------------- | :---: | ------------------------- | -------------------------------------------------------------------- |
+| Identité (hostname, domaine)       |  P1   | `{HOSTNAME}`, `{DOMAINE}` | Nomme l'équipement ; prérequis de la clé SSH                         |
+| Résolution DNS locale désactivée   |  P1   | commun                    | `no ip domain-lookup` : évite le gel CLI de 30 s sur faute de frappe |
+| Horodatage et fuseau               |  P1   | commun                    | `service timestamps` à la ms + timezone : logs corrélables           |
+| Bannière légale (MOTD)             |  P2   | commun                    | Avertissement opposable avant connexion                              |
+| Durcissement des services inutiles |  P2   | commun                    | `no ip http`, `no source-route`, `no bootp`, `no pad`                |
+| Politique errdisable recovery      |  P1   | commun                    | Décide du relèvement auto des ports coupés — **avant** F6/F8/F9      |
+| Archivage de configuration         |  P2   | commun                    | `archive` + journal des changements (MCO)                            |
+
+#### F2 — Accès et administration
+
+| Sous-point                                | Phase | Portée / variable | Rôle                                                         |
+| ----------------------------------------- | :---: | ----------------- | ------------------------------------------------------------ |
+| Modèle AAA local                          |  P1   | commun            | `aaa new-model` + comptes locaux privilégiés                 |
+| Hachage fort des secrets                  |  P1   | commun            | `algorithm-type scrypt` (type 9) pour comptes et enable      |
+| Accès distant SSH v2 exclusif             |  P1   | commun            | Clé RSA ≥ 2048, `ip ssh version 2`, Telnet banni             |
+| Lignes VTY et console                     |  P1   | commun            | `transport input ssh`, `exec-timeout`, `logging synchronous` |
+| Restriction des sources d'admin (ACL VTY) |  P2   | commun            | `access-class` : SSH limité aux subnets d'administration     |
+
+#### F3 — Segmentation réseau (réseaux virtuels)
+
+| Sous-point                                          | Phase | Portée / variable | Rôle                                                    |
+| --------------------------------------------------- | :---: | ----------------- | ------------------------------------------------------- |
+| Propagation VLAN en mode transparent                |  P1   | commun            | `vtp mode transparent` **avant** toute création de VLAN |
+| Base de données VLAN et nommage                     |  P1   | commun            | Crée les 8 VLAN utilisateurs + 997/998/999              |
+| VLAN système (997 natif, 998 parking, 1 neutralisé) |  P1   | commun            | Hygiène L2 : voir F5 (natif) et F9 (parking)            |
+
+#### F4 — Affectation des ports d'accès
+
+| Sous-point                     | Phase | Portée / variable   | Rôle                                                     |
+| ------------------------------ | :---: | ------------------- | -------------------------------------------------------- |
+| Ports terminaux (VLAN d'accès) |  P1   | VLAN selon endpoint | `switchport mode access` + `access vlan`                 |
+| VLAN voix                      |  P1   | ports ToIP          | `switchport voice vlan 20` (mode hybride data/voix)      |
+| Descriptions d'interface       |  P2   | par port            | Identification en supervision et en `show`               |
+| Désactivation DTP              |  P1   | tous ports          | `switchport nonegotiate` : ferme la négociation de trunk |
+
+#### F5 — Liaisons montantes (trunks)
+
+| Sous-point               | Phase | Portée / variable  | Rôle                                                         |
+| ------------------------ | :---: | ------------------ | ------------------------------------------------------------ |
+| Mode trunk forcé         |  P1   | uplinks DIST       | `switchport mode trunk` + `nonegotiate`                      |
+| VLAN natif dédié         |  P1   | `{VLAN_NATIF}`=997 | Natif = 997, mort et hors allowed-list → anti double-tagging |
+| Liste des VLAN autorisés |  P1   | `{ALLOWED_UPLINK}` | Restreint le trunk aux seuls VLAN du bloc + 999              |
+| Encapsulation 802.1Q     |  P1   | uplinks DIST       | `encapsulation dot1q` explicite (ISL inexistant sur IOSvL2)  |
+
+#### F6 — Prévention des boucles de commutation
+
+| Sous-point                                   | Phase | Portée / variable                         | Rôle                                                                |
+| -------------------------------------------- | :---: | ----------------------------------------- | ------------------------------------------------------------------- |
+| Protocole d'arbre couvrant (MSTP)            |  P1   | commun                                    | `spanning-tree mode mst`                                            |
+| Cohérence de région MST                      |  P1   | `{REGION_MST}`, `{REVISION_MST}`, mapping | **Invariant transverse** : identique sur tout le LAN                |
+| Convergence des ports terminaux (PortFast)   |  P2   | ports access                              | Passage immédiat en forwarding sur endpoints                        |
+| Protection anti-switch parasite (BPDU Guard) |  P2   | ports PortFast                            | Err-disable si un BPDU arrive sur un port utilisateur               |
+| Protection lien unidirectionnel (Loop Guard) |  P2   | uplinks                                   | Empêche le passage d'un port bloqué en forwarding sur perte de BPDU |
+
+#### F7 — Découverte de voisinage
+
+| Sous-point                     | Phase | Portée / variable | Rôle                                                       |
+| ------------------------------ | :---: | ----------------- | ---------------------------------------------------------- |
+| Protocole de découverte (LLDP) |  P2   | commun            | `lldp run` : standard multi-constructeur pour la topologie |
+| Portée par type de port        |  P2   | access vs uplink  | CDP conservé sur liens Cisco, désactivé côté endpoints     |
+| Annonce voix (LLDP-MED / CDP)  |  P2   | ports ToIP        | Pousse le Voice VLAN au téléphone automatiquement          |
+
+#### F8 — Sécurité des accès (anti-usurpation de flux)
+
+| Sous-point                                         | Phase | Portée / variable    | Rôle                                                                                  |
+| -------------------------------------------------- | :---: | -------------------- | ------------------------------------------------------------------------------------- |
+| Filtrage des serveurs DHCP pirates (DHCP Snooping) |  P3   | VLAN utilisateurs    | Trust sur uplinks, drop des Offer venus d'un port endpoint                            |
+| Table de correspondance IP-MAC                     |  P3   | commun               | Sous-produit du Snooping ; base de la DAI ; persistance sur flash                     |
+| Inspection ARP dynamique (DAI)                     |  P3   | VLAN utilisateurs    | Rejette l'ARP incohérent — **dépend de la table Snooping**                            |
+| Validation de la source IP (IP Source Guard)       |  P3   | ports access         | Bloque l'usurpation d'IP source — dépend de la table Snooping                         |
+| Équipements à IP statique (ARP ACL)                |  P3   | imprimantes, caméras | Entrées manuelles pour ne pas les bloquer sous DAI                                    |
+| Rate-limit DAI et Snooping                         |  P3   | ports/uplinks        | `limit rate` + `arp inspection limit` : anti-starvation, sans err-disable des uplinks |
+
+#### F9 — Sécurité des ports
+
+| Sous-point                                   | Phase | Portée / variable | Rôle                                                         |
+| -------------------------------------------- | :---: | ----------------- | ------------------------------------------------------------ |
+| Restriction des adresses MAC (Port Security) |  P2   | ports access      | `maximum 2` (PC + ToIP), violation `shutdown`, mode `sticky` |
+| Limitation des tempêtes (Storm Control)      |  P2   | ports access      | Seuils broadcast/multicast/unknown-unicast + action          |
+| Fermeture des ports inutilisés               |  P2   | ports libres      | Affectation au VLAN 998 (parking) + `shutdown`               |
+
+#### F10 — Contrôle d'accès réseau (authentification par port)
+
+| Sous-point                               | Phase | Portée / variable | Rôle                                               |
+| ---------------------------------------- | :---: | ----------------- | -------------------------------------------------- |
+| Framework 802.1X                         |  P3   | commun            | `dot1x system-auth-control` + AAA vers RADIUS      |
+| Déclaration du serveur RADIUS            |  P3   | `{IP_RADIUS}`     | FreeRADIUS (VLAN 303 ADMIN-AAA), clé partagée      |
+| Authentification par port (802.1X + MAB) |  P3   | ports access      | `port-control auto`, `order mab dot1x`, host-mode  |
+| VLAN spéciaux (invité, échec, secours)   |  P3   | ports access      | Repli pour endpoints sans supplicant / RADIUS mort |
+
+> **Exclusivité F9/F10.** Port Security et 802.1X ne coexistent pas sur un même port. Port Security est le dispositif **transitoire de la Phase 1** ; il est retiré du port quand le 802.1X y devient opérationnel (Phase 3, après FreeRADIUS).
+
+#### F11 — Adressage d'administration
+
+| Sous-point                         | Phase | Portée / variable            | Rôle                                                        |
+| ---------------------------------- | :---: | ---------------------------- | ----------------------------------------------------------- |
+| Interface de management (SVI 999)  |  P1   | `{IP_MGMT}`, `{MASQUE_MGMT}` | Adresse d'administration in-band de l'équipement            |
+| Passerelle par défaut              |  P1   | `{GW_MGMT}`                  | `ip default-gateway` : requis (pas de routage sur l'Access) |
+| Sourcing des flux d'administration |  P2   | commun                       | SSH/Syslog/SNMP/NTP sourcés sur la SVI 999                  |
+
+#### F12 — Supervision et journalisation
+
+| Sous-point                       | Phase | Portée / variable | Rôle                                                       |
+| -------------------------------- | :---: | ----------------- | ---------------------------------------------------------- |
+| Synchronisation horaire (NTP)    |  P2   | `{IP_NTP}`        | Cible provisoire 192.168.122.1 en P1, Chrony interne en P2 |
+| Journalisation distante (Syslog) |  P3   | `{IP_SYSLOG}`     | Cible Wazuh ; buffer local si injoignable (inoffensif)     |
+| Métrologie (SNMPv3)              |  P3   | `{IP_SNMP}`       | `authPriv` (SHA + AES), ACL de restriction, pas de v2c     |
+
+---
+
+### 4.2.4) Ordre de déploiement et jalons
+
+L'ordre des familles est à la fois l'ordre de lecture et l'ordre de déploiement, car il respecte les dépendances. Deux points de vigilance dominent la séquence.
+
+**Le socle avant le fonctionnel.** F1 et F2 (identité, accès, horodatage, politique errdisable) se posent avant tout le reste : sans horloge synchronisée les journaux des étapes suivantes sont inexploitables, et sans politique errdisable définie on subit les protections qu'on vient d'activer.
+
+**La chaîne de dépendance de F8.** DHCP Snooping doit précéder la DAI, qui doit précéder IP Source Guard — les trois s'appuient sur la même table de correspondance. Toute la famille F8 est en **P3** car cette table reste vide tant que le serveur DHCP n'existe pas ; activer la DAI avant couperait le réseau.
+
+La couche se valide sur trois jalons, chacun clos par un instantané GNS3 :
+
+|  Jalon  | Vérifie                              | Test                                                                                                 |
+| :-----: | ------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| **JA1** | Socle (F1, F2)                       | Connexion SSH authentifiée, horloge cohérente, Telnet refusé                                         |
+| **JA2** | Fonctionnel L2 (F3, F4, F5, F6, F11) | Un poste en IP statique joint sa passerelle VRRP ; trunks actifs ; MSTP convergé sur la bonne région |
+| **JA3** | Durcissement (F6 stabilité, F7, F9)  | Un switch parasite sur un port access déclenche un err-disable ; ports inutilisés fermés             |
+
+Les familles F8, F10 et une partie de F12 (P3) ne sont pas validées au déploiement initial : leur configuration est préparée, mais leur activation et leur test attendent les services de la Phase 2 (DHCP, RADIUS, collecteurs).
+
+---
+
+### 4.2.5) Arbitrages développés
+
+Les sous-points suivants comportent un **choix technique** qui sera documenté dans sa sous-section dédiée, selon le canevas : solutions possibles → tableau comparatif → choix retenu et justification → étapes de déploiement (commande + variables) → commandes de vérification. Ils sont listés ici pour cadrer la rédaction à venir.
+
+|#|Famille|Sous-point|Choix à trancher|Retenu (pressenti)|
+|---|:-:|---|---|---|
+|A1|F2|Protocole d'accès distant|Telnet / SSHv1 / **SSHv2**|SSHv2 exclusif|
+|A2|F2|Hachage des secrets|type 0/7/5/8/**9**|Type 9 (scrypt)|
+|A3|F3|Propagation des VLAN|VTP serveur/client / **transparent**|Transparent (anti-écrasement de la VLAN DB)|
+|A4|F6|Protocole d'arbre couvrant|STP / RSTP / PVST+ / RPVST+ / **MSTP**|MSTP (standard, multi-instance, multi-constructeur)|
+|A5|F7|Protocole de découverte|CDP seul / **LLDP** + CDP ciblé|LLDP global, CDP sur liens Cisco uniquement|
+|A6|F8|Traitement de l'Option 82|conserver / **désactiver**|À tester avec Kea (rejet possible des requêtes)|
+|A7|F9|Mode de violation Port Security|protect / restrict / **shutdown**|Shutdown (la violation mérite investigation)|
+|A8|F9|Apprentissage MAC|manuel / dynamic / **sticky**|Sticky (déploiement sans inventaire préalable)|
+|A9|F9|Action Storm Control|drop / **shutdown** / trap|À arbitrer : shutdown (radical) vs trap (supervision)|
+|A10|F10|Méthode EAP|MD5 / LEAP / **PEAP-MSCHAPv2** / EAP-TLS|PEAP-MSCHAPv2 (postes), EAP-TLS après PKI|
+|A11|F10|Host-mode 802.1X|single / multi-host / **multi-domain** / multi-auth|Multi-domain (PC + téléphone), multi-auth ailleurs|
+|A12|F12|Version SNMP|v2c / **v3 authPriv**|SNMPv3 authPriv (SHA + AES)|
+
+### 4.3.1) F1 — Configuration de base et identité
+La configuration de base établit l'identité de l'équipement et sécurise son plan d'administration _avant_ toute configuration fonctionnelle. L'ordre importe : un switch qui démarre sans elle est joignable en Telnet en clair, sans authentification robuste, depuis n'importe quel port actif — un vecteur d'attaque trivial. Cette famille pose aussi trois éléments dont l'absence se paie plus tard : l'horodatage (sans lequel les journaux produits par les familles suivantes sont incorrélables), la politique de récupération sur err-disable (sans laquelle on relève les ports à la main pendant tous les tests de sécurité), et la désactivation de la résolution DNS (sans laquelle chaque faute de frappe en CLI gèle la console une trentaine de secondes).
+
+Le stockage des mots de passe dans la configuration admet plusieurs niveaux de robustesse, tous ne se valant pas. Le choix du type conditionne ce qu'un attaquant tire d'un vol de configuration.
+
+|Type|Algorithme|Robustesse|Verdict|
+|:-:|---|---|---|
+|0|Texte clair|Nulle|À proscrire|
+|7|XOR réversible|Déchiffrable en secondes|Cosmétique seulement|
+|5|MD5|Déprécié (collisions, GPU)|Insuffisant aujourd'hui|
+|8|PBKDF2-SHA256|Bonne|Acceptable|
+|9|scrypt|Très bonne (coût mémoire élevé)|**Retenu**|
+
+**Choix retenu.** On génère tous les secrets en **type 9 (scrypt)** via `algorithm-type scrypt`. Scrypt est délibérément coûteux en mémoire, ce qui rend le cassage par force brute sur GPU nettement plus difficile que MD5 ou même PBKDF2. Le type 7 est conservé uniquement comme filet passif via `service password-encryption` — il ne protège rien contre un attaquant sérieux, mais il évite qu'un mot de passe résiduel apparaisse en clair dans un `show running-config` lu par-dessus l'épaule. Il ne remplace jamais un secret en type 9.
+
+* Étape 1 — Identité de l'équipement. On fixe le nom (qui devient le prompt, l'identifiant en supervision, et le préfixe de la clé SSH) et le domaine (prérequis technique de la génération de clé).
+```
+hostname {HOSTNAME}
+ip domain-name {DOMAINE}
+no ip domain-lookup
+```
+
+- `hostname {HOSTNAME}` : obligatoire. Remplacé par ACC-1 à ACC-4.
+- `ip domain-name {DOMAINE}` : obligatoire pour SSH ; `crypto key generate rsa` échoue sans domaine. Valeur : `homelab.local`.
+- `no ip domain-lookup` : recommandé. Désactive la résolution DNS des mots inconnus tapés en CLI, qui sinon bloque la console ~30 s à chaque faute de frappe.
+
+* Étape 2 — Horodatage. On horodate à la milliseconde avec le fuseau, condition d'une corrélation d'événements fiable entre équipements.
+```
+service timestamps log datetime msec localtime show-timezone
+service timestamps debug datetime msec localtime show-timezone
+clock timezone CET 1
+clock summer-time CEST recurring last Sun Mar 2:00 last Sun Oct 3:00
+```
+
+- `service timestamps log datetime msec` : recommandé (indispensable en pratique). Sans lui, les journaux ne portent qu'un compteur relatif inexploitable.
+- `clock timezone` / `summer-time` : la synchronisation NTP réelle viendra en F12 ; on pose ici le fuseau pour que l'horloge locale soit juste dès le départ.
+
+* Étape 3 — Politique de récupération sur err-disable. On décide dès maintenant du comportement des protections qui couperont des ports (BPDU Guard, Port Security, Storm Control).
+```
+errdisable recovery cause bpduguard
+errdisable recovery cause psecure-violation
+errdisable recovery interval 300
+```
+
+- `errdisable recovery cause ...` : recommandé. Réactive automatiquement un port coupé après le délai, cause par cause. On l'active pour les causes _opérationnelles_ fréquentes en test.
+- `errdisable recovery interval 300` : délai de relèvement, en secondes.
+- Choix assumé : on **n'active pas** l'auto-recovery pour une violation de sécurité qu'on veut voir persister (un switch parasite détecté par BPDU Guard peut rester coupé jusqu'à investigation). C'est un arbitrage sécurité/exploitation à trancher par cause ; la valeur ci-dessus privilégie la fluidité des tests.
+
+* Étape 4 — Durcissement des services inutiles et sauvegarde. On ferme les services hérités inutilisés et on active l'archivage de configuration.
+```
+no ip http server
+no ip http secure-server
+no service pad
+no ip source-route
+no ip bootp server
+service password-encryption
+!
+archive
+ log config
+  logging enable
+```
+
+- `no ip http server` / `secure-server` : recommandé. L'administration passe par SSH, pas par l'interface web ; on réduit la surface d'attaque.
+- `no ip source-route`, `no service pad`, `no ip bootp server` : recommandé. Désactivent des fonctions anciennes sans usage ici et potentiellement détournables.
+- `archive` + `log config` : recommandé. Journalise chaque commande de configuration (qui, quand, quoi) — traçabilité de MCO.
+
+**Vérification**
+```
+show clock                               ! heure et fuseau corrects
+show archive config differences          ! suivi des changements
+show running-config | include no ip http ! services désactivés
+```
+
+### 4.3.2) F2 — Accès et administration
+
+Cette famille définit _qui_ peut administrer l'équipement et _par quel canal_. Trois décisions la structurent : le modèle d'authentification (comptes locaux via AAA), le protocole d'accès distant (chiffré et robuste), et la restriction des sources autorisées à se connecter. L'objectif est qu'aucune administration ne soit possible en clair, sans authentification forte, ni depuis un réseau non prévu.
+
+Le canal d'administration à distance conditionne toute la sécurité du plan de gestion : s'il est en clair, tout le reste est vain.
+
+|Critère|Telnet|SSH v1|SSH v2|
+|---|---|---|---|
+|Chiffrement|Aucun (texte clair)|RC4/DES (vulnérable)|AES / ChaCha20|
+|Authentification|Mot de passe en clair|Faible (détournement de session)|Robuste (clé + mot de passe)|
+|Intégrité|Aucune|Partielle|HMAC forte|
+|Verdict|À proscrire|Obsolète|**Retenu**|
+
+**Choix retenu.** **SSH v2 exclusivement**, Telnet totalement banni des lignes VTY. SSH v1 est écarté pour ses faiblesses cryptographiques connues (le chiffrement RC4/DES et l'absence de protection d'intégrité robuste le rendent vulnérable). La clé est générée en 4096 bits — au-delà du minimum de 2048 en dessous duquel une clé est considérée faible. L'authentification s'appuie sur le modèle **AAA local** : les identifiants sont stockés dans la configuration de l'équipement, hachés en type 9. Le passage ultérieur à une authentification centralisée (RADIUS/TACACS+) relève de F10 et de la Phase 2 ; en Phase 1, le local suffit et évite une dépendance externe.
+
+Étape 1 — Clé RSA. La génération exige que le hostname et le domaine (F1) soient déjà posés.
+```
+crypto key generate rsa modulus 4096
+```
+- `modulus 4096` : recommandé. Minimum acceptable 2048 (NIST SP 800-57) ; 4096 pour la marge.
+
+Étape 2 — Paramètres SSH. On impose la version 2 et on borne les sessions.
+```
+ip ssh version 2
+ip ssh time-out 60
+ip ssh authentication-retries 3
+```
+- `ip ssh version 2` : obligatoire. Interdit SSH v1.
+- `ip ssh time-out 60` : optionnel (défaut 120 s). Ferme une session non authentifiée après 60 s.
+- `ip ssh authentication-retries 3` : optionnel. Tentatives avant déconnexion.
+
+Étape 3 — Modèle AAA et comptes locaux. On active le framework AAA et on crée le compte d'administration privilégié, haché en scrypt.
+```
+aaa new-model
+aaa authentication login default local
+aaa authorization exec default local
+!
+username admin privilege 15 algorithm-type scrypt secret {MDP_ADMIN}
+enable algorithm-type scrypt secret {MDP_ENABLE}
+```
+- `aaa new-model` : obligatoire. Active AAA et modifie le comportement des lignes VTY (l'authentification devient pilotée par les listes AAA).
+- `username ... privilege 15` : obligatoire. Le niveau 15 donne l'accès direct au mode privilégié.
+- `algorithm-type scrypt` : recommandé. Génère un hachage type 9 ; sans cette option, IOS retombe sur du type 5 (MD5).
+- `{MDP_ADMIN}` / `{MDP_ENABLE}` : variables par site, jamais réutilisées entre environnements.
+
+Étape 4 — Lignes VTY et console. On force SSH en entrée, on restreint les sources d'administration par ACL, on borne les délais d'inactivité.
+```
+ip access-list standard ACL-ADMIN-VTY
+ permit 10.254.1.0 0.0.0.255      ! management bloc 1
+ permit 10.254.2.0 0.0.0.255      ! management bloc 2
+ permit 10.4.30.0 0.0.0.255       ! ADMIN-CORE (bastion)
+ deny   any log
+!
+line vty 0 15
+ transport input ssh
+ access-class ACL-ADMIN-VTY in
+ login authentication default
+ exec-timeout 10 0
+ logging synchronous
+!
+line con 0
+ exec-timeout 5 0
+ logging synchronous
+```
+- `transport input ssh` : obligatoire. Bloque Telnet sur les VTY.
+- `access-class ACL-ADMIN-VTY in` : recommandé. N'autorise l'ouverture d'une session SSH que depuis les subnets d'administration (management et bastion) ; tout le reste est refusé et journalisé. C'est la contre-mesure au fait que SSH, une fois activé, est sinon joignable depuis n'importe quelle source.
+- `exec-timeout 10 0` : optionnel (format minutes secondes). `0 0` (jamais) est déconseillé.
+- `logging synchronous` : recommandé. Empêche les messages console de couper la saisie.
+
+Étape 5 — Bannière légale. Message d'avertissement affiché avant l'invite de connexion.
+```
+banner login ^
+*******************************************************************************
+*  Acces reserve aux personnes habilitees. Toute connexion non autorisee     *
+*  est enregistree et susceptible de poursuites.                             *
+*  {HOSTNAME} - HomeLab                                                       *
+*******************************************************************************
+^
+```
+- `banner login` : recommandé en contexte professionnel. Sa valeur est juridique (opposabilité en cas de contentieux). On préfère `login` à `motd` pour qu'elle s'affiche avant l'authentification.
+
+**Vérification**
+```
+show ip ssh                                 ! version et paramètres SSH
+show running-config | section line vty      ! transport ssh + access-class
+show running-config | include username|enable secret ! type de hachage (9)
+```
+
+
+### 4.3.3) F3 — Segmentation réseau (réseaux virtuels)
+
+La segmentation crée, à l'intérieur du switch, plusieurs domaines de diffusion logiquement isolés. Un port affecté à un VLAN inexistant dans la base reste inactif et ne transmet rien : la base VLAN est donc un prérequis de toute affectation de port (F4) et de tout trunk (F5). Cette famille pose aussi les trois VLAN système d'hygiène L2 dont le rôle défensif est traité en F5 (natif) et F9 (parking). Un point de séquence est déterminant : la propagation VLAN doit être neutralisée _avant_ la première création de VLAN.
+
+**Propagation des VLAN : VTP**
+
+VTP (VLAN Trunking Protocol) synchronise automatiquement la base VLAN entre switches d'un même domaine. Séduisant sur le papier, il porte un risque d'exploitation majeur.
+
+|Mode VTP|Comportement|Risque|
+|---|---|---|
+|Server|Émet et applique les mises à jour ; modifiable|Un switch réintroduit avec un numéro de révision supérieur **écrase la base VLAN de tout le domaine**|
+|Client|Applique les mises à jour ; non modifiable localement|Même risque d'écrasement subi|
+|Transparent|N'applique rien, ne propage pas ; base purement locale|**Aucun** — la base est maîtrisée équipement par équipement|
+
+**Choix retenu.** **Mode transparent, sur tous les switches.** L'automatisation de VTP n'apporte rien à l'échelle du projet (quelques VLAN, gérés par configuration versionnée), alors qu'elle expose au scénario de panne le plus redouté du L2 Cisco : un switch rebranché en mode serveur, porteur d'un numéro de révision plus élevé, propage sa propre base et **efface silencieusement** tous les VLAN du domaine — panne totale, cause peu évidente à diagnostiquer. Le mode transparent supprime ce risque : chaque switch détient sa base, écrite explicitement dans sa configuration. C'est un cas d'école du principe « ne pas déployer une automatisation dont le coût de défaillance dépasse le bénéfice ». Le passage en transparent est posé **avant** la création des VLAN, faute de quoi on créerait des VLAN dans un domaine VTP actif.
+
+**Configuration**
+
+Étape 1 — Neutralisation de VTP. Première commande de la famille, avant toute création.
+
+```
+vtp mode transparent
+```
+
+- `vtp mode transparent` : obligatoire, et en premier. Rend la base VLAN locale et inerte vis-à-vis de VTP.
+
+Étape 2 — Création et nommage des VLAN utilisateurs. On crée les huit VLAN du bloc, nommés selon la convention `ZONE-RÔLE`.
+
+```
+vlan 10
+ name USERS
+vlan 20
+ name VOICE
+vlan 30
+ name IOT
+vlan 40
+ name WIFI-CORP
+vlan 41
+ name WIFI-GUEST
+vlan 42
+ name WIFI-BYOD
+vlan 50
+ name PRINTERS
+vlan 90
+ name LAB-DEV
+```
+
+- Ces huit VLAN sont **identiques sur les quatre Access** : le numéro désigne un rôle, pas un segment. Seuls les subnets diffèrent par bloc (offset +100), et ils sont portés par les SVI des Distribution, pas par les Access.
+
+Étape 3 — VLAN système et management. On crée le natif dédié, le parking et le VLAN de management.
+
+```
+vlan 997
+ name NATIVE-UNUSED
+vlan 998
+ name PARKING
+vlan 999
+ name MGMT-LAN
+```
+
+- `vlan 997 NATIVE-UNUSED` : sera le VLAN natif des trunks (F5). Aucun port, aucune SVI.
+- `vlan 998 PARKING` : recevra les ports inutilisés, en `shutdown` (F9). Aucun trunk, aucune SVI.
+- `vlan 999 MGMT-LAN` : portera la SVI d'administration de l'équipement (F11). Sur les Access, le 999 est local au bloc.
+
+Étape 4 — Neutralisation du VLAN 1. On ne l'utilise pour rien : aucun port, aucune SVI, et il sera exclu des trunks (F5).
+
+- Décision de conception, pas une commande : le VLAN 1 reste présent dans la base (on ne peut pas le supprimer) mais vidé de tout usage. Il est cible historique du double-tagging et support par défaut de protocoles de contrôle (CDP, STP) ; y faire circuler du trafic utilisateur créerait des interférences.
+
+**Vérification**
+
+```
+show vtp status                          ! mode transparent confirmé
+show vlan brief                          ! présence et nommage des VLAN
+```
+
+
+### 4.3.4) F4 — Affectation des ports d'accès
+
+Les ports d'accès raccordent les endpoints (postes, imprimantes, téléphones IP). Chaque port est affecté à un unique VLAN, dont les trames circulent sans étiquette. Deux raffinements interviennent ici : le **VLAN voix**, qui superpose sur un même port physique un flux de données non étiqueté et un flux voix étiqueté (pour brancher un PC derrière un téléphone IP), et la **désactivation systématique de la négociation de trunk**, qui empêche un endpoint de faire basculer son port en mode trunk par des trames forgées.
+
+Étape 1 — Port terminal simple. Cas d'un poste seul.
+```
+interface {IF_ACCESS}
+ description {LIBELLE_ENDPOINT}
+ switchport mode access
+ switchport access vlan {VLAN_ENDPOINT}
+ switchport nonegotiate
+ no shutdown
+```
+- `description {LIBELLE_ENDPOINT}` : recommandé. Apparaît dans les `show` et en supervision ; identifie le port sans consulter le schéma.
+- `switchport mode access` : obligatoire. Fixe le mode et coupe la négociation DTP implicite.
+- `switchport access vlan {VLAN_ENDPOINT}` : obligatoire. Sans elle, le port retombe dans le VLAN 1. Valeur selon l'endpoint (ex. 10 pour un poste bureautique).
+- `switchport nonegotiate` : obligatoire. Désactive DTP explicitement (défense en profondeur, voir F5).
+
+Étape 2 — Port terminal avec téléphonie. Cas d'un PC raccordé derrière un téléphone IP.
+```
+interface {IF_ACCESS}
+ description {LIBELLE_ENDPOINT}-TOIP
+ switchport mode access
+ switchport access vlan {VLAN_ENDPOINT}
+ switchport voice vlan 20
+ switchport nonegotiate
+ no shutdown
+```
+- `switchport voice vlan 20` : optionnel (uniquement en présence d'un téléphone IP). Active le mode hybride : données non étiquetées sur le VLAN d'accès, voix étiquetée sur le VLAN 20. Le switch annonce le VLAN voix au téléphone via LLDP-MED ou CDP (F7), qui configure alors automatiquement son interface.
+
+**Vérification**
+```
+show interfaces {IF_ACCESS} switchport   ! mode, VLAN d'accès, VLAN voix, état DTP
+show vlan brief                          ! ports rattachés à chaque VLAN
+```
+
+### 4.3.5) F5 — Liaisons montantes (trunks)
+
+Les trunks relient chaque Access à ses deux Distribution et transportent plusieurs VLAN par étiquetage 802.1Q. Trois menaces L2 classiques ciblent précisément ces liens, et la configuration du trunk est d'abord une configuration de sécurité : la **négociation de trunk abusive** (un endpoint qui force son port en trunk pour recevoir tous les VLAN), l'**attaque par double étiquetage** (qui exploite le VLAN natif pour franchir la segmentation), et le **transport de VLAN superflus** (un trunk qui porte plus que nécessaire élargit la surface d'exposition).
+
+**Les trois protections d'un trunk**
+
+|Menace|Mécanisme|Contre-mesure|
+|---|---|---|
+|Négociation DTP forgée|Un port en `dynamic` bascule en trunk sur demande|Mode `trunk` forcé + `nonegotiate`|
+|Double étiquetage (double-tagging)|Le natif circule sans étiquette ; deux tags empilés franchissent un VLAN|**Natif = 997**, mort, hors de l'allowed-list|
+|Transport de VLAN superflus|Un trunk porte tous les VLAN par défaut|`allowed vlan` restreint à la liste stricte|
+
+**Choix retenu.** Les trois protections sont appliquées sur **tous** les trunks. Le mode trunk est **fixé explicitement** et la négociation coupée par `nonegotiate` : DTP ne peut alors rien négocier, ni depuis un port compromis ni depuis un équipement malveillant. Le **VLAN natif est le 997** (`NATIVE-UNUSED`), un VLAN sans aucun port ni SVI, **volontairement exclu de la liste des VLAN autorisés**. Cette double disposition — natif dédié _et_ hors allowed-list — va un cran plus loin que la recommandation minimale : toute trame reçue non étiquetée sur un uplink n'appartient à aucun VLAN transporté et est **rejetée**, ce qui ferme structurellement le double étiquetage. Enfin, l'`allowed vlan` est réduit aux seuls VLAN du bloc plus le management : un trunk Access ↔ Distribution n'a aucune raison de porter les VLAN du datacenter ni ceux de l'autre bloc.
+
+**Configuration**
+
+Étape unique — Trunk vers une Distribution. Appliquée aux deux uplinks de chaque Access.
+```
+interface {IF_UPLINK}
+ description UPLINK-{DIST_AMONT}
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport nonegotiate
+ switchport trunk native vlan 997
+ switchport trunk allowed vlan 10,20,30,40,41,42,50,90,999
+ no shutdown
+```
+
+- `switchport trunk encapsulation dot1q` : à confirmer sur IOSvL2. Sur les plateformes supportant encore ISL, force le format 802.1Q ; sur l'image de laboratoire, dot1q est généralement le seul disponible, mais l'expliciter lève toute ambiguïté (statut 🔬).
+- `switchport mode trunk` : obligatoire. Fixe le mode.
+- `switchport nonegotiate` : obligatoire. Coupe DTP même sur un trunk explicite.
+- `switchport trunk native vlan 997` : obligatoire pour la sécurité. Déplace le natif du VLAN 1 vers le 997 dédié. La cohérence est un invariant : le natif doit être 997 **des deux côtés** du lien, sinon MSTP signale une incohérence de natif et le trafic peut fuir.
+- `switchport trunk allowed vlan ...` : obligatoire. Le 997 en est **volontairement absent** (le natif rejeté n'a pas à être transporté) ; les VLAN 990/991 (infra DC) et 100-306 (DC) n'ont rien à faire sur un trunk LAN.
+
+**Vérification**
+```
+show interfaces trunk                     ! trunks actifs, natif, VLAN autorisés et actifs
+show interfaces {IF_UPLINK} switchport    ! mode trunk, nonegotiate, natif 997
+show spanning-tree mst configuration      ! cohérence de natif attendue côté MSTP (F6)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--- 
 
 ## 4.2) Switches Access LAN (ACC-1 à ACC-4)
 
