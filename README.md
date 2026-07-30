@@ -826,28 +826,207 @@ Le projet ne simule **pas de SAN physique** — tout est virtualisé au niveau P
 
 Ce choix n'est pas bloquant pour l'architecture réseau actuelle. Il sera tranché en début de Phase 2 (services), en cohérence avec les besoins du cluster (live migration, HA).
 
-### 3.6.8) Schéma de la zone Datacenter
+## 3.7) La fabric datacenter : VXLAN, EVPN et frontière vSwitch/Leaf
+
+> **Périmètre.** Cette section explique le fonctionnement de la fabric Spine-Leaf du datacenter : le problème qu'elle résout, l'idée qui la fonde, le rôle de VXLAN et d'EVPN, la frontière entre le commutateur virtuel de l'hyperviseur et le Leaf, puis la logique d'exécution complète illustrée sur les cas de trafic réels. Elle se clôt par une lecture critique du modèle. Le détail des chemins de flux et de leurs conséquences sur les performances figure en section 3.10 ; on se concentre ici sur la **compréhension de la machinerie**.
+
+### 3.7.1) Le problème à résoudre
+
+Le besoin fondateur d'un datacenter est simple à énoncer : **une machine virtuelle doit pouvoir s'exécuter sur n'importe quel hyperviseur, et migrer de l'un à l'autre sans changer d'adresse IP.** C'est la condition de l'équilibrage de charge, de la tolérance aux pannes et de la maintenance sans interruption de service. Or « sans changer d'adresse IP » impose que le segment réseau de la VM — son VLAN, son sous-réseau — soit **disponible simultanément sur tous les hyperviseurs** susceptibles de l'accueillir.
+
+Dans notre architecture, les hyperviseurs sont raccordés à des commutateurs de haut de baie (les Leaf) reliés au reste de l'infrastructure par des **liens de niveau 3 routés**. Cette structure pose frontalement la question : si LEAF-1 et LEAF-2 doivent tous deux porter le VLAN 100, comment éviter que le même sous-réseau ne soit « annoncé à deux endroits différents » et que le routage ne se contredise ?
+
+La réponse historique consistait à étirer le niveau 2 : trunker le VLAN partout, interconnecter tous les commutateurs, et laisser le domaine de diffusion s'étendre. Cette approche, le _stretched L2_, échoue à l'échelle d'un datacenter pour trois raisons cumulatives.
+
+D'abord, le **Spanning Tree**. Un réseau de niveau 2 avec des liens redondants — et l'on en veut, pour la résilience — impose STP, qui casse les boucles en **désactivant la moitié des liens**. On paie de la capacité qu'on n'exploite pas. Ensuite, le **trafic de diffusion** : en niveau 2, chaque requête ARP et chaque trame inconnue est inondée partout ; plus le domaine grandit, plus ce bruit croît, jusqu'à saturer la fabric. Enfin, la **limite des 4094 VLAN** : l'étiquette 802.1Q tient sur 12 bits, ce qui plafonne le nombre de segments — rédhibitoire pour un hébergeur multi-clients.
+
+Le niveau 2 étiré ne passe donc pas à l'échelle. Mais le tout-niveau-3 routé ne convient pas davantage, car un routeur classique **ne sait pas déplacer un segment de niveau 2 d'un endroit à l'autre** — précisément ce dont la mobilité des VM a besoin. Le dilemme est là : on veut la **souplesse du niveau 2** (segments étirés, mobilité) avec la **robustesse du niveau 3** (tous les liens actifs, pas de diffusion à l'échelle, pas de Spanning Tree géant). VXLAN et EVPN sont la réponse conjointe à ce dilemme.
+
+### 3.7.2) L'idée fondatrice : séparer le transport du service
+
+Le mécanisme repose sur une seule idée, qui dépasse d'ailleurs le seul réseau : **découpler le plan qui transporte de celui qui porte le sens.** La fabric est bâtie en deux couches superposées et étanches.
+
+L'**underlay** est le réseau physique routé, sans intelligence particulière. Son unique fonction est de permettre aux Leaf et aux Spine de se joindre entre eux. Il fait tourner un IGP — OSPF chez nous — qui ne transporte **que les adresses de boucle `/32` des équipements et les liens `/31`** de la fabric. L'underlay ne connaît aucun réseau client : le sous-réseau `10.2.100.0/24` n'existe nulle part dans sa table.
+
+L'**overlay** est le réseau virtuel qui porte les segments clients. C'est lui qui « voit » les VM, les VLAN et les VRF. Il est transporté **par-dessus** l'underlay, sous forme de tunnels.
+
+Cette séparation est le cœur de tout. L'underlay est bête et rapide ; l'overlay est riche et mobile. On retrouve ce motif partout en informatique — la pagination mémoire sépare adresses virtuelles et physiques, l'hyperviseur sépare le matériel des machines virtuelles, TCP s'appuie sur IP sans le connaître. Une couche stable et idiote, une couche mobile et riche : c'est un patron de conception universel, et la fabric en est une application réseau.
+
+Point capital qui découle de cette étanchéité : **VXLAN et EVPN ne remplacent pas OSPF, ils roulent au-dessus.** OSPF construit les routes que les tunnels vont emprunter ; l'overlay décide de ce qu'on met dans les tunnels et de leur destination. Les deux ne se mélangent jamais.
+
+### 3.7.3) VXLAN — le format d'encapsulation
+
+VXLAN (_Virtual eXtensible LAN_) est le **format de l'enveloppe**. Son principe tient en une phrase : on met la trame de niveau 2 de la VM dans un paquet IP routable ordinaire, on l'expédie à travers l'underlay comme n'importe quel paquet, et on la sort de l'enveloppe à l'arrivée.
+
+L'enveloppe porte un numéro d'identification, le **VNI** (_VXLAN Network Identifier_), qui indique à quel segment appartient la trame transportée. Ce VNI est codé sur **24 bits**, soit environ seize millions de segments possibles — la limite des 4094 VLAN disparaît.
+
+Les points qui posent et ouvrent les enveloppes sont les **VTEP** (_VXLAN Tunnel Endpoints_). Dans notre conception, ce sont les **Leaf**. Un VTEP encapsule le trafic sortant vers l'underlay et décapsule le trafic entrant. Les Spine, eux, ne décapsulent rien : ils ne voient que l'adresse IP externe des enveloppes et les routent, sans jamais regarder ce qu'elles contiennent.
+
+VXLAN à lui seul ne fait que transporter. Il lui manque une information cruciale : **derrière quel VTEP se trouve la destination recherchée ?** Sans réponse, un Leaf devrait inonder la fabric pour la découvrir — et l'on retomberait sur le trafic de diffusion que l'on cherchait à fuir. C'est le rôle d'EVPN.
+
+### 3.7.4) EVPN — le plan de contrôle
+
+EVPN n'est **pas un protocole nouveau** : c'est une extension de BGP, plus précisément une famille d'adresses de **MP-BGP** (_Multiprotocol BGP_). BGP a été rendu extensible pour transporter n'importe quel type d'information d'accessibilité, chaque type constituant une famille ; IPv6, les VPN MPLS et EVPN sont des familles au-dessus du même moteur. C'est pourquoi la configuration active `address-family l2vpn evpn` sous `router bgp 65000` : on n'ajoute pas un démon, on active une famille de plus sur le BGP existant.
+
+Le rôle d'EVPN est celui d'un **annuaire** : il indique qui se trouve où. Chaque VTEP publie les VM qu'il héberge et apprend celles des autres, sous forme d'annonces du type « la MAC et l'IP de telle VM sont joignables via tel VTEP, dans tel VNI ». La table EVPN n'est donc pas une table de routage de sous-réseaux classique : c'est une table de **couples MAC + IP + VNI**, associés à un VTEP.
+
+Deux types d'annonces suffisent à comprendre le fonctionnement :
+
+- la **route de type 2** (MAC/IP) annonce un hôte précis derrière un VTEP ; elle sert le trafic de niveau 2 et permet la **suppression ARP** — chaque Leaf répond localement aux requêtes ARP des VM qu'il connaît, sans propagation dans la fabric ;
+- la **route de type 5** (préfixe IP) annonce un sous-réseau dans le contexte d'une VRF ; elle sert le trafic routé entre sous-réseaux.
+
+Grâce à cet annuaire, quand un Leaf doit joindre une VM, il **sait déjà** vers quel VTEP encapsuler. Plus d'inondation, plus de découverte à l'aveugle.
+
+La formule qui résume l'ensemble : **VXLAN pose les enveloppes, EVPN tient le carnet d'adresses, l'underlay OSPF fait la poste.** Le facteur OSPF ne lit jamais le carnet ; le carnet EVPN ne sait pas conduire le camion. Chacun son métier, et ils ne se recouvrent jamais.
+
+### 3.7.5) La frontière vSwitch / Leaf
+
+Le commutateur virtuel de l'hyperviseur et le Leaf « font » tous deux du VLAN, mais ne jouent pas dans la même catégorie. La ligne de partage est nette : **le vSwitch est du niveau 2 pur ; le Leaf est la frontière niveau 2 / niveau 3 et le point d'entrée de la fabric.**
+
+Le **commutateur virtuel** (un pont Linux compatible VLAN, sous Proxmox) ne route rien, ne connaît aucun VNI, ne parle pas EVPN. Il fait trois choses : il étiquette l'interface de la VM en mode accès, il commute en niveau 2 entre les ports d'un même VLAN, et il achemine le tout vers le Leaf par un lien trunk. Son horizon s'arrête à la MAC. Il ignore qu'un sous-réseau `10.2.100.0/24` existe, où se trouve la passerelle, ce qu'est un VNI, et qu'il existe une VRF. C'est l'équivalent exact d'un **commutateur d'accès** dans le monde du LAN : il classe chaque VM dans son VLAN et la remonte à l'étage supérieur.
+
+Le **Leaf** contient toute l'intelligence que le vSwitch ignore. Il porte les passerelles anycast, établit la correspondance VLAN → VNI de niveau 2 et VRF → VNI de niveau 3, encapsule en VXLAN et publie dans EVPN. Il est le VTEP. Il est l'équivalent d'un étage de distribution qui ferait du routage intégré.
+
+L'analogie qui fixe le tout : **le vSwitch est au Leaf ce qu'un commutateur d'accès est à sa distribution.** L'accès étiquette et remonte ; l'étage supérieur route et interconnecte. La seule particularité du datacenter est que « l'étage supérieur » emploie VXLAN et EVPN au lieu d'OSPF et de VRRP.
+
+Deux conséquences pratiques méritent d'être retenues.
+
+D'abord, **le tout premier mur d'isolation se situe dans l'hyperviseur, avant même le Leaf.** L'interface d'une VM rattachée au pont d'une zone ne peut émettre que dans les VLAN que ce pont transporte. Une VM de production ne peut pas déposer une trame dans un VLAN de DMZ : ce VLAN n'existe pas sur son pont, et il n'y a aucune fonction de niveau 3 dans l'hôte pour franchir la frontière. L'endpoint est enfermé dans sa zone dès la carte réseau virtuelle.
+
+Ensuite, **le VLAN n'a de sens que local au lien physique.** L'étiquette 802.1Q portée sur le trunk entre l'hyperviseur et le Leaf ne vaut que pour ces deux extrémités. Ce qui relie réellement deux VM d'un même segment sur deux hyperviseurs différents, ce n'est pas l'étiquette VLAN — c'est le **VNI** que les deux Leaf partagent. On pourrait techniquement employer une étiquette VLAN différente de chaque côté, tant que chaque Leaf la mappe vers le même VNI ; on ne le fait pas, par cohérence d'exploitation, mais cette liberté illustre la vérité de fond : **le vSwitch raisonne en VLAN locaux, la fabric raisonne en VNI globaux, et le Leaf est le traducteur entre les deux.**
+
+### 3.7.6) VNI de niveau 2 et VNI de niveau 3
+
+La fabric manipule deux familles de VNI, qu'il ne faut jamais confondre. Ce sont des **identifiants distincts, pris dans des plages séparées**.
+
+||VNI L2|VNI L3|
+|---|---|---|
+|Étire…|un **VLAN** (un segment, un domaine de diffusion)|une **VRF** (une table de routage)|
+|Convention retenue|`10000 + numéro de VLAN` → VLAN 100 = **10100**|`50000 + offset` → VRF-PROD = **50001**|
+|Employé quand…|on reste dans le même sous-réseau (**commutation**)|on change de sous-réseau (**routage**)|
+|Route EVPN associée|type 2 (MAC/IP)|type 5 (préfixe IP)|
+
+Le VNI de niveau 2 « allonge » un VLAN : il transporte une trame dans son segment, sans routage. Le VNI de niveau 3 « allonge » une VRF : c'est le fil qui relie la table de routage d'une VRF sur un Leaf à la même table sur un autre Leaf. Réserver des plages distinctes (`10xxx` et `50xxx`) permet, à la seule lecture d'un numéro, de savoir si l'on a affaire à un segment ou à une VRF.
+
+### 3.7.7) La logique d'exécution
+
+C'est le point qui doit être parfaitement clair, car il dissipe l'idée fausse selon laquelle on « choisirait » un type de VNI. **On ne choisit jamais : la destination le détermine, mécaniquement.** À chaque trame reçue, le Leaf déroule une cascade de décisions.
 
 ```
-                     FW-1 ════ FW-2           (HA CARP, section 3.7)
-                      │ │       │ │
-                      │ │       │ │           (4 liens FW↔Spine full-mesh
-                      │ │       │ │            L3 /31 underlay + trunk VLAN 201-204
-                      │ │       │ │            pour handoff VRF)
-                   Spine-1   Spine-2           (pas de lien Spine↔Spine)
-                    │╲  ╲     ╱  ╱│
-                    │ ╲  ╲   ╱  ╱ │
-                    │  ╲  ╳ ╳  ╱  │            (6 liens Spine↔Leaf full-mesh
-                    │   ╳ ╳ ╳ ╳   │             L3 /31, OSPF underlay
-                    │  ╱  ╳ ╳  ╲  │             + iBGP EVPN overlay AS 65000)
-                    │ ╱  ╱   ╲  ╲ │
-                    │╱  ╱     ╲  ╲│
-                  Leaf-1   Leaf-2  Leaf-3      (pas de lien Leaf↔Leaf)
-                    │        │        │
-                  HV-1     HV-2     HV-3        (1 lien trunk 802.1Q par HV)
-                 (cluster) (cluster)(mgmt)
-              PROD+DMZ+ADMIN     ADMIN uniquement
+Le Leaf reçoit une trame. Destination = ?
+│
+├─ Même sous-réseau ?  ──── OUI ──►  COMMUTATION  → VNI L2   (pas de routage, pas de firewall)
+│
+└─ NON (autre sous-réseau)
+   │
+   ├─ Même VRF ?  ──────────── OUI ──►  ROUTAGE     → VNI L3   (routé par la fabric, pas de firewall)
+   │
+   └─ Autre VRF ? ──────────── OUI ──►  FIREWALL    → U-turn   (VNI L3 source, puis VNI L3 destination)
 ```
+
+Trois issues, une seule question de départ — « même sous-réseau ? » — puis une sous-question — « même VRF ? ». On n'a jamais à désigner un VNI : il découle de la position de la destination. Plus on descend dans l'arbre, plus on ajoute une opération : rien, puis encapsulation de niveau 2, puis routage de niveau 3, puis routage plus inspection. La progression est régulière, jamais arbitraire.
+
+Une propriété essentielle en découle : **une trame VXLAN ne porte qu'un seul VNI.** Le champ VNI de l'en-tête est unique ; on y inscrit soit un numéro de niveau 2, soit un numéro de niveau 3, jamais les deux. Le choix a été tranché **avant l'encapsulation** par le Leaf d'entrée, en réponse à sa question « même sous-réseau ou non ? ». L'enveloppe porte la conséquence de cette décision, pas les deux options.
+
+### 3.7.8) Ce que transporte chaque enveloppe
+
+La différence entre les deux VNI devient concrète quand on regarde le contenu de l'enveloppe.
+
+Dans le cas d'un **VNI de niveau 2**, l'intérieur est la trame Ethernet d'origine, intacte, avec les **adresses MAC des VM elles-mêmes**. Le Leaf d'arrivée ouvre l'enveloppe, lit le VNI, en déduit le VLAN, regarde la MAC destination et livre. Il n'a pas routé, il a fait suivre une trame.
+
+```
+┌─ Enveloppe VXLAN ──────────────────────────────┐
+│  IP externe : LEAF-1 → LEAF-2   (les VTEP)      │
+│  VNI : 10100    ← "segment VLAN 100"            │
+│  ┌─ trame de la VM, intacte ─────────────────┐  │
+│  │  MAC src = web-01    MAC dst = web-02      │  │  ← MAC des VM
+│  │  IP src  = .20       IP dst  = .21         │  │
+│  └────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────┘
+```
+
+Dans le cas d'un **VNI de niveau 3**, le Leaf d'entrée a **déjà routé**. Les adresses MAC des VM ont donc disparu, remplacées par celles des routeurs — les Leaf eux-mêmes. Ce qui compte désormais est l'**IP destination** et la VRF. Le Leaf d'arrivée lit le VNI, en déduit la VRF, cherche l'IP destination dans la table de cette VRF, route vers le bon VLAN local et livre.
+
+```
+┌─ Enveloppe VXLAN ──────────────────────────────┐
+│  IP externe : LEAF-1 → LEAF-2   (les VTEP)      │
+│  VNI : 50001    ← "VRF-PROD" (pas un VLAN)      │
+│  ┌─ paquet déjà routé ───────────────────────┐  │
+│  │  MAC src = LEAF-1    MAC dst = LEAF-2      │  │  ← MAC des Leaf
+│  │  IP src  = web-01    IP dst  = db-01       │  │  ← l'IP décide
+│  └────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────┘
+```
+
+Point à retenir absolument : **le VLAN de destination n'est jamais transporté.** Dans le cas de niveau 3, le VLAN de départ est oublié dès que le Leaf d'entrée route, et le VLAN d'arrivée est **recalculé** par le Leaf de sortie, grâce au VNI qui lui désigne la bonne table de routage.
+
+### 3.7.9) L'IRB symétrique
+
+Le mécanisme qui gère le routage entre sous-réseaux d'une même VRF s'appelle l'**IRB symétrique** (_Integrated Routing and Bridging_). Le terme se comprend en observant les deux extrémités.
+
+Le Leaf d'entrée reçoit une trame dans un VLAN, constate que la destination est dans un autre sous-réseau, effectue une **recherche de routage** dans la table de la VRF, puis encapsule le résultat dans le VNI de niveau 3 de cette VRF. Le Leaf de sortie reçoit ce VNI, en déduit la VRF, effectue à son tour une **recherche de routage** dans la même table, trouve le VLAN local correspondant à l'IP destination, route et livre. **Les deux extrémités routent** : c'est ce qui rend le procédé « symétrique ». Entre elles ne circule que le VNI de la VRF, jamais les VNI des VLAN.
+
+Cette symétrie répond directement à une question naturelle : comment le Leaf de sortie sait-il dans quel VLAN livrer ? La réponse est qu'il **ne cherche pas le VLAN d'origine — il calcule le VLAN de destination.** Le VNI de niveau 3 lui indique la table de routage à consulter ; il y cherche l'IP destination, qui tombe dans un sous-réseau, lequel correspond à un VLAN local. C'est exactement le métier d'un routeur, et c'est là que la convention « un VLAN = un sous-réseau » cesse d'être une simple commodité pour devenir un rouage fonctionnel : la recherche « IP → sous-réseau → VLAN » n'est déterministe que parce que la correspondance est unique.
+
+Une seconde question mérite d'être tranchée sans ambiguïté : le Leaf de sortie vérifie-t-il un droit d'accès ? **Non. Le Leaf ne filtre rien, et c'est normal.** L'autorisation a déjà été tranchée en amont, par la structure de la fabric. Si une trame est arrivée dans le VNI d'une VRF, c'est que sa destination était routable dans cette VRF — donc dans la même zone de confiance que la source. Or une VRF ne contient aucune route vers les autres VRF : leur étanchéité est acquise dès le plan de contrôle EVPN, aucun _Route Target_ n'étant importé en croisé. Par conséquent, **être présent dans le VNI d'une VRF constitue en soi l'autorisation.** Le filtrage n'a pas lieu à l'arrivée : il a lieu à l'origine, par l'absence de route. Une trame visant une autre VRF ne trouve, dans la table de sa VRF de départ, aucune route vers sa cible ; elle tombe sur la route par défaut et part vers le firewall, sans jamais atteindre un VNI de niveau 3 distant.
+
+### 3.7.10) Les cas de trafic
+
+Trois situations couvrent l'essentiel du trafic réel. Le décor est le suivant.
+
+|VM|IP|VLAN|VRF|Hyperviseur|Leaf|
+|---|---|---|---|---|---|
+|`web-01`|10.2.100.20|100|PROD|HV-1|LEAF-1|
+|`web-02`|10.2.100.21|100|PROD|HV-1|LEAF-1|
+|`db-01`|10.2.102.30|102|PROD|HV-2|LEAF-2|
+|`rp-01`|10.3.200.10|200|DMZ|HV-2|LEAF-2|
+
+**Cas 1 — deux VM sur le même hyperviseur, même VLAN.** `web-01` vers `web-02`. Le commutateur virtuel constate que les deux ports sont dans le VLAN 100 et fait un simple pont local : il regarde la MAC destination et livre. Le trafic ne quitte jamais l'hyperviseur — **ni VXLAN, ni VNI, ni EVPN, le Leaf n'est même pas sollicité.**
+
+**Cas 2a — deux hyperviseurs, même VLAN.** `web-01` vers une VM du VLAN 100 sur HV-2. Même segment, mais deux Leaf différents : pas de routage, **commutation étirée par VXLAN**. LEAF-1 consulte sa table EVPN, apprend que la MAC est derrière le VTEP de LEAF-2, encapsule en **VNI de niveau 2 (10100)** vers la boucle de LEAF-2 ; l'underlay OSPF achemine ; LEAF-2 ouvre, en déduit le VLAN 100, regarde la MAC destination et livre. Route de **type 2**, aucun routage, aucun firewall.
+
+**Cas 2b — deux hyperviseurs, VLAN différents, même VRF.** `web-01` (VLAN 100) vers `db-01` (VLAN 102), tous deux en PROD. On change de sous-réseau, donc on route : c'est l'IRB symétrique. `web-01` envoie à sa passerelle anycast, locale sur LEAF-1 ; LEAF-1 route dans VRF-PROD, encapsule en **VNI de niveau 3 (50001)** ; l'underlay achemine ; LEAF-2 en déduit VRF-PROD, route vers le VLAN 102 et livre à `db-01`. Route de **type 5**, les deux Leaf routent, **aucun firewall** — même VRF, donc trafic libre dans la fabric.
+
+**Cas 3 — deux hyperviseurs, VRF différentes.** `web-01` (PROD) vers `rp-01` (DMZ). Changement de VRF : le firewall est **obligatoire**. LEAF-1 cherche l'IP de `rp-01` dans VRF-PROD, ne trouve aucune route, tombe sur la route par défaut vers le firewall. Le paquet est routé dans VRF-PROD (VNI 50001) jusqu'à la sortie de la fabric, présenté au firewall qui **inspecte et décide** ; s'il autorise, il réinjecte le paquet côté DMZ, qui repart dans la fabric en **VNI 50002** jusqu'à LEAF-2, lequel route vers le VLAN 200 et livre. C'est le motif du U-turn : aucun VNI ne franchit seul la frontière entre VRF, le seul chemin inter-VRF passe par le point de contrôle.
+
+|Cas|Situation|Chemin|VNI|Routage|Firewall|
+|---|---|---|---|---|:-:|
+|1|Même hôte, même VLAN|vSwitch local|aucun|non (pont local)|non|
+|2a|Hôtes ≠, même VLAN|Leaf → Spine → Leaf|**L2** (10100)|non (pont étiré)|non|
+|2b|Hôtes ≠, VLAN ≠, même VRF|Leaf → Spine → Leaf|**L3** (50001)|oui, **les deux Leaf**|non|
+|3|Hôtes ≠, VRF ≠|Leaf → Spine → **FW** → Spine → Leaf|**L3 → L3**|oui + **le FW route**|**oui**|
+
+La logique d'ensemble tient en une phrase : **même hôte et même VLAN → commutateur virtuel local ; sinon même sous-réseau → VNI de niveau 2 ; sinon même VRF → VNI de niveau 3 dans la fabric ; sinon → firewall.**
+
+### 3.7.11) Ce que la fabric résout, et ce qu'elle coûte
+
+Le triptyque Spine-Leaf + VXLAN + EVPN règle les trois problèmes du niveau 2 étiré identifiés en 3.7.1. Le **Spanning Tree géant disparaît** : entre Leaf et Spine, tout est routé, tous les liens sont actifs en ECMP, plus rien n'est éteint ; le niveau 2 ne subsiste qu'aux extrémités, entre la VM et son Leaf. Le **trafic de diffusion s'effondre** : EVPN annonçant les MAC/IP à l'avance, la découverte par inondation devient inutile, et la suppression ARP traite localement l'essentiel du reste. La **limite des 4094 segments saute** grâce au VNI sur 24 bits. Et le bénéfice recherché au départ retombe naturellement : le segment étant disponible sur tous les Leaf qui le portent, **une VM migre d'un hyperviseur à l'autre sans changer d'adresse**, EVPN se contentant de mettre à jour l'annuaire.
+
+Cette réussite a néanmoins un coût qu'il serait malhonnête de passer sous silence, et qui doit être gardé à l'esprit sur ce projet précis.
+
+**Le diagnostic se complexifie.** Quand tout fonctionne, l'architecture est limpide ; quand elle casse, on débogue _deux_ plans de contrôle superposés — OSPF _et_ BGP EVPN — plus la couche d'encapsulation. Un `ping` qui échoue peut trouver son origine dans l'underlay, dans l'overlay, dans une incohérence de MTU, dans un _Route Target_ mal importé ou dans une route de type 2 absente. Le nombre de couches qui font la puissance du système est aussi le nombre d'endroits où il peut se rompre.
+
+**La visibilité native se perd.** Le trafic étant encapsulé, une capture réseau ne voit que du VXLAN tant qu'on ne décapsule pas — c'est précisément l'angle mort identifié pour la supervision de sécurité.
+
+**C'est un sur-dimensionnement dans beaucoup de contextes.** À l'échelle de trois hyperviseurs, on paie l'intégralité de la complexité sans toucher le bénéfice, qui n'apparaît qu'à partir d'un certain volume. La fabric est déployée ici **pour être comprise et démontrée**, ce qui est un motif légitime ; mais la proposer en clientèle « parce que c'est moderne » relèverait de la faute d'architecture. La bonne technologie est la plus simple qui résout le problème réel, et pour une PME un niveau 2 correctement agrégé ferait souvent l'affaire sans cette machinerie.
+
+### 3.7.12) Lecture critique : la fabric repose sur des conventions
+
+Un dernier point structure la compréhension du modèle et engage la manière de l'exploiter. **La fabric tient sur des conventions, et une convention est une vérité que la machine ne vérifie pas.** La correspondance « un VLAN = un sous-réseau », les plages de VNI (`10xxx` pour le niveau 2, `50xxx` pour le niveau 3), la numérotation des RD et RT en `65000:XXX` : rien de tout cela n'est contrôlé par un protocole. Cela tient parce qu'un document l'a fixé et que l'on s'y conforme. Le jour où quelqu'un dévie — un VNI mal calculé, un RT importé en trop —, **le système ne proteste pas : il fait silencieusement la mauvaise chose.** C'est la pire catégorie d'anomalie, non pas une erreur signalée mais une divergence muette. C'est aussi ce qui donne son statut au plan d'adressage et à la cartographie : ils ne sont pas de la documentation accessoire, ils sont le **seul endroit où ces conventions existent réellement.** Sans eux, la fabric est un château de sable dont personne ne connaît le plan.
+
+Cette fragilité par convention n'est pas un défaut propre à EVPN : c'est la nature de **toute abstraction puissante.** IP suppose que chacun respecte les mêmes numéros de protocole ; TCP, que les deux extrémités implémentent le même automate ; DNS, une hiérarchie de délégations que rien n'impose physiquement. Plus une couche est utile, plus elle repose sur des accords non vérifiés. EVPN n'est pas exceptionnellement fragile — il l'est **à la mesure de ce qu'il permet.**
+
+Il faut enfin situer honnêtement cette technologie dans le temps. Elle n'est pas le produit d'un éclair de génie mais d'une **sédimentation** : VXLAN répond à un besoin de virtualisation apparu au début des années 2010, EVPN réutilise le MP-BGP conçu pour les VPN MPLS de la décennie précédente, et l'IRB symétrique corrige les défauts de l'IRB asymétrique, qui corrigeait lui-même le fonctionnement en inondation-apprentissage. Ce que l'on prend pour de l'élégance est en réalité de la cicatrisation — vingt ans de problèmes résolus les uns après les autres. La posture juste n'est donc ni l'émerveillement, qui fait baisser la garde, ni le rejet de principe, mais un **respect lucide** : savoir que c'est puissant, savoir ce que cela coûte, et savoir quand s'en passer. C'est exactement l'arbitrage qui a conduit, ailleurs dans ce projet, à refuser une VRF dédiée au SOC et une VRF-lite pour les postes utilisateurs — la même discipline appliquée à la fabric qu'aux VRF.
+
+### 3.7.13) Synthèse
+
+La fabric datacenter résout un dilemme apparemment insoluble : offrir la souplesse du niveau 2, indispensable à la mobilité des machines virtuelles, avec la robustesse du niveau 3, indispensable à l'échelle. Sa réponse tient dans une idée unique — **séparer le plan qui transporte du plan qui porte le sens** — déclinée en un underlay routé et stupide, sur lequel OSPF ne connaît que les adresses de boucle, et un overlay virtuel qui porte les segments clients.
+
+Sur cet underlay, **VXLAN pose les enveloppes** en emballant les trames de niveau 2 dans des paquets IP marqués d'un VNI, et **EVPN tient le carnet d'adresses** en publiant, via MP-BGP, quel VTEP héberge quelle MAC/IP dans quel VNI. Le VNI de niveau 2 étire un VLAN, le VNI de niveau 3 étire une VRF ; une trame n'en porte jamais qu'un seul, déterminé par une question mécanique — la destination est-elle dans le même sous-réseau ? — que le Leaf tranche avant d'encapsuler.
+
+Le commutateur virtuel de l'hyperviseur reste, dans tout cela, un simple commutateur d'accès de niveau 2 : il étiquette et remonte, sans rien connaître de la fabric. C'est le Leaf qui traduit les VLAN locaux en VNI globaux, porte les passerelles anycast et applique l'étanchéité entre VRF. Cette étanchéité, structurelle et non déclarative, garantit qu'aucun flux ne franchit une frontière de zone sans passer par le firewall, tandis que tout le trafic intra-zone — commutation dans un segment ou routage entre sous-réseaux d'une même VRF — reste dans la fabric, rapide et non inspecté.
+
+Le modèle est puissant, mais il est complexe, coûteux à diagnostiquer, aveugle à l'inspection native, et il repose entièrement sur des conventions que rien ne vérifie. Il se justifie ici par sa valeur pédagogique et démonstrative, non par un besoin d'échelle. La compétence d'architecte ne consiste pas à en admirer l'ingéniosité, mais à savoir précisément **quel problème il résout, à quel prix et sous quelles hypothèses** — et, souvent, à choisir de ne pas le déployer.
 
 ## 3.7) Placement des firewalls : pattern mutualisé multi-zone
 
@@ -1669,13 +1848,15 @@ Les fichiers de configuration bruts (output de `show running-config`) sont archi
 L'ordre de déploiement retenu et sa justification sont détaillés dans le fichier `ROADMAP.md`. En résumé : LAN (Access → Distribution → Core) en premier, puis DC (underlay OSPF → overlay BGP EVPN) en second, puis Proxmox, et enfin pfSense HA qui connecte les deux îlots OSPF en dernier étape.
 
 # 4) Configuration et déploiement
-## 4.2) Switches Access LAN (ACC-1 à ACC-4)
+## 4.1) Switches Access LAN (ACC-1 à ACC-4)
 
 Les switches Access constituent la couche d'entrée du réseau utilisateur. Leur rôle est strictement L2 : ils raccordent les endpoints, portent les VLAN, appliquent la politique de sécurité de port et remontent vers les Distribution par des trunks 802.1Q. Ils ne routent pas.
 
 Les quatre équipements sont configurés **à l'identique**, à quelques variables près. Le bloc 1 (ACC-1, ACC-2) est raccordé à DIST-1/DIST-2 ; le bloc 2 (ACC-3, ACC-4) à DIST-3/DIST-4, avec un offset `+100` sur le 3ᵉ octet des subnets utilisateurs et un `+1` sur le 3ᵉ octet du management (`10.254.1.0/24` pour le bloc 1, `10.254.2.0/24` pour le bloc 2). Cette section est donc un **gabarit unique** : configurer un Access, c'est appliquer ce cahier des charges en substituant les variables listées en 4.2.2.
 
-### 4.2.1) Principe de lecture
+### 4.1.1) Cahier des charges
+
+#### 4.1.1.1) Principe de lecture
 
 La configuration se lit comme une superposition de **douze familles fonctionnelles**, chacune répondant à un besoin précis. À l'intérieur d'une famille, chaque sous-point est une notion à configurer. Le nom d'une famille décrit _à quoi elle sert_ ; la technologie employée (MSTP, LLDP, DHCP Snooping…) vit _dans_ le sous-point et fait l'objet d'un arbitrage documenté (section 4.2.4 et suivantes).
 
@@ -1690,7 +1871,7 @@ Chaque sous-point porte deux attributs de pilotage :
 |**P3**|Ajourné — dépend d'un service de la Phase 2 du projet|Préparer la configuration, ne l'activer qu'une fois le service disponible|
 
 
-### 4.2.2) Variables du gabarit
+#### 4.1.1.2) Variables du gabarit
 
 Tout ce qui suit est identique sur les quatre Access, à l'exception des variables ci-dessous. Un technicien qui déploie un nouvel Access ne modifie que ces valeurs.
 
@@ -1717,7 +1898,7 @@ Les valeurs communes aux quatre — invariants du gabarit — sont :
 
 ---
 
-### 4.2.3) Tableau maître de configuration
+#### 4.1.1.3) Tableau maître de configuration
 
 Le tableau ci-dessous est la check-list complète de la couche Access, quadrillée par famille. Chaque ligne est développée dans les sections de rédaction qui suivront (une sous-section par sous-point, avec solutions, arbitrage et commandes).
 
@@ -1835,7 +2016,7 @@ Le tableau ci-dessous est la check-list complète de la couche Access, quadrill�
 
 ---
 
-### 4.2.4) Ordre de déploiement et jalons
+#### 4.1.1.4) Ordre de déploiement et jalons
 
 L'ordre des familles est à la fois l'ordre de lecture et l'ordre de déploiement, car il respecte les dépendances. Deux points de vigilance dominent la séquence.
 
@@ -1855,7 +2036,7 @@ Les familles F8, F10 et une partie de F12 (P3) ne sont pas validées au déploie
 
 ---
 
-### 4.2.5) Arbitrages développés
+#### 4.1.1.5) Arbitrages développés
 
 Les sous-points suivants comportent un **choix technique** qui sera documenté dans sa sous-section dédiée, selon le canevas : solutions possibles → tableau comparatif → choix retenu et justification → étapes de déploiement (commande + variables) → commandes de vérification. Ils sont listés ici pour cadrer la rédaction à venir.
 
@@ -1874,7 +2055,7 @@ Les sous-points suivants comportent un **choix technique** qui sera documenté d
 |A11|F10|Host-mode 802.1X|single / multi-host / **multi-domain** / multi-auth|Multi-domain (PC + téléphone), multi-auth ailleurs|
 |A12|F12|Version SNMP|v2c / **v3 authPriv**|SNMPv3 authPriv (SHA + AES)|
 
-### 4.3.1) F1 — Configuration de base et identité
+### 4.1.2) F1 : Configuration de base et identité
 La configuration de base établit l'identité de l'équipement et sécurise son plan d'administration _avant_ toute configuration fonctionnelle. L'ordre importe : un switch qui démarre sans elle est joignable en Telnet en clair, sans authentification robuste, depuis n'importe quel port actif — un vecteur d'attaque trivial. Cette famille pose aussi trois éléments dont l'absence se paie plus tard : l'horodatage (sans lequel les journaux produits par les familles suivantes sont incorrélables), la politique de récupération sur err-disable (sans laquelle on relève les ports à la main pendant tous les tests de sécurité), et la désactivation de la résolution DNS (sans laquelle chaque faute de frappe en CLI gèle la console une trentaine de secondes).
 
 Le stockage des mots de passe dans la configuration admet plusieurs niveaux de robustesse, tous ne se valant pas. Le choix du type conditionne ce qu'un attaquant tire d'un vol de configuration.
@@ -1947,7 +2128,7 @@ show archive config differences          ! suivi des changements
 show running-config | include no ip http ! services désactivés
 ```
 
-### 4.3.2) F2 — Accès et administration
+### 4.1.3) F2 : Accès et administration
 
 Cette famille définit _qui_ peut administrer l'équipement et _par quel canal_. Trois décisions la structurent : le modèle d'authentification (comptes locaux via AAA), le protocole d'accès distant (chiffré et robuste), et la restriction des sources autorisées à se connecter. L'objectif est qu'aucune administration ne soit possible en clair, sans authentification forte, ni depuis un réseau non prévu.
 
@@ -2036,7 +2217,7 @@ show running-config | include username|enable secret ! type de hachage (9)
 ```
 
 
-### 4.3.3) F3 — Segmentation réseau (réseaux virtuels)
+### 4.1.4) F3 : Segmentation réseau (réseaux virtuels)
 
 La segmentation crée, à l'intérieur du switch, plusieurs domaines de diffusion logiquement isolés. Un port affecté à un VLAN inexistant dans la base reste inactif et ne transmet rien : la base VLAN est donc un prérequis de toute affectation de port (F4) et de tout trunk (F5). Cette famille pose aussi les trois VLAN système d'hygiène L2 dont le rôle défensif est traité en F5 (natif) et F9 (parking). Un point de séquence est déterminant : la propagation VLAN doit être neutralisée _avant_ la première création de VLAN.
 
@@ -2112,7 +2293,7 @@ show vlan brief                          ! présence et nommage des VLAN
 ```
 
 
-### 4.3.4) F4 — Affectation des ports d'accès
+### 4.1.5) F4 : Affectation des ports d'accès
 
 Les ports d'accès raccordent les endpoints (postes, imprimantes, téléphones IP). Chaque port est affecté à un unique VLAN, dont les trames circulent sans étiquette. Deux raffinements interviennent ici : le **VLAN voix**, qui superpose sur un même port physique un flux de données non étiqueté et un flux voix étiqueté (pour brancher un PC derrière un téléphone IP), et la **désactivation systématique de la négociation de trunk**, qui empêche un endpoint de faire basculer son port en mode trunk par des trames forgées.
 
@@ -2148,7 +2329,7 @@ show interfaces {IF_ACCESS} switchport   ! mode, VLAN d'accès, VLAN voix, état
 show vlan brief                          ! ports rattachés à chaque VLAN
 ```
 
-### 4.3.5) F5 — Liaisons montantes (trunks)
+### 4.1.6) F5 : Liaisons montantes (trunks)
 
 Les trunks relient chaque Access à ses deux Distribution et transportent plusieurs VLAN par étiquetage 802.1Q. Trois menaces L2 classiques ciblent précisément ces liens, et la configuration du trunk est d'abord une configuration de sécurité : la **négociation de trunk abusive** (un endpoint qui force son port en trunk pour recevoir tous les VLAN), l'**attaque par double étiquetage** (qui exploite le VLAN natif pour franchir la segmentation), et le **transport de VLAN superflus** (un trunk qui porte plus que nécessaire élargit la surface d'exposition).
 
