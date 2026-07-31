@@ -1985,9 +1985,9 @@
         <mxCell id="FfuzRm21JSvxm2wyqQET-18" edge="1" parent="1" source="FfuzRm21JSvxm2wyqQET-15" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=12;startSize=8;endSize=8;" target="FfuzRm21JSvxm2wyqQET-12">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="qXVerP6BSWUhJeOKCktQ-1" connectable="0" parent="FfuzRm21JSvxm2wyqQET-18" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" value="802.1X via Certificat" vertex="1">
+        <mxCell id="qXVerP6BSWUhJeOKCktQ-1" connectable="0" parent="FfuzRm21JSvxm2wyqQET-18" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" value="Accès réseau 802.1X via Certificat" vertex="1">
           <mxGeometry relative="1" x="-0.4825" as="geometry">
-            <mxPoint x="34" as="offset" />
+            <mxPoint x="51" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="qXVerP6BSWUhJeOKCktQ-2" edge="1" parent="1" source="FfuzRm21JSvxm2wyqQET-15" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontSize=12;startSize=8;endSize=8;" target="FfuzRm21JSvxm2wyqQET-3">
@@ -2003,7 +2003,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="FfuzRm21JSvxm2wyqQET-15" parent="1" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://icons.diagrams.net/assets/devices/1/Laptop-29.svg" value="Windows&amp;amp;Linux" vertex="1">
-          <mxGeometry height="60" width="69.23" x="90" y="575" as="geometry" />
+          <mxGeometry height="60" width="69.23" x="40" y="575" as="geometry" />
         </mxCell>
         <mxCell id="FfuzRm21JSvxm2wyqQET-16" parent="1" style="image;html=1;image=img/lib/clip_art/networking/Switch_128x128.png" value="" vertex="1">
           <mxGeometry height="53.71" width="69.23" x="365.38" y="530" as="geometry" />
