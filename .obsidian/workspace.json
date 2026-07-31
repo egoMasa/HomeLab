@@ -206,8 +206,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -227,15 +226,15 @@
   },
   "active": "699b009810e9e4da",
   "lastOpenFiles": [
+    "configs/lan/ACC-1.md",
+    "configs/lan/ACC-2.md",
+    "README.md",
     "plan_adressage.xlsx",
     "cartographie.xlsx",
     "ROADMAP.md",
-    "README.md",
     "configs/README.md",
-    "configs/lan/ACC-1.md",
     "configs/lan/ACC-4.md",
     "configs/lan/ACC-3.md",
-    "configs/lan/ACC-2.md",
     "configs/README.md.tmp.5825.1777231698995",
     "configs/lan/CORE-2.txt",
     "configs/lan/CORE-2.txt.tmp.5825.1777231686582",
