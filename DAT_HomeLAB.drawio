@@ -1945,7 +1945,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="KALAxj_yHjcte_MN0g44" name="DAT - IAM">
-    <mxGraphModel dx="2847" dy="2246" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2491" dy="2056" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -2196,10 +2196,10 @@
           <mxGeometry height="38.5" width="170" x="607.52" y="959.75" as="geometry" />
         </mxCell>
         <mxCell id="SqR2IlYS3qTaEpYjyt0m-14" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Partie applicative" vertex="1">
-          <mxGeometry height="30" width="114.88" x="-30" y="-70" as="geometry" />
+          <mxGeometry height="30" width="114.88" x="-10.280000000000001" y="-70" as="geometry" />
         </mxCell>
         <mxCell id="SqR2IlYS3qTaEpYjyt0m-15" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Partie réseau" vertex="1">
-          <mxGeometry height="30" width="114.88" x="-57.18000000000001" y="1030" as="geometry" />
+          <mxGeometry height="30" width="114.88" x="-115" y="1030" as="geometry" />
         </mxCell>
         <mxCell id="QkDzB9EzTwx2VRBN9Gmt-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
           <mxGeometry height="96.86" width="120" x="687.44" y="50.00000000000001" as="geometry" />
