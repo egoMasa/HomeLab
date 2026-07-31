@@ -1927,7 +1927,7 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="SqR2IlYS3qTaEpYjyt0m-13" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;" value="" vertex="1">
-          <mxGeometry height="560" width="860" x="-60" y="509.43" as="geometry" />
+          <mxGeometry height="560" width="920" x="-120" y="509.43" as="geometry" />
         </mxCell>
         <mxCell id="SqR2IlYS3qTaEpYjyt0m-12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fad9d5;strokeColor=#ae4132;" value="" vertex="1">
           <mxGeometry height="560" width="817.72" x="-30" y="-70" as="geometry" />
@@ -2016,7 +2016,7 @@
         <mxCell id="FfuzRm21JSvxm2wyqQET-18" edge="1" parent="1" source="FfuzRm21JSvxm2wyqQET-15" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;fontSize=12;startSize=8;endSize=8;" target="FfuzRm21JSvxm2wyqQET-12">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="qXVerP6BSWUhJeOKCktQ-1" connectable="0" parent="FfuzRm21JSvxm2wyqQET-18" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;rotation=-5;" value="Authentification certificat (EAP-TLS)" vertex="1">
+        <mxCell id="qXVerP6BSWUhJeOKCktQ-1" connectable="0" parent="FfuzRm21JSvxm2wyqQET-18" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;rotation=0;" value="Authentification certificat (EAP-TLS)" vertex="1">
           <mxGeometry relative="1" x="-0.4825" as="geometry">
             <mxPoint x="51" y="-5" as="offset" />
           </mxGeometry>
@@ -2044,13 +2044,13 @@
         <mxCell id="SqR2IlYS3qTaEpYjyt0m-10" edge="1" parent="1" source="FfuzRm21JSvxm2wyqQET-15" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=12;startSize=8;endSize=8;" target="FfuzRm21JSvxm2wyqQET-12">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="SqR2IlYS3qTaEpYjyt0m-16" connectable="0" parent="SqR2IlYS3qTaEpYjyt0m-10" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" value="Authentification via login/mp" vertex="1">
+        <mxCell id="SqR2IlYS3qTaEpYjyt0m-16" connectable="0" parent="SqR2IlYS3qTaEpYjyt0m-10" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" value="Authentification via login/mp (PEAP-MSCHAP)" vertex="1">
           <mxGeometry relative="1" x="-0.794" y="1" as="geometry">
-            <mxPoint x="68" y="-3" as="offset" />
+            <mxPoint x="101" y="1" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="FfuzRm21JSvxm2wyqQET-15" parent="1" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://icons.diagrams.net/assets/devices/1/Laptop-29.svg" value="Windows&amp;amp;Linux" vertex="1">
-          <mxGeometry height="60" width="69.23" x="-50" y="574.43" as="geometry" />
+          <mxGeometry height="60" width="69.23" x="-99.22999999999999" y="570" as="geometry" />
         </mxCell>
         <mxCell id="FfuzRm21JSvxm2wyqQET-16" parent="1" style="image;html=1;image=img/lib/clip_art/networking/Switch_128x128.png" value="" vertex="1">
           <mxGeometry height="53.71" width="69.23" x="275.38" y="529.43" as="geometry" />
@@ -2172,7 +2172,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="7l7_DzZvloFJ6x5a-U13" name="DAT - SSO">
-    <mxGraphModel dx="2241" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2241" dy="806" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
