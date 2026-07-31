@@ -2052,6 +2052,11 @@
         <mxCell id="XB1orNze9BHSLB6RV6hz-20" edge="1" parent="1" source="XB1orNze9BHSLB6RV6hz-14" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=12;startSize=8;endSize=8;" target="k4Jy3QuIOfx1lerArTr_-1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="vOi_ggbyXpbxOm9E2i3d-1" connectable="0" parent="XB1orNze9BHSLB6RV6hz-20" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" value="OIDC/SAML/CAS" vertex="1">
+          <mxGeometry relative="1" x="0.006" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="XB1orNze9BHSLB6RV6hz-14" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
           <mxGeometry height="96.86" width="120" x="540" y="60" as="geometry" />
         </mxCell>
@@ -2074,10 +2079,16 @@
           <mxGeometry height="30" width="114.88" x="772.5699999999999" y="470" as="geometry" />
         </mxCell>
         <mxCell id="lKUEKLibHi7ofYh7ihPd-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="MFA" vertex="1">
-          <mxGeometry height="30" width="114.88" x="545.12" y="340" as="geometry" />
+          <mxGeometry height="30" width="114.88" x="542.5600000000001" y="355" as="geometry" />
         </mxCell>
         <mxCell id="lKUEKLibHi7ofYh7ihPd-5" parent="1" style="image;html=1;image=img/lib/clip_art/networking/Firewall_02_128x128.png" value="" vertex="1">
           <mxGeometry height="60" width="53.71" x="113.14" y="355" as="geometry" />
+        </mxCell>
+        <mxCell id="lKUEKLibHi7ofYh7ihPd-7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="MFA" vertex="1">
+          <mxGeometry height="30" width="114.88" x="543.13" y="321.29" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-MoeeGZ6f2puEfefyLM-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Accès d&#39;administration centralisé" vertex="1">
+          <mxGeometry height="30" width="114.88" x="342.56" y="321.29" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
