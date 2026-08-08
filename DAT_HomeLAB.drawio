@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" pages="11">
   <diagram name="Architecture générale" id="afl-n46_FWIlyFFu-ON1">
-    <mxGraphModel dx="2005" dy="1818" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1416" dy="1494" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -457,8 +457,8 @@
         <mxCell id="CQp6Ki8eFqKhazDei_1H-31" parent="1" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" value="Lien FC (SAN)" vertex="1">
           <mxGeometry height="30" width="92" x="-22" y="1203" as="geometry" />
         </mxCell>
-        <mxCell id="CQp6Ki8eFqKhazDei_1H-32" parent="1" style="text;whiteSpace=wrap;html=1;fontStyle=1" value="Serveurs" vertex="1">
-          <mxGeometry height="20" width="44.6" x="617.2" y="-54.19999999999999" as="geometry" />
+        <mxCell id="CQp6Ki8eFqKhazDei_1H-32" parent="1" style="text;whiteSpace=wrap;html=1;fontStyle=1" value="Rack MGMT+ADM+Backup" vertex="1">
+          <mxGeometry height="20" width="155.5" x="496.13" y="-150" as="geometry" />
         </mxCell>
         <mxCell id="CQp6Ki8eFqKhazDei_1H-33" edge="1" parent="1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;endArrow=none;endFill=0;fillColor=#60a917;strokeColor=light-dark(#2D7600, #ffffff);">
           <mxGeometry relative="1" as="geometry">
@@ -527,6 +527,9 @@
         </mxCell>
         <mxCell id="H_FZySfODWUR1Leul7hQ-4" parent="1" style="shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#4495D1;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.veeam.2d.virtual_machine;" value="" vertex="1">
           <mxGeometry height="18" width="18" x="732.46" y="-90" as="geometry" />
+        </mxCell>
+        <mxCell id="J1nmBkGGVjkztTY9MXDF-1" parent="1" style="fillColorStyles=neutralFill;neutralFill=#9DA6A8;shape=mxgraph.networks2.icon;aspect=fixed;fillColor=#EDEDED;strokeColor=#000000;gradientColor=#5B6163;network2IconShadow=1;network2bgFillColor=none;labelPosition=center;verticalLabelPosition=bottom;align=center;verticalAlign=top;network2Icon=mxgraph.networks2.server;network2IconW=1.0001;network2IconH=0.5812;" value="" vertex="1">
+          <mxGeometry height="43.13" width="74.22" x="533.77" y="-97.33" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
