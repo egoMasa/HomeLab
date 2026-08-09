@@ -836,13 +836,6 @@ Ensuite, **le VLAN n'a de sens que local au lien physique.** L'étiquette 802.1Q
 
 La fabric manipule deux familles de VNI, qu'il ne faut jamais confondre. Ce sont des **identifiants distincts, pris dans des plages séparées**.
 
-||VNI L2|VNI L3|
-|---|---|---|
-|Étire…|un **VLAN** (un segment, un domaine de diffusion)|une **VRF** (une table de routage)|
-|Convention retenue|`10000 + numéro de VLAN` → VLAN 100 = **10100**|`50000 + offset` → VRF-PROD = **50001**|
-|Employé quand…|on reste dans le même sous-réseau (**commutation**)|on change de sous-réseau (**routage**)|
-|Route EVPN associée|type 2 (MAC/IP)|type 5 (préfixe IP)|
-
 Le VNI de niveau 2 « allonge » un VLAN : il transporte une trame dans son segment, sans routage. Le VNI de niveau 3 « allonge » une VRF : c'est le fil qui relie la table de routage d'une VRF sur un Leaf à la même table sur un autre Leaf. Réserver des plages distinctes (`10xxx` et `50xxx`) permet, à la seule lecture d'un numéro, de savoir si l'on a affaire à un segment ou à une VRF.
 
 ### 3.7.7) La logique d'exécution
@@ -1344,80 +1337,11 @@ Grâce à BGP EVPN, le trafic **BUM** (Broadcast, Unknown Unicast, Multicast) es
 
 Côté routage, la **passerelle anycast** confère à chaque VLAN la même adresse _et_ la même adresse MAC de passerelle sur tous les Leaf qui l'hébergent. La passerelle du VLAN 101 (`PROD-APP`, `10.2.101.0/24`) est ainsi `10.2.101.1` sur LEAF-1 comme sur LEAF-2. Une machine virtuelle migrée d'un hyperviseur à l'autre conserve sa passerelle sans le moindre changement, et son trafic n'est pas interrompu : la passerelle est toujours l'équipement auquel elle est directement raccordée. C'est le mécanisme qui rend la mobilité des machines virtuelles transparente dans une fabric EVPN, et il s'applique de la même façon aux VLAN de la VRF-MGMT.
 
-### 3.9.13) Réservations et extensions futures
-
-Le plan est dimensionné pour absorber une croissance importante sans renumérotation. Les éléments suivants sont **réservés et documentés**, mais non déployés :
-
-|Réservation|Identifiants|Déclencheur envisagé|
-|---|---|---|
-|`VRF-SOC`|`10.5.0.0/16` · RD/RT `65000:400` · VNI L3 `50005` · plage VLAN `4xx`|Population d'analystes distincte des administrateurs, SOC dépassant un VLAN, ou exigence d'intégrité de la preuve opposable|
-|`VRF-PREPROD`|`10.6.0.0/16`|Environnement de qualification nécessitant une inspection des flux vers la production|
-|`VRF-INFRA`|à allouer|Scission des services socles (DNS, annuaire) si le SI grossit fortement|
-|Granularité SOC|VLAN `401` à `405`|Séparation SIEM / NSM / TI / SIRP / SOAR|
-|Extensions ADMIN|VLAN `307` à `310`|Outillage forensique ou de test d'intrusion interne|
-|3ᵉ bloc de Distribution|offset `+200` sur `10.1.0.0/16`|Nouveau bâtiment ou nouveau site|
-
-La marge disponible est considérable : chaque bloc `/16` de zone contient 256 sous-réseaux `/24` dont moins de dix sont utilisés, la convention RD/RT laisse la plage `65000:100` à `65000:999` largement ouverte, et l'espace des VNI sur 24 bits est très loin d'être contraint. Le dimensionnement du plan n'est donc pas un facteur limitant pour l'évolution de l'infrastructure.
 
 ### 3.9.14) Tableau de synthèse — VRF et zones de confiance
 
-|Zone / VRF|Nature|Bloc IP|VLAN|VNI L3|RD / RT|Passerelle|Sortie de zone|
-|---|---|---|---|--:|---|---|---|
-|`default`|Table globale fabric|`10.0.0.0/16`|—|—|—|—|—|
-|`USERS`|Table globale LAN (Cisco)|`10.1.0.0/16`|8 (× 2 blocs)|—|—|VIP VRRP sur Distribution|Core → FW (L3 OSPF)|
-|`VRF-PROD`|VRF EVPN|`10.2.0.0/16`|8|50001|`65000:100`|Anycast sur Leaf|`0/0` → FW via VLAN 4001|
-|`VRF-DMZ`|VRF EVPN|`10.3.0.0/16`|5|50002|`65000:200`|Anycast sur Leaf|`0/0` → FW via VLAN 4002|
-|`VRF-ADMIN`|VRF EVPN|`10.4.0.0/16`|7|50003|`65000:300`|Anycast sur Leaf|`0/0` → FW via VLAN 4003|
-|`VRF-MGMT`|VRF EVPN|`10.254.0.0/16`|1|50004|`65000:999`|Anycast sur Leaf|`0/0` → FW via VLAN 4004|
-|_(réservé)_ `VRF-SOC`|—|`10.5.0.0/16`|—|50005|`65000:400`|—|—|
-
-**Total déployé : 4 VRF EVPN**, plus la table globale de l'underlay et la zone USERS du LAN. Aucun import croisé de Route Target : tout franchissement de zone passe par le firewall.
-
 ### 3.9.15) Tableau de synthèse — plan VLAN complet
 
-|VLAN|Nom|Zone / VRF|Sous-réseau|VNI L2|Passerelle|Portée|
-|--:|---|---|---|--:|---|---|
-|1|`DEFAULT-UNUSED`|—|—|—|aucune|Aucun port, élagué des trunks|
-|10|`USERS`|USERS|`10.1.10.0/24` · `10.1.110.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
-|20|`VOICE`|USERS|`10.1.20.0/24` · `10.1.120.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
-|30|`IOT`|USERS|`10.1.30.0/24` · `10.1.130.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
-|40|`WIFI-CORP`|USERS|`10.1.40.0/24` · `10.1.140.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
-|41|`WIFI-GUEST`|USERS|`10.1.41.0/24` · `10.1.141.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
-|42|`WIFI-BYOD`|USERS|`10.1.42.0/24` · `10.1.142.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
-|50|`PRINTERS`|USERS|`10.1.50.0/24` · `10.1.150.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
-|90|`LAB-DEV`|USERS|`10.1.90.0/24` · `10.1.190.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
-|100|`PROD-WEB-INT`|VRF-PROD|`10.2.100.0/24`|10100|Anycast `.1`|Fabric DC|
-|101|`PROD-APP`|VRF-PROD|`10.2.101.0/24`|10101|Anycast `.1`|Fabric DC|
-|102|`PROD-DB`|VRF-PROD|`10.2.102.0/24`|10102|Anycast `.1`|Fabric DC|
-|103|`PROD-INFRA`|VRF-PROD|`10.2.103.0/24`|10103|Anycast `.1`|Fabric DC|
-|104|`PROD-FILES`|VRF-PROD|`10.2.104.0/24`|10104|Anycast `.1`|Fabric DC|
-|105|`PROD-MESSAGING`|VRF-PROD|`10.2.105.0/24`|10105|Anycast `.1`|Fabric DC|
-|106|`PROD-TOIP`|VRF-PROD|`10.2.106.0/24`|10106|Anycast `.1`|Fabric DC|
-|107|`PROD-INTEGRATION`|VRF-PROD|`10.2.107.0/24`|10107|Anycast `.1`|Fabric DC|
-|200|`DMZ-FRONT`|VRF-DMZ|`10.3.200.0/24`|10200|Anycast `.1`|Fabric DC|
-|201|`DMZ-WEB`|VRF-DMZ|`10.3.201.0/24`|10201|Anycast `.1`|Fabric DC|
-|202|`DMZ-MAIL`|VRF-DMZ|`10.3.202.0/24`|10202|Anycast `.1`|Fabric DC|
-|203|`DMZ-DNS`|VRF-DMZ|`10.3.203.0/24`|10203|Anycast `.1`|Fabric DC|
-|204|`DMZ-API`|VRF-DMZ|`10.3.204.0/24`|10204|Anycast `.1`|Fabric DC|
-|300|`ADMIN-CORE`|VRF-ADMIN|`10.4.30.0/24`|10300|Anycast `.1`|Fabric DC|
-|301|`ADMIN-CICD`|VRF-ADMIN|`10.4.31.0/24`|10301|Anycast `.1`|Fabric DC|
-|302|`ADMIN-OBSERV`|VRF-ADMIN|`10.4.32.0/24`|10302|Anycast `.1`|Fabric DC|
-|303|`ADMIN-AAA`|VRF-ADMIN|`10.4.33.0/24`|10303|Anycast `.1`|Fabric DC|
-|304|`ADMIN-AUTOMATE`|VRF-ADMIN|`10.4.34.0/24`|10304|Anycast `.1`|Fabric DC|
-|305|`ADMIN-VAULT`|VRF-ADMIN|`10.4.35.0/24`|10305|Anycast `.1`|Fabric DC|
-|306|`ADMIN-SOC`|VRF-ADMIN|`10.4.36.0/24`|10306|Anycast `.1` + ACL Leaf|Fabric DC|
-|990|`DC-CLUSTER`|_(aucune)_|—|10990|**aucune**|Trunks Leaf ↔ HV|
-|991|`DC-MIGRATION`|_(aucune)_|—|10991|**aucune**|Trunks Leaf ↔ HV|
-|997|`NATIVE-UNUSED`|—|—|—|aucune|Natif de tous les trunks|
-|998|`PARKING`|—|—|—|aucune|Ports inutilisés, `shutdown`|
-|999|`MGMT-DC`|VRF-MGMT|`10.254.0.0/24`|10999|Anycast `10.254.0.1`|Fabric DC|
-|999|`MGMT-LAN`|_(table globale LAN)_|`10.254.1.0/24` · `10.254.2.0/24`|—|VIP VRRP `.1`|LAN, par bloc|
-|4001|`TRANSIT-PROD`|VRF-PROD|`10.0.21.0/24` (4 × /30)|—|Anycast Spine|Trunks FW ↔ Spine|
-|4002|`TRANSIT-DMZ`|VRF-DMZ|`10.0.22.0/24` (4 × /30)|—|Anycast Spine|Trunks FW ↔ Spine|
-|4003|`TRANSIT-ADMIN`|VRF-ADMIN|`10.0.23.0/24` (4 × /30)|—|Anycast Spine|Trunks FW ↔ Spine|
-|4004|`TRANSIT-MGMT`|VRF-MGMT|`10.0.24.0/24` (4 × /30)|—|Anycast Spine|Trunks FW ↔ Spine|
-
-**Décompte.** 31 VLAN de segmentation (8 USERS + 8 PROD + 5 DMZ + 7 ADMIN + 1 MGMT + 2 infrastructure DC), 3 VLAN système et 4 VLAN de transit, soit **38 identifiants**. Côté sous-réseaux : 39 segments (16 LAN, 8 PROD, 5 DMZ, 7 ADMIN, 1 MGMT-DC, 2 MGMT-LAN) auxquels s'ajoutent 16 `/30` de transit et les loopbacks. Quatre segments — 990, 991, 997 et 998 — ne portent **aucune interface L3** et sont donc structurellement non routables.
 
 ## 3.10) Cas particulier des flux datacenter (intra-VRF vs inter-VRF)
 
