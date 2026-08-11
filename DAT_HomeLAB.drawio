@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" pages="11">
+<mxfile host="app.diagrams.net" pages="12">
   <diagram name="Architecture générale" id="afl-n46_FWIlyFFu-ON1">
     <mxGraphModel dx="1416" dy="1494" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -3074,6 +3074,14 @@
         <mxCell id="8HA7T8tTLkIIkyh8sy8W-65" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Stockage des métriques" vertex="1">
           <mxGeometry height="30" width="120" x="673.58" y="212" as="geometry" />
         </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="RgAFvJOoFb7gJsvGrDrK" name="Plateforme Intent-Based Networking (IBN)">
+    <mxGraphModel dx="1414" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
       </root>
     </mxGraphModel>
   </diagram>
