@@ -123,8 +123,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "76106136780ccbfe",
@@ -222,8 +221,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -241,11 +239,11 @@
       "obsidian-full-calendar:Open Full Calendar": false
     }
   },
-  "active": "699b009810e9e4da",
+  "active": "a3419b1b392a37bc",
   "lastOpenFiles": [
     "configs/campus/ACC-1.md",
-    "README.md",
     "configs/campus/Plan de déploiement.md",
+    "README.md",
     "SECTION 1 - Réseaux.md",
     "configs/README.md",
     "SECTION 2 - Systèmes.md",
